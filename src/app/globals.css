@@ -87,93 +87,229 @@ body {
   box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.15);
 }
 
-/* Typography styles for Editorial Reader Modes */
+/* ==========================================================================
+   Editorial Reader Mode Typography Engine (High Legibility & Strict Contrast)
+   ========================================================================== */
 
-/* Paper Theme Prose */
-.prose-paper {
-  @apply text-slate-900 leading-relaxed;
+/* --- Paper Theme (.prose-paper) --- */
+.prose-paper,
+.prose-paper *,
+.prose-paper p,
+.prose-paper span,
+.prose-paper div,
+.prose-paper li,
+.prose-paper td,
+.prose-paper section,
+.prose-paper article,
+.prose-paper main {
+  color: #0f172a !important;
+  opacity: 1 !important;
 }
-.prose-paper h1, .prose-paper h2, .prose-paper h3, .prose-paper h4 {
-  @apply text-slate-950 font-bold tracking-tight my-4;
+
+.prose-paper h1,
+.prose-paper h2,
+.prose-paper h3,
+.prose-paper h4,
+.prose-paper h5,
+.prose-paper h6 {
+  color: #020617 !important;
+  font-weight: 700 !important;
 }
-.prose-paper p {
-  @apply my-3.5 text-slate-900 leading-relaxed font-normal;
+
+.prose-paper a,
+.prose-paper a * {
+  color: #78350f !important;
+  text-decoration: underline !important;
+  font-weight: 600 !important;
 }
-.prose-paper li {
-  @apply my-1.5 text-slate-900;
+
+.prose-paper a:hover,
+.prose-paper a:hover * {
+  color: #b45309 !important;
 }
-.prose-paper a {
-  @apply text-amber-900 font-semibold underline decoration-amber-700/50 hover:text-amber-700 transition-colors;
-}
+
 .prose-paper code {
-  @apply bg-stone-200 text-stone-900 px-1.5 py-0.5 rounded text-sm font-mono font-semibold;
+  color: #0f172a !important;
+  background-color: #e7e5e4 !important;
+  padding: 0.15rem 0.4rem !important;
+  border-radius: 0.375rem !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-weight: 600 !important;
 }
-.prose-paper pre {
-  @apply bg-stone-900 text-stone-100 p-4 rounded-xl overflow-x-auto my-4 text-sm font-mono;
+
+.prose-paper pre,
+.prose-paper pre * {
+  color: #f8fafc !important;
+  background-color: #0f172a !important;
+}
+
+.prose-paper blockquote,
+.prose-paper blockquote * {
+  color: #1e293b !important;
 }
 .prose-paper blockquote {
-  @apply border-l-4 border-amber-800 pl-4 italic text-slate-800 my-4 bg-stone-100/70 p-3 rounded-r-lg;
-}
-.prose-paper img {
-  @apply rounded-xl max-w-full h-auto my-4 border border-stone-300 shadow-md;
+  border-left: 4px solid #78350f !important;
+  background-color: #f1f0ea !important;
+  padding: 0.75rem 1rem !important;
+  margin: 1rem 0 !important;
+  border-radius: 0 0.5rem 0.5rem 0 !important;
+  font-style: italic !important;
 }
 
-/* Sepia Theme Prose */
-.prose-sepia {
-  @apply text-[#2e2315] leading-relaxed;
+.prose-paper img {
+  border-radius: 0.75rem !important;
+  max-width: 100% !important;
+  height: auto !important;
+  margin: 1rem 0 !important;
+  border: 1px solid #e7e5e4 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
 }
-.prose-sepia h1, .prose-sepia h2, .prose-sepia h3, .prose-sepia h4 {
-  @apply text-[#1a1209] font-bold tracking-tight my-4;
+
+/* --- Sepia Theme (.prose-sepia) --- */
+.prose-sepia,
+.prose-sepia *,
+.prose-sepia p,
+.prose-sepia span,
+.prose-sepia div,
+.prose-sepia li,
+.prose-sepia td,
+.prose-sepia section,
+.prose-sepia article,
+.prose-sepia main {
+  color: #2e2315 !important;
+  opacity: 1 !important;
 }
-.prose-sepia p {
-  @apply my-3.5 text-[#2e2315] leading-relaxed font-normal;
+
+.prose-sepia h1,
+.prose-sepia h2,
+.prose-sepia h3,
+.prose-sepia h4,
+.prose-sepia h5,
+.prose-sepia h6 {
+  color: #1a1209 !important;
+  font-weight: 700 !important;
 }
-.prose-sepia li {
-  @apply my-1.5 text-[#2e2315];
+
+.prose-sepia a,
+.prose-sepia a * {
+  color: #78350f !important;
+  text-decoration: underline !important;
+  font-weight: 600 !important;
 }
-.prose-sepia a {
-  @apply text-amber-950 font-semibold underline decoration-amber-900/60 hover:text-amber-800 transition-colors;
+
+.prose-sepia a:hover,
+.prose-sepia a:hover * {
+  color: #92400e !important;
 }
+
 .prose-sepia code {
-  @apply bg-[#ebdcb8] text-[#1a1209] px-1.5 py-0.5 rounded text-sm font-mono font-semibold;
+  color: #1a1209 !important;
+  background-color: #ebdcb8 !important;
+  padding: 0.15rem 0.4rem !important;
+  border-radius: 0.375rem !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-weight: 600 !important;
 }
-.prose-sepia pre {
-  @apply bg-[#2b2014] text-[#f5ebd6] p-4 rounded-xl overflow-x-auto my-4 text-sm font-mono;
+
+.prose-sepia pre,
+.prose-sepia pre * {
+  color: #f5ebd6 !important;
+  background-color: #2b2014 !important;
+}
+
+.prose-sepia blockquote,
+.prose-sepia blockquote * {
+  color: #3b2d1c !important;
 }
 .prose-sepia blockquote {
-  @apply border-l-4 border-amber-900 pl-4 italic text-[#3b2d1c] my-4 bg-[#ebdcb8]/70 p-3 rounded-r-lg;
-}
-.prose-sepia img {
-  @apply rounded-xl max-w-full h-auto my-4 border border-amber-300/80 shadow-md;
+  border-left: 4px solid #78350f !important;
+  background-color: #ebdcb8 !important;
+  padding: 0.75rem 1rem !important;
+  margin: 1rem 0 !important;
+  border-radius: 0 0.5rem 0.5rem 0 !important;
+  font-style: italic !important;
 }
 
-/* Night Theme Prose */
-.prose-night {
-  @apply text-stone-200 leading-relaxed;
+.prose-sepia img {
+  border-radius: 0.75rem !important;
+  max-width: 100% !important;
+  height: auto !important;
+  margin: 1rem 0 !important;
+  border: 1px solid #d6c4a3 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
 }
-.prose-night h1, .prose-night h2, .prose-night h3, .prose-night h4 {
-  @apply text-stone-100 font-bold tracking-tight my-4;
+
+/* --- Night Theme (.prose-night) --- */
+.prose-night,
+.prose-night *,
+.prose-night p,
+.prose-night span,
+.prose-night div,
+.prose-night li,
+.prose-night td,
+.prose-night section,
+.prose-night article,
+.prose-night main {
+  color: #e2e8f0 !important;
+  opacity: 1 !important;
 }
-.prose-night p {
-  @apply my-3.5 text-stone-200 leading-relaxed font-normal;
+
+.prose-night h1,
+.prose-night h2,
+.prose-night h3,
+.prose-night h4,
+.prose-night h5,
+.prose-night h6 {
+  color: #f8fafc !important;
+  font-weight: 700 !important;
 }
-.prose-night li {
-  @apply my-1.5 text-stone-200;
+
+.prose-night a,
+.prose-night a * {
+  color: #fbbf24 !important;
+  text-decoration: underline !important;
+  font-weight: 600 !important;
 }
-.prose-night a {
-  @apply text-amber-400 font-semibold underline decoration-amber-500/40 hover:text-amber-300 transition-colors;
+
+.prose-night a:hover,
+.prose-night a:hover * {
+  color: #fde047 !important;
 }
+
 .prose-night code {
-  @apply bg-stone-800 text-amber-300 px-1.5 py-0.5 rounded text-sm font-mono;
+  color: #fde047 !important;
+  background-color: #1e293b !important;
+  padding: 0.15rem 0.4rem !important;
+  border-radius: 0.375rem !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
 }
-.prose-night pre {
-  @apply bg-stone-950 border border-stone-800 text-stone-100 p-4 rounded-xl overflow-x-auto my-4 text-sm font-mono;
+
+.prose-night pre,
+.prose-night pre * {
+  color: #f8fafc !important;
+  background-color: #020617 !important;
+}
+
+.prose-night blockquote,
+.prose-night blockquote * {
+  color: #cbd5e1 !important;
 }
 .prose-night blockquote {
-  @apply border-l-4 border-amber-500 pl-4 italic text-stone-300 my-4 bg-stone-900/80 p-3 rounded-r-lg;
+  border-left: 4px solid #f59e0b !important;
+  background-color: #1e293b !important;
+  padding: 0.75rem 1rem !important;
+  margin: 1rem 0 !important;
+  border-radius: 0 0.5rem 0.5rem 0 !important;
+  font-style: italic !important;
 }
+
 .prose-night img {
-  @apply rounded-xl max-w-full h-auto my-4 border border-stone-800 shadow-lg;
+  border-radius: 0.75rem !important;
+  max-width: 100% !important;
+  height: auto !important;
+  margin: 1rem 0 !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* Legacy fallback */
