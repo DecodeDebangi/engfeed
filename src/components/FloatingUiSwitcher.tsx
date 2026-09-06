@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Palette, Check, Sparkles, BookOpen, Layers, LayoutGrid, Zap, ChevronUp } from 'lucide-react';
 
 export type UiStyleMode = 'editorial' | 'glass' | 'material' | 'brutalist';
@@ -57,84 +57,116 @@ export const FloatingUiSwitcher: React.FC<FloatingUiSwitcherProps> = ({
   onStyleChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const leaveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const activeOption = UI_OPTIONS.find((opt) => opt.id === currentStyle) || UI_OPTIONS[0];
 
+  const handleMouseEnter = () => {
+    if (leaveTimerRef.current) {
+      clearTimeout(leaveTimerRef.current);
+      leaveTimerRef.current = null;
+    }
+    setIsOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    leaveTimerRef.current = setTimeout(() => {
+      setIsOpen(false);
+    }, 300); // 300ms grace period so fast mouse movement never drops open popover
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      if (leaveTimerRef.current) clearTimeout(leaveTimerRef.current);
+    };
+  }, []);
+
   return (
     <div
+      ref={containerRef}
       className="fixed bottom-6 right-6 z-50 font-sans group"
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      {/* Floating Options Dropdown Menu */}
+      {/* Invisible Hover Bridge + Floating Options Dropdown Menu */}
       <div
-        className={`absolute bottom-full right-0 mb-3 w-80 bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 rounded-2xl shadow-2xl p-3 transition-all duration-200 origin-bottom-right ${
+        className={`absolute bottom-full right-0 pb-3 w-80 transition-all duration-200 origin-bottom-right ${
           isOpen
             ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
             : 'opacity-0 scale-95 translate-y-2 pointer-events-none'
         }`}
       >
-        <div className="flex items-center justify-between px-3 py-2 border-b border-slate-800 mb-2">
-          <div className="flex items-center gap-2">
-            <Palette className="w-4 h-4 text-amber-400" />
-            <span className="text-xs font-bold text-slate-100 uppercase tracking-wider">
-              Select UI Design
+        <div className="bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 rounded-2xl shadow-2xl p-3">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-slate-800 mb-2">
+            <div className="flex items-center gap-2">
+              <Palette className="w-4 h-4 text-amber-400" />
+              <span className="text-xs font-bold text-slate-100 uppercase tracking-wider">
+                Select UI Design
+              </span>
+            </div>
+            <span className="text-[10px] font-semibold text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">
+              4 Styles Available
             </span>
           </div>
-          <span className="text-[10px] font-semibold text-slate-400 bg-slate-800 px-2 py-0.5 rounded-full">
-            4 Styles Available
-          </span>
-        </div>
 
-        <div className="space-y-1.5">
-          {UI_OPTIONS.map((opt) => {
-            const isSelected = currentStyle === opt.id;
-            const Icon = opt.icon;
+          <div className="space-y-1.5">
+            {UI_OPTIONS.map((opt) => {
+              const isSelected = currentStyle === opt.id;
+              const Icon = opt.icon;
 
-            return (
-              <button
-                key={opt.id}
-                onClick={() => {
-                  onStyleChange(opt.id);
-                  setIsOpen(false);
-                }}
-                className={`w-full text-left p-2.5 rounded-xl transition-all flex items-start gap-3 border ${
-                  isSelected
-                    ? 'bg-slate-800/90 border-amber-500/60 shadow-sm'
-                    : 'bg-slate-900/40 border-transparent hover:bg-slate-800/60 hover:border-slate-700'
-                }`}
-              >
-                <div
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                    isSelected ? 'bg-amber-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-300'
+              return (
+                <button
+                  key={opt.id}
+                  onClick={() => {
+                    onStyleChange(opt.id);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full text-left p-2.5 rounded-xl transition-all flex items-start gap-3 border ${
+                    isSelected
+                      ? 'bg-slate-800/90 border-amber-500/60 shadow-sm'
+                      : 'bg-slate-900/40 border-transparent hover:bg-slate-800/60 hover:border-slate-700'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-1 mb-0.5">
-                    <span
-                      className={`text-xs font-bold truncate ${
-                        isSelected ? 'text-amber-400' : 'text-slate-200'
-                      }`}
-                    >
-                      {opt.name}
-                    </span>
-                    {isSelected && (
-                      <span className="flex-shrink-0 p-0.5 rounded-full bg-amber-500 text-slate-950">
-                        <Check className="w-3 h-3 stroke-[3]" />
-                      </span>
-                    )}
+                  <div
+                    className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                      isSelected ? 'bg-amber-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-300'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
                   </div>
 
-                  <p className="text-[11px] text-slate-400 leading-tight line-clamp-2">
-                    {opt.desc}
-                  </p>
-                </div>
-              </button>
-            );
-          })}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-1 mb-0.5">
+                      <span
+                        className={`text-xs font-bold truncate ${
+                          isSelected ? 'text-amber-400' : 'text-slate-200'
+                        }`}
+                      >
+                        {opt.name}
+                      </span>
+                      {isSelected && (
+                        <span className="flex-shrink-0 p-0.5 rounded-full bg-amber-500 text-slate-950">
+                          <Check className="w-3 h-3 stroke-[3]" />
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-[11px] text-slate-400 leading-tight line-clamp-2">
+                      {opt.desc}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
