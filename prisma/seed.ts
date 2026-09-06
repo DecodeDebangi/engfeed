@@ -179,6 +179,33 @@ export const SEED_COMPANIES: SeedCompany[] = [
     category: 'AI & ML',
     description: 'AlphaFold, Gemini foundation models, reinforcement learning, and scientific AI.',
   },
+  {
+    name: 'Anthropic Research',
+    slug: 'anthropic',
+    logoUrl: 'https://images.unsplash.com/photo-1677442136019-21780efad99a?w=128&auto=format&fit=crop&q=80',
+    rssUrl: 'https://conoro.github.io/anthropic-engineering-rss-feed/anthropic_engineering_rss.xml',
+    websiteUrl: 'https://www.anthropic.com/news',
+    category: 'AI & ML',
+    description: 'Claude foundation models, constitutional AI, mechanistic interpretability, and AI safety research.',
+  },
+  {
+    name: 'Anyscale Blog',
+    slug: 'anyscale',
+    logoUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=128&auto=format&fit=crop&q=80',
+    rssUrl: 'https://www.anyscale.com/rss.xml',
+    websiteUrl: 'https://www.anyscale.com/blog',
+    category: 'AI & ML',
+    description: 'Ray distributed computing framework, LLM scaling, Ray Train, Ray Serve, and cluster management.',
+  },
+  {
+    name: 'Google Cloud Tech',
+    slug: 'google-cloud',
+    logoUrl: 'https://images.unsplash.com/photo-1573804633927-bfcbcd909acd?w=128&auto=format&fit=crop&q=80',
+    rssUrl: 'https://cloudblog.withgoogle.com/rss/',
+    websiteUrl: 'https://cloud.google.com/blog',
+    category: 'Cloud & Infra',
+    description: 'Google Cloud architecture, Kubernetes Engine, BigQuery, Vertex AI, and enterprise cloud solutions.',
+  },
 
   // --- Cloud, Infrastructure & Databases ---
   {
@@ -328,6 +355,33 @@ export const SEED_COMPANIES: SeedCompany[] = [
     websiteUrl: 'https://css-tricks.com',
     category: 'Frontend',
     description: 'Modern CSS layouts, Flexbox/Grid techniques, SVG animations, and responsive web design.',
+  },
+  {
+    name: 'Chrome Developers Blog',
+    slug: 'chrome-devs',
+    logoUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=128&auto=format&fit=crop&q=80',
+    rssUrl: 'https://developer.chrome.com/feed.xml',
+    websiteUrl: 'https://developer.chrome.com/blog',
+    category: 'Frontend',
+    description: 'Web platform features, DevTools updates, V8 JavaScript engine, and web performance specs.',
+  },
+  {
+    name: 'Figma Engineering',
+    slug: 'figma',
+    logoUrl: 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=128&auto=format&fit=crop&q=80',
+    rssUrl: 'https://medium.com/feed/figma-design',
+    websiteUrl: 'https://www.figma.com/blog/engineering',
+    category: 'DevTools',
+    description: 'WebGL multi-player canvas architecture, WebAssembly, design systems, and frontend performance.',
+  },
+  {
+    name: 'Robinhood Engineering',
+    slug: 'robinhood',
+    logoUrl: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=128&auto=format&fit=crop&q=80',
+    rssUrl: 'https://medium.com/feed/robinhood-engineering',
+    websiteUrl: 'https://newsroom.robinhood.com',
+    category: 'Fintech',
+    description: 'Zero-commission trading infrastructure, market data streaming, Go backend, and mobile security.',
   },
 
   // --- Systems & Security ---
