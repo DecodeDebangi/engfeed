@@ -85,9 +85,15 @@ export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
   };
 
   const themeBgClasses = {
-    paper: 'bg-[#fdfbf7] text-stone-900 border-stone-300',
-    sepia: 'bg-[#f5ebd6] text-stone-900 border-amber-300',
+    paper: 'bg-[#fdfbf7] text-slate-950 border-stone-300',
+    sepia: 'bg-[#f5ebd6] text-[#2e2315] border-amber-300/80',
     night: 'bg-[#121315] text-stone-100 border-stone-800',
+  };
+
+  const proseClassMap = {
+    paper: 'prose-paper',
+    sepia: 'prose-sepia',
+    night: 'prose-night',
   };
 
   return (
@@ -292,7 +298,7 @@ export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
             </div>
           ) : (
             <div
-              className={`prose-custom ${readerFont === 'serif' ? 'font-serif' : 'font-sans'} max-w-2xl mx-auto ${fontClasses[fontSize]}`}
+              className={`${proseClassMap[readerTheme]} ${readerFont === 'serif' ? 'font-serif' : 'font-sans'} max-w-2xl mx-auto ${fontClasses[fontSize]}`}
               dangerouslySetInnerHTML={{
                 __html: fullArticleData?.content || article.summary || '<p>No content available.</p>',
               }}

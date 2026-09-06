@@ -87,35 +87,96 @@ body {
   box-shadow: 0 12px 30px -10px rgba(99, 102, 241, 0.15);
 }
 
-/* Typography override for Reader Mode */
+/* Typography styles for Editorial Reader Modes */
+
+/* Paper Theme Prose */
+.prose-paper {
+  @apply text-slate-900 leading-relaxed;
+}
+.prose-paper h1, .prose-paper h2, .prose-paper h3, .prose-paper h4 {
+  @apply text-slate-950 font-bold tracking-tight my-4;
+}
+.prose-paper p {
+  @apply my-3.5 text-slate-900 leading-relaxed font-normal;
+}
+.prose-paper li {
+  @apply my-1.5 text-slate-900;
+}
+.prose-paper a {
+  @apply text-amber-900 font-semibold underline decoration-amber-700/50 hover:text-amber-700 transition-colors;
+}
+.prose-paper code {
+  @apply bg-stone-200 text-stone-900 px-1.5 py-0.5 rounded text-sm font-mono font-semibold;
+}
+.prose-paper pre {
+  @apply bg-stone-900 text-stone-100 p-4 rounded-xl overflow-x-auto my-4 text-sm font-mono;
+}
+.prose-paper blockquote {
+  @apply border-l-4 border-amber-800 pl-4 italic text-slate-800 my-4 bg-stone-100/70 p-3 rounded-r-lg;
+}
+.prose-paper img {
+  @apply rounded-xl max-w-full h-auto my-4 border border-stone-300 shadow-md;
+}
+
+/* Sepia Theme Prose */
+.prose-sepia {
+  @apply text-[#2e2315] leading-relaxed;
+}
+.prose-sepia h1, .prose-sepia h2, .prose-sepia h3, .prose-sepia h4 {
+  @apply text-[#1a1209] font-bold tracking-tight my-4;
+}
+.prose-sepia p {
+  @apply my-3.5 text-[#2e2315] leading-relaxed font-normal;
+}
+.prose-sepia li {
+  @apply my-1.5 text-[#2e2315];
+}
+.prose-sepia a {
+  @apply text-amber-950 font-semibold underline decoration-amber-900/60 hover:text-amber-800 transition-colors;
+}
+.prose-sepia code {
+  @apply bg-[#ebdcb8] text-[#1a1209] px-1.5 py-0.5 rounded text-sm font-mono font-semibold;
+}
+.prose-sepia pre {
+  @apply bg-[#2b2014] text-[#f5ebd6] p-4 rounded-xl overflow-x-auto my-4 text-sm font-mono;
+}
+.prose-sepia blockquote {
+  @apply border-l-4 border-amber-900 pl-4 italic text-[#3b2d1c] my-4 bg-[#ebdcb8]/70 p-3 rounded-r-lg;
+}
+.prose-sepia img {
+  @apply rounded-xl max-w-full h-auto my-4 border border-amber-300/80 shadow-md;
+}
+
+/* Night Theme Prose */
+.prose-night {
+  @apply text-stone-200 leading-relaxed;
+}
+.prose-night h1, .prose-night h2, .prose-night h3, .prose-night h4 {
+  @apply text-stone-100 font-bold tracking-tight my-4;
+}
+.prose-night p {
+  @apply my-3.5 text-stone-200 leading-relaxed font-normal;
+}
+.prose-night li {
+  @apply my-1.5 text-stone-200;
+}
+.prose-night a {
+  @apply text-amber-400 font-semibold underline decoration-amber-500/40 hover:text-amber-300 transition-colors;
+}
+.prose-night code {
+  @apply bg-stone-800 text-amber-300 px-1.5 py-0.5 rounded text-sm font-mono;
+}
+.prose-night pre {
+  @apply bg-stone-950 border border-stone-800 text-stone-100 p-4 rounded-xl overflow-x-auto my-4 text-sm font-mono;
+}
+.prose-night blockquote {
+  @apply border-l-4 border-amber-500 pl-4 italic text-stone-300 my-4 bg-stone-900/80 p-3 rounded-r-lg;
+}
+.prose-night img {
+  @apply rounded-xl max-w-full h-auto my-4 border border-stone-800 shadow-lg;
+}
+
+/* Legacy fallback */
 .prose-custom {
-  @apply text-slate-300 leading-relaxed;
-}
-
-.prose-custom h1, .prose-custom h2, .prose-custom h3, .prose-custom h4 {
-  @apply text-slate-100 font-semibold tracking-tight my-4;
-}
-
-.prose-custom p {
-  @apply my-3 text-slate-300 text-base leading-relaxed;
-}
-
-.prose-custom a {
-  @apply text-indigo-400 underline decoration-indigo-500/40 hover:text-indigo-300 hover:decoration-indigo-400 transition-colors;
-}
-
-.prose-custom code {
-  @apply bg-slate-800 text-indigo-300 px-1.5 py-0.5 rounded text-sm font-mono;
-}
-
-.prose-custom pre {
-  @apply bg-slate-900 border border-slate-800 p-4 rounded-xl overflow-x-auto my-4 text-sm font-mono;
-}
-
-.prose-custom blockquote {
-  @apply border-l-4 border-indigo-500/60 pl-4 italic text-slate-400 my-4;
-}
-
-.prose-custom img {
-  @apply rounded-xl max-w-full h-auto my-4 border border-slate-800 shadow-lg;
+  @apply prose-night;
 }
