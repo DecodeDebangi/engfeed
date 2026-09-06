@@ -93,6 +93,7 @@ export const EngFeedDashboard: React.FC = () => {
         setStats((prev) => ({
           ...prev,
           totalArticles: json.pagination.totalCount,
+          ...(activeView === 'bookmarks' ? { bookmarksCount: json.pagination.totalCount } : {}),
         }));
       }
     } catch (err) {
@@ -106,8 +107,8 @@ export const EngFeedDashboard: React.FC = () => {
   const fetchGlobalStats = useCallback(async () => {
     try {
       const [statsRes, bookmarksRes] = await Promise.all([
-        fetch('/api/stats', { cache: 'no-store' }).then((r) => r.json()),
-        fetch('/api/bookmarks', { cache: 'no-store' }).then((r) => r.json()),
+        fetch(`/api/stats?t=${Date.now()}`, { cache: 'no-store' }).then((r) => r.json()),
+        fetch(`/api/bookmarks?t=${Date.now()}`, { cache: 'no-store' }).then((r) => r.json()),
       ]);
 
       if (statsRes.success) {
@@ -165,8 +166,6 @@ export const EngFeedDashboard: React.FC = () => {
             ? prev.bookmarksCount + 1
             : Math.max(0, prev.bookmarksCount - 1),
         }));
-
-        fetchGlobalStats();
       }
     } catch (err) {
       console.error('Bookmark toggle error:', err);
