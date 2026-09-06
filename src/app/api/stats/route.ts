@@ -1,0 +1,64 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/lib/db';
+import { redis } from '@/lib/redis';
+
+export async function GET(request: NextRequest) {
+  try {
+    const cacheKey = 'api:stats:global';
+
+    try {
+      const cached = await redis.get(cacheKey);
+      if (cached) {
+        return NextResponse.json(JSON.parse(cached), {
+          headers: { 'X-Cache': 'HIT' },
+        });
+      }
+    } catch (cacheErr) {
+      console.warn('Redis read warning:', cacheErr);
+    }
+
+    const [totalArticles, totalCompanies, latestArticle, categoriesGroup] = await Promise.all([
+      db.article.count(),
+      db.company.count(),
+      db.article.findFirst({
+        orderBy: { publishedAt: 'desc' },
+        select: { publishedAt: true },
+      }),
+      db.company.groupBy({
+        by: ['category'],
+        _count: { _all: true },
+      }),
+    ]);
+
+    const categories = categoriesGroup.map((c) => ({
+      name: c.category,
+      companiesCount: c._count._all,
+    }));
+
+    const payload = {
+      success: true,
+      stats: {
+        totalArticles,
+        totalCompanies,
+        lastSyncedAt: latestArticle?.publishedAt || new Date(),
+        categories,
+      },
+    };
+
+    try {
+      await redis.setex(cacheKey, 120, JSON.stringify(payload));
+    } catch (cacheErr) {
+      console.warn('Redis write warning:', cacheErr);
+    }
+
+    return NextResponse.json(payload, {
+      headers: { 'X-Cache': 'MISS' },
+    });
+  } catch (error: any) {
+    console.error('Error fetching stats:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch stats', details: error.message },
+      { status: 500 }
+    );
+  }
+}
