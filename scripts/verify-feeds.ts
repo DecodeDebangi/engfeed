@@ -13,7 +13,7 @@ const CANDIDATE_FEEDS = [
   { name: 'Meta Engineering', rssUrl: 'https://engineering.fb.com/feed/' },
   { name: 'Cloudflare Blog', rssUrl: 'https://blog.cloudflare.com/rss/' },
   { name: 'Uber Engineering', rssUrl: 'https://www.uber.com/blog/engineering/rss/' },
-  { name: 'Stripe Engineering', rssUrl: 'https://stripe.com/blog/feed.rss' },
+  { name: 'Stripe Engineering', rssUrl: 'https://stripe.dev/blog/feed' },
   { name: 'Airbnb Tech', rssUrl: 'https://medium.com/feed/airbnb-engineering' },
   { name: 'GitHub Engineering', rssUrl: 'https://github.blog/category/engineering/feed/' },
   { name: 'Vercel Blog', rssUrl: 'https://vercel.com/atom' },

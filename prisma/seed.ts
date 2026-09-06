@@ -106,6 +106,15 @@ export const SEED_COMPANIES: SeedCompany[] = [
     description: 'Ruby on Rails at scale, e-commerce infrastructure, GraphQL, and global merchant APIs.',
   },
   {
+    name: 'Stripe Engineering',
+    slug: 'stripe',
+    logoUrl: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?w=128&auto=format&fit=crop&q=80',
+    rssUrl: 'https://stripe.dev/blog/feed',
+    websiteUrl: 'https://stripe.dev/blog',
+    category: 'Fintech',
+    description: 'Payment infrastructure, database reliability, TypeScript migrations, and API design from Stripe.',
+  },
+  {
     name: 'Spotify R&D',
     slug: 'spotify',
     logoUrl: 'https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=128&auto=format&fit=crop&q=80',
@@ -356,11 +365,11 @@ async function main() {
 
   for (const company of SEED_COMPANIES) {
     await prisma.company.upsert({
-      where: { rssUrl: company.rssUrl },
+      where: { slug: company.slug },
       update: {
         name: company.name,
-        slug: company.slug,
         logoUrl: company.logoUrl,
+        rssUrl: company.rssUrl,
         websiteUrl: company.websiteUrl,
         category: company.category,
         description: company.description,
