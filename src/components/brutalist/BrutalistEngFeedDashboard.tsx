@@ -156,6 +156,13 @@ export const BrutalistEngFeedDashboard: React.FC = () => {
           setActiveArticleForReader((prev) => (prev ? { ...prev, isBookmarked: data.bookmarked } : null));
         }
 
+        setStats((prev) => ({
+          ...prev,
+          bookmarksCount: data.bookmarked
+            ? prev.bookmarksCount + 1
+            : Math.max(0, prev.bookmarksCount - 1),
+        }));
+
         fetchGlobalStats();
       }
     } catch (err) {
@@ -204,6 +211,13 @@ export const BrutalistEngFeedDashboard: React.FC = () => {
         activeView={activeView}
         setActiveView={(view) => {
           setActiveView(view);
+          if (view === 'bookmarks') {
+            setSelectedCategory(null);
+            setSelectedTag(null);
+            setSelectedCompanySlug(null);
+            setSearchQuery('');
+            setDebouncedSearch('');
+          }
           setCurrentPage(1);
         }}
         onOpenSyncModal={() => setIsSyncModalOpen(true)}
