@@ -54,8 +54,8 @@ export const MaterialArticleCard: React.FC<MaterialArticleCardProps> = ({
                 {article.company.name.charAt(0)}
               </div>
             )}
-            <div className="min-w-0">
-              <span className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors block truncate">
+            <div className="min-w-0 flex-1">
+              <span className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors block leading-tight">
                 {article.company.name}
               </span>
               <span className="text-[10px] font-medium text-slate-500 block truncate">
@@ -92,7 +92,7 @@ export const MaterialArticleCard: React.FC<MaterialArticleCardProps> = ({
         </div>
 
         {/* Title */}
-        <h3 className="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors line-clamp-2 leading-snug mb-2.5">
+        <h3 className="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition-colors leading-snug mb-2.5">
           {article.title}
         </h3>
 

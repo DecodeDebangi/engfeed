@@ -118,7 +118,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
         </div>
 
         {/* Title */}
-        <h3 className="text-base font-bold text-slate-100 group-hover:text-indigo-300 transition-colors line-clamp-2 leading-snug mb-2.5">
+        <h3 className="text-base font-bold text-slate-100 group-hover:text-indigo-300 transition-colors leading-snug mb-2.5">
           {article.title}
         </h3>
 

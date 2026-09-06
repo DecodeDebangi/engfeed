@@ -67,7 +67,7 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
           </div>
 
           <h3
-            className={`text-base font-serif font-bold leading-snug line-clamp-1 transition-colors ${
+            className={`text-base font-serif font-bold leading-snug transition-colors ${
               isNight
                 ? 'text-stone-100 group-hover:text-amber-400'
                 : 'text-slate-900 group-hover:text-amber-900'
@@ -76,7 +76,7 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
             {article.title}
           </h3>
 
-          <p className={`text-xs font-sans line-clamp-1 ${isNight ? 'text-stone-400' : 'text-slate-700'}`}>
+          <p className={`text-xs font-sans line-clamp-2 ${isNight ? 'text-stone-400' : 'text-slate-700'}`}>
             {article.summary}
           </p>
         </div>
@@ -140,13 +140,13 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
                 className="w-7 h-7 rounded-lg object-cover bg-stone-100 border border-stone-200/80"
               />
             ) : (
-              <div className="w-7 h-7 rounded-lg bg-stone-900 text-white flex items-center justify-center font-bold text-xs">
+              <div className="w-7 h-7 rounded-lg bg-stone-900 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
                 {article.company.name.charAt(0)}
               </div>
             )}
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <span
-                className={`text-xs font-serif font-bold block truncate ${
+                className={`text-xs font-serif font-bold block leading-tight ${
                   isNight ? 'text-amber-400' : 'text-amber-900'
                 }`}
               >
@@ -162,7 +162,7 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-shrink-0">
             <button
               onClick={handleBookmarkClick}
               disabled={isBookmarking}
@@ -197,9 +197,9 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
           </div>
         </div>
 
-        {/* Headline */}
+        {/* Headline - FULL TITLE UNTRIMMED */}
         <h3
-          className={`text-base font-serif font-bold leading-snug line-clamp-2 mb-2.5 transition-colors ${
+          className={`text-base font-serif font-bold leading-snug mb-2.5 transition-colors ${
             isNight
               ? 'text-stone-100 group-hover:text-amber-400'
               : 'text-slate-950 group-hover:text-amber-900'

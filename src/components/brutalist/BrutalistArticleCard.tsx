@@ -79,7 +79,7 @@ export const BrutalistArticleCard: React.FC<BrutalistArticleCardProps> = ({
         </div>
 
         {/* Title */}
-        <h3 className="text-base font-black text-black group-hover:underline underline-offset-4 line-clamp-2 leading-tight mb-2.5 uppercase">
+        <h3 className="text-base font-black text-black group-hover:underline underline-offset-4 leading-tight mb-2.5 uppercase">
           {article.title}
         </h3>
 
