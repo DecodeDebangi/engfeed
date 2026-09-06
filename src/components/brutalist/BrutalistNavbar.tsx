@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Rss, Search, Bookmark, RefreshCw, Layers, X, Sparkles, Paintbrush } from 'lucide-react';
-import Link from 'next/link';
+import { Rss, Search, Bookmark, RefreshCw, Layers, X } from 'lucide-react';
 
 interface BrutalistNavbarProps {
   searchQuery: string;
@@ -53,14 +52,6 @@ export const BrutalistNavbar: React.FC<BrutalistNavbarProps> = ({
               </p>
             </div>
           </div>
-
-          {/* Theme Switcher Link to Glassmorphic */}
-          <Link
-            href="/"
-            className="md:hidden px-2.5 py-1 text-xs font-mono font-bold bg-white text-black border-2 border-black shadow-[2px_2px_0px_0px_#000]"
-          >
-            Glass UI
-          </Link>
         </div>
 
         {/* Search Input Bar */}
@@ -85,7 +76,7 @@ export const BrutalistNavbar: React.FC<BrutalistNavbarProps> = ({
           )}
         </div>
 
-        {/* Navigation Tabs & Style Switcher */}
+        {/* Navigation Tabs & Actions */}
         <div className="flex items-center gap-2.5 w-full md:w-auto justify-end">
           
           {/* Tab Buttons */}
@@ -130,19 +121,10 @@ export const BrutalistNavbar: React.FC<BrutalistNavbarProps> = ({
             <span>SYNC</span>
           </button>
 
-          {/* Switch to Glass UI */}
-          <Link
-            href="/"
-            className="hidden md:flex items-center gap-1 px-3 py-1.5 text-xs font-mono font-black bg-white text-black border-2 border-black shadow-[2px_2px_0px_0px_#000] hover:bg-slate-100"
-            title="Switch to Glassmorphism UI"
-          >
-            <Paintbrush className="w-3.5 h-3.5" />
-            <span>Glass Mode</span>
-          </Link>
-
         </div>
 
       </div>
     </header>
   );
 };
+
