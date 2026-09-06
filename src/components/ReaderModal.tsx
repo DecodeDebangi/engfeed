@@ -8,7 +8,7 @@ import { formatDateFull } from '@/lib/utils';
 interface ReaderModalProps {
   article: ArticleItem | null;
   onClose: () => void;
-  onToggleBookmark: (articleId: string) => Promise<void>;
+  onToggleBookmark: (articleId: string, markAsBookmarked?: boolean) => Promise<void>;
   onToggleRead?: (articleId: string, markAsRead?: boolean) => Promise<void>;
 }
 
@@ -98,7 +98,7 @@ export const ReaderModal: React.FC<ReaderModalProps> = ({
     const nextState = !isBookmarked;
     setIsBookmarked(nextState);
     try {
-      await onToggleBookmark(article.id);
+      await onToggleBookmark(article.id, nextState);
     } catch (err) {
       setIsBookmarked(!nextState);
     }

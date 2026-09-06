@@ -135,12 +135,12 @@ export const MaterialEngFeedDashboard: React.FC = () => {
     fetchArticles();
   }, [fetchArticles]);
 
-  const handleToggleBookmark = async (articleId: string) => {
+  const handleToggleBookmark = async (articleId: string, markAsBookmarked?: boolean) => {
     try {
       const res = await fetch('/api/bookmarks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ articleId }),
+        body: JSON.stringify({ articleId, markAsBookmarked }),
       });
       const data = await res.json();
 

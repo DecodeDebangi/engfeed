@@ -28,7 +28,7 @@ export interface ArticleItem {
 interface ArticleCardProps {
   article: ArticleItem;
   onOpenReader: (article: ArticleItem) => void;
-  onToggleBookmark: (articleId: string) => Promise<void>;
+  onToggleBookmark: (articleId: string, markAsBookmarked?: boolean) => Promise<void>;
   onToggleRead?: (articleId: string) => Promise<void>;
 }
 
@@ -43,6 +43,14 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
   const [isRead, setIsRead] = useState(article.isRead || false);
   const [isTogglingRead, setIsTogglingRead] = useState(false);
 
+  React.useEffect(() => {
+    setIsBookmarked(article.isBookmarked || false);
+  }, [article.isBookmarked]);
+
+  React.useEffect(() => {
+    setIsRead(article.isRead || false);
+  }, [article.isRead]);
+
   const handleBookmarkClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsBookmarking(true);
@@ -50,7 +58,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
     setIsBookmarked(nextState);
 
     try {
-      await onToggleBookmark(article.id);
+      await onToggleBookmark(article.id, nextState);
     } catch (err) {
       setIsBookmarked(!nextState);
     } finally {

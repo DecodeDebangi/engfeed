@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { articleId, userId = 'default-user' } = body;
+    const { articleId, userId = 'default-user', markAsBookmarked } = body;
 
     if (!articleId) {
       return NextResponse.json(
@@ -95,21 +95,39 @@ export async function POST(request: NextRequest) {
 
     let isBookmarked = false;
 
-    if (existing) {
-      // Remove bookmark
-      await db.userBookmark.delete({
-        where: { id: existing.id },
-      });
-      isBookmarked = false;
+    if (typeof markAsBookmarked === 'boolean') {
+      if (markAsBookmarked) {
+        if (!existing) {
+          await db.userBookmark.create({
+            data: { userId, articleId },
+          });
+        }
+        isBookmarked = true;
+      } else {
+        if (existing) {
+          await db.userBookmark.delete({
+            where: { id: existing.id },
+          });
+        }
+        isBookmarked = false;
+      }
     } else {
-      // Create bookmark
-      await db.userBookmark.create({
-        data: {
-          userId,
-          articleId,
-        },
-      });
-      isBookmarked = true;
+      if (existing) {
+        // Remove bookmark
+        await db.userBookmark.delete({
+          where: { id: existing.id },
+        });
+        isBookmarked = false;
+      } else {
+        // Create bookmark
+        await db.userBookmark.create({
+          data: {
+            userId,
+            articleId,
+          },
+        });
+        isBookmarked = true;
+      }
     }
 
     // Invalidate user article cache in Redis

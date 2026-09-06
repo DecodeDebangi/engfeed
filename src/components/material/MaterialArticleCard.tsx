@@ -8,7 +8,7 @@ import { formatRelativeDate } from '@/lib/utils';
 interface MaterialArticleCardProps {
   article: ArticleItem;
   onOpenReader: (article: ArticleItem) => void;
-  onToggleBookmark: (articleId: string) => Promise<void>;
+  onToggleBookmark: (articleId: string, markAsBookmarked?: boolean) => Promise<void>;
   onToggleRead?: (articleId: string) => Promise<void>;
 }
 
@@ -23,6 +23,14 @@ export const MaterialArticleCard: React.FC<MaterialArticleCardProps> = ({
   const [isRead, setIsRead] = useState(article.isRead || false);
   const [isTogglingRead, setIsTogglingRead] = useState(false);
 
+  React.useEffect(() => {
+    setIsBookmarked(article.isBookmarked || false);
+  }, [article.isBookmarked]);
+
+  React.useEffect(() => {
+    setIsRead(article.isRead || false);
+  }, [article.isRead]);
+
   const handleBookmarkClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsBookmarking(true);
@@ -30,7 +38,7 @@ export const MaterialArticleCard: React.FC<MaterialArticleCardProps> = ({
     setIsBookmarked(nextState);
 
     try {
-      await onToggleBookmark(article.id);
+      await onToggleBookmark(article.id, nextState);
     } catch (err) {
       setIsBookmarked(!nextState);
     } finally {
