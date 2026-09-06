@@ -131,16 +131,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-indigo-400' : 'text-slate-400'}`} />
             <span>{isSyncing ? 'Syncing Feeds...' : 'Force Sync RSS'}</span>
           </button>
-
-          {/* Switch to Brutalist UI Link */}
-          <a
-            href="/brutalist"
-            className="hidden md:flex items-center gap-1.5 px-3 py-2 text-xs font-mono font-bold text-yellow-300 bg-black hover:bg-yellow-400 hover:text-black border border-yellow-400/40 rounded-xl transition-all shadow-sm"
-            title="Switch to Neo-Brutalist UI"
-          >
-            <span>Brutalist UI</span>
-          </a>
-
         </div>
 
       </div>
