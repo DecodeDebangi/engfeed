@@ -47,38 +47,54 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
         onClick={() => onOpenReader(article)}
         className={`group p-4 rounded-xl border transition-all cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4 ${
           isNight
-            ? 'bg-[#18191c] border-stone-800/80 hover:bg-[#202226]'
-            : 'bg-[#fcfbf9] border-stone-200/90 hover:bg-stone-100/70 shadow-sm'
+            ? 'bg-[#18191c] border-stone-800 hover:bg-[#202226]'
+            : 'bg-white border-stone-200 hover:border-stone-400 hover:bg-stone-50/70 shadow-sm'
         }`}
       >
         <div className="flex-1 min-w-0 space-y-1.5">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-serif font-bold text-amber-700 dark:text-amber-400">
+            <span
+              className={`text-xs font-serif font-bold ${
+                isNight ? 'text-amber-400' : 'text-amber-900'
+              }`}
+            >
               {article.company.name}
             </span>
-            <span className="text-stone-300 dark:text-stone-700">•</span>
-            <span className="text-[11px] font-sans text-stone-500">
+            <span className={isNight ? 'text-stone-700' : 'text-stone-300'}>•</span>
+            <span className={`text-[11px] font-sans ${isNight ? 'text-stone-400' : 'text-stone-600 font-medium'}`}>
               {formatRelativeDate(article.publishedAt)}
             </span>
           </div>
 
-          <h3 className="text-base font-serif font-bold group-hover:text-amber-800 dark:group-hover:text-amber-400 leading-snug line-clamp-1 transition-colors">
+          <h3
+            className={`text-base font-serif font-bold leading-snug line-clamp-1 transition-colors ${
+              isNight
+                ? 'text-stone-100 group-hover:text-amber-400'
+                : 'text-slate-900 group-hover:text-amber-900'
+            }`}
+          >
             {article.title}
           </h3>
 
-          <p className="text-xs font-sans text-stone-500 line-clamp-1">
+          <p className={`text-xs font-sans line-clamp-1 ${isNight ? 'text-stone-400' : 'text-slate-700'}`}>
             {article.summary}
           </p>
         </div>
 
         <div className="flex items-center gap-3 flex-shrink-0">
           {article.tags && article.tags.length > 0 && (
-            <span className="hidden sm:inline-block px-2.5 py-0.5 text-[11px] font-sans font-medium rounded-md bg-stone-200/60 dark:bg-stone-800 text-stone-600 dark:text-stone-400">
+            <span
+              className={`hidden sm:inline-block px-2.5 py-0.5 text-[11px] font-sans font-semibold rounded-md border ${
+                isNight
+                  ? 'bg-stone-800 text-stone-300 border-stone-700'
+                  : 'bg-stone-100 text-slate-800 border-stone-300'
+              }`}
+            >
               {article.tags[0]}
             </span>
           )}
 
-          <span className="text-xs text-stone-400 font-sans flex items-center gap-1">
+          <span className={`text-xs font-sans flex items-center gap-1 ${isNight ? 'text-stone-400' : 'text-stone-600 font-medium'}`}>
             <Clock className="w-3 h-3" />
             {article.readTime} min
           </span>
@@ -88,11 +104,15 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
             disabled={isBookmarking}
             className={`p-1.5 rounded-lg transition-all ${
               isBookmarked
-                ? 'bg-amber-600/20 text-amber-600'
-                : 'text-stone-400 hover:text-stone-700 hover:bg-stone-200/50'
+                ? isNight
+                  ? 'bg-amber-900/40 text-amber-400 border border-amber-500/30'
+                  : 'bg-amber-100 text-amber-900 border border-amber-300'
+                : isNight
+                ? 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
+                : 'text-stone-500 hover:text-stone-900 hover:bg-stone-200/60'
             }`}
           >
-            <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-amber-600' : ''}`} />
+            <Bookmark className={`w-4 h-4 ${isBookmarked ? (isNight ? 'fill-amber-400' : 'fill-amber-900') : ''}`} />
           </button>
         </div>
       </article>
@@ -105,8 +125,8 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
       onClick={() => onOpenReader(article)}
       className={`group p-6 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
         isNight
-          ? 'bg-[#18191c] border-stone-800/80 hover:border-stone-700 hover:bg-[#1d1f23]'
-          : 'bg-[#fcfbf9] border-stone-200/90 hover:border-stone-300 hover:bg-white shadow-sm hover:shadow-md'
+          ? 'bg-[#18191c] border-stone-800 hover:border-stone-700 hover:bg-[#1d1f23]'
+          : 'bg-white border-stone-200 hover:border-stone-400 hover:bg-stone-50/50 shadow-sm hover:shadow-md'
       }`}
     >
       <div>
@@ -117,7 +137,7 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
               <img
                 src={article.company.logoUrl}
                 alt={article.company.name}
-                className="w-7 h-7 rounded-lg object-cover bg-stone-100 border border-stone-200/60"
+                className="w-7 h-7 rounded-lg object-cover bg-stone-100 border border-stone-200/80"
               />
             ) : (
               <div className="w-7 h-7 rounded-lg bg-stone-900 text-white flex items-center justify-center font-bold text-xs">
@@ -125,10 +145,18 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
               </div>
             )}
             <div className="min-w-0">
-              <span className="text-xs font-serif font-bold text-amber-800 dark:text-amber-400 block truncate">
+              <span
+                className={`text-xs font-serif font-bold block truncate ${
+                  isNight ? 'text-amber-400' : 'text-amber-900'
+                }`}
+              >
                 {article.company.name}
               </span>
-              <span className="text-[10px] text-stone-400 font-sans block truncate">
+              <span
+                className={`text-[10px] font-sans block truncate ${
+                  isNight ? 'text-stone-400' : 'text-stone-600 font-medium'
+                }`}
+              >
                 {article.company.category}
               </span>
             </div>
@@ -140,12 +168,16 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
               disabled={isBookmarking}
               className={`p-2 rounded-xl transition-all ${
                 isBookmarked
-                  ? 'bg-amber-900/20 text-amber-700 dark:text-amber-400'
-                  : 'text-stone-400 hover:text-stone-700 hover:bg-stone-200/50'
+                  ? isNight
+                    ? 'bg-amber-900/40 text-amber-400 border border-amber-500/30'
+                    : 'bg-amber-100 text-amber-900 border border-amber-300'
+                  : isNight
+                  ? 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
+                  : 'text-stone-500 hover:text-stone-900 hover:bg-stone-200/60'
               }`}
               title={isBookmarked ? 'Remove Bookmark' : 'Save Article'}
             >
-              <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-amber-700 dark:fill-amber-400' : ''}`} />
+              <Bookmark className={`w-4 h-4 ${isBookmarked ? (isNight ? 'fill-amber-400' : 'fill-amber-900') : ''}`} />
             </button>
 
             <a
@@ -153,7 +185,11 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="p-2 text-stone-400 hover:text-stone-700 hover:bg-stone-200/50 rounded-xl transition-all"
+              className={`p-2 rounded-xl transition-all ${
+                isNight
+                  ? 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
+                  : 'text-stone-500 hover:text-stone-900 hover:bg-stone-200/60'
+              }`}
               title="Open Original Link"
             >
               <ExternalLink className="w-4 h-4" />
@@ -162,24 +198,42 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
         </div>
 
         {/* Headline */}
-        <h3 className="text-base font-serif font-bold text-stone-900 dark:text-stone-100 group-hover:text-amber-800 dark:group-hover:text-amber-400 leading-snug line-clamp-2 mb-2.5 transition-colors">
+        <h3
+          className={`text-base font-serif font-bold leading-snug line-clamp-2 mb-2.5 transition-colors ${
+            isNight
+              ? 'text-stone-100 group-hover:text-amber-400'
+              : 'text-slate-950 group-hover:text-amber-900'
+          }`}
+        >
           {article.title}
         </h3>
 
         {/* Excerpt */}
-        <p className="text-xs font-sans text-stone-600 dark:text-stone-400 line-clamp-3 leading-relaxed mb-4">
+        <p
+          className={`text-xs font-sans line-clamp-3 leading-relaxed mb-4 ${
+            isNight ? 'text-stone-300' : 'text-slate-700 font-normal'
+          }`}
+        >
           {article.summary}
         </p>
       </div>
 
       {/* Footer Info */}
-      <div className="pt-3.5 border-t border-stone-200/60 dark:border-stone-800 flex flex-col gap-2.5 font-sans">
+      <div
+        className={`pt-3.5 border-t flex flex-col gap-2.5 font-sans ${
+          isNight ? 'border-stone-800' : 'border-stone-200'
+        }`}
+      >
         {article.tags && article.tags.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {article.tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                className="px-2 py-0.5 text-[10px] font-medium bg-stone-200/60 dark:bg-stone-800 text-stone-700 dark:text-stone-300 rounded-md"
+                className={`px-2 py-0.5 text-[10px] font-semibold rounded-md border ${
+                  isNight
+                    ? 'bg-stone-800 text-stone-300 border-stone-700'
+                    : 'bg-stone-100 text-slate-800 border-stone-300'
+                }`}
               >
                 {tag}
               </span>
@@ -187,9 +241,9 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
           </div>
         )}
 
-        <div className="flex items-center justify-between text-[11px] text-stone-500 font-sans">
+        <div className={`flex items-center justify-between text-[11px] font-sans ${isNight ? 'text-stone-400' : 'text-stone-600 font-medium'}`}>
           <span className="flex items-center gap-1">
-            <Clock className="w-3 h-3 text-stone-400" />
+            <Clock className={`w-3 h-3 ${isNight ? 'text-stone-400' : 'text-stone-500'}`} />
             {article.readTime} min read
           </span>
           <span>{formatRelativeDate(article.publishedAt)}</span>

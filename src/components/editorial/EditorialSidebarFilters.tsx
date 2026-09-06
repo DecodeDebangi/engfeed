@@ -72,22 +72,24 @@ export const EditorialSidebarFilters: React.FC<EditorialSidebarFiltersProps> = (
         className={`rounded-2xl border p-5 space-y-6 transition-colors ${
           isNight
             ? 'bg-[#18191c] border-stone-800 text-stone-200'
-            : 'bg-[#f8f6f0] border-stone-200/90 text-stone-800'
+            : 'bg-white border-stone-200 text-slate-900 shadow-sm'
         }`}
       >
         
         {/* Header */}
-        <div className="flex items-center justify-between border-b pb-3 border-stone-200/60 dark:border-stone-800">
+        <div className={`flex items-center justify-between border-b pb-3 ${isNight ? 'border-stone-800' : 'border-stone-200'}`}>
           <div className="flex items-center gap-2">
-            <Filter className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-            <h2 className="text-xs font-serif font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300">
+            <Filter className={`w-4 h-4 ${isNight ? 'text-amber-400' : 'text-amber-900'}`} />
+            <h2 className={`text-xs font-serif font-bold uppercase tracking-wider ${isNight ? 'text-stone-200' : 'text-slate-950 font-bold'}`}>
               Editorial Topics
             </h2>
           </div>
           {activeFiltersCount > 0 && (
             <button
               onClick={onResetFilters}
-              className="text-xs text-amber-700 dark:text-amber-400 hover:underline flex items-center gap-1 font-medium"
+              className={`text-xs font-bold hover:underline flex items-center gap-1 ${
+                isNight ? 'text-amber-400' : 'text-amber-900'
+              }`}
             >
               <RotateCcw className="w-3 h-3" />
               <span>Reset ({activeFiltersCount})</span>
@@ -97,9 +99,9 @@ export const EditorialSidebarFilters: React.FC<EditorialSidebarFiltersProps> = (
 
         {/* Tech Topic Chips */}
         <div className="space-y-3">
-          <h3 className="text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider flex items-center justify-between">
+          <h3 className={`text-xs font-bold uppercase tracking-wider flex items-center justify-between ${isNight ? 'text-stone-400' : 'text-slate-800 font-bold'}`}>
             <span>Engineering Topics</span>
-            {selectedTag && <span className="text-[10px] text-amber-600">1 Selected</span>}
+            {selectedTag && <span className="text-[10px] text-amber-700 font-semibold">1 Selected</span>}
           </h3>
           <div className="flex flex-wrap gap-1.5">
             {TECH_TAGS.map((tag) => {
@@ -108,12 +110,14 @@ export const EditorialSidebarFilters: React.FC<EditorialSidebarFiltersProps> = (
                 <button
                   key={tag}
                   onClick={() => setSelectedTag(isSelected ? null : tag)}
-                  className={`px-3 py-1 text-xs font-medium rounded-xl border transition-all ${
+                  className={`px-3 py-1 text-xs font-semibold rounded-xl border transition-all ${
                     isSelected
-                      ? 'bg-amber-800 text-white border-amber-800 dark:bg-amber-600 dark:border-amber-600'
+                      ? isNight
+                        ? 'bg-amber-500 text-slate-950 border-amber-500 font-bold'
+                        : 'bg-amber-950 text-white border-amber-950 font-bold'
                       : isNight
                       ? 'bg-[#222428] border-stone-800 text-stone-300 hover:border-stone-700'
-                      : 'bg-[#efece6] border-stone-300/70 text-stone-700 hover:border-stone-400'
+                      : 'bg-stone-100 border-stone-300 text-slate-800 hover:bg-stone-200'
                   }`}
                 >
                   {tag}
@@ -125,7 +129,7 @@ export const EditorialSidebarFilters: React.FC<EditorialSidebarFiltersProps> = (
 
         {/* Domain Categories */}
         <div className="space-y-3">
-          <h3 className="text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider">
+          <h3 className={`text-xs font-bold uppercase tracking-wider ${isNight ? 'text-stone-400' : 'text-slate-800 font-bold'}`}>
             Categories
           </h3>
           <div className="flex flex-wrap gap-1.5">
@@ -135,12 +139,14 @@ export const EditorialSidebarFilters: React.FC<EditorialSidebarFiltersProps> = (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(isSelected ? null : cat)}
-                  className={`px-3 py-1 text-xs font-medium rounded-xl border transition-all ${
+                  className={`px-3 py-1 text-xs font-semibold rounded-xl border transition-all ${
                     isSelected
-                      ? 'bg-stone-900 text-white border-stone-900 dark:bg-stone-100 dark:text-stone-900'
+                      ? isNight
+                        ? 'bg-stone-100 text-stone-900 border-stone-100 font-bold'
+                        : 'bg-slate-950 text-white border-slate-950 font-bold'
                       : isNight
                       ? 'bg-[#222428] border-stone-800 text-stone-300 hover:border-stone-700'
-                      : 'bg-[#efece6] border-stone-300/70 text-stone-700 hover:border-stone-400'
+                      : 'bg-stone-100 border-stone-300 text-slate-800 hover:bg-stone-200'
                   }`}
                 >
                   {cat}
@@ -151,15 +157,15 @@ export const EditorialSidebarFilters: React.FC<EditorialSidebarFiltersProps> = (
         </div>
 
         {/* Company Blog Selector */}
-        <div className="space-y-3 pt-3 border-t border-stone-200/60 dark:border-stone-800">
+        <div className={`space-y-3 pt-3 border-t ${isNight ? 'border-stone-800' : 'border-stone-200'}`}>
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold text-stone-400 dark:text-stone-500 uppercase tracking-wider flex items-center gap-1.5">
-              <Building2 className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
+            <h3 className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${isNight ? 'text-stone-400' : 'text-slate-800 font-bold'}`}>
+              <Building2 className={`w-3.5 h-3.5 ${isNight ? 'text-amber-400' : 'text-amber-900'}`} />
               <span>Blog Sources ({companies.length})</span>
             </h3>
             <button
               onClick={() => setIsCompanyDropdownOpen(!isCompanyDropdownOpen)}
-              className="text-stone-400 hover:text-stone-600"
+              className={isNight ? 'text-stone-400 hover:text-stone-200' : 'text-slate-600 hover:text-slate-900'}
             >
               <ChevronDown className={`w-4 h-4 transition-transform ${isCompanyDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
@@ -168,16 +174,16 @@ export const EditorialSidebarFilters: React.FC<EditorialSidebarFiltersProps> = (
           {isCompanyDropdownOpen && (
             <div className="space-y-2">
               <div className="relative">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-stone-400" />
+                <Search className={`w-3.5 h-3.5 absolute left-3 top-2.5 ${isNight ? 'text-stone-500' : 'text-slate-500'}`} />
                 <input
                   type="text"
                   value={companySearch}
                   onChange={(e) => setCompanySearch(e.target.value)}
                   placeholder="Filter blog source..."
-                  className={`w-full pl-8 pr-3 py-1.5 rounded-xl text-xs focus:outline-none border ${
+                  className={`w-full pl-8 pr-3 py-1.5 rounded-xl text-xs font-medium focus:outline-none border ${
                     isNight
                       ? 'bg-[#222428] border-stone-800 text-stone-100 placeholder-stone-500'
-                      : 'bg-[#efece6] border-stone-300/80 text-stone-900 placeholder-stone-500'
+                      : 'bg-stone-100 border-stone-300 text-slate-900 placeholder-slate-500 focus:border-slate-500'
                   }`}
                 />
               </div>
@@ -186,7 +192,11 @@ export const EditorialSidebarFilters: React.FC<EditorialSidebarFiltersProps> = (
                 {selectedCompanySlug && (
                   <button
                     onClick={() => setSelectedCompanySlug(null)}
-                    className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium bg-amber-900/10 text-amber-800 dark:text-amber-300 border border-amber-500/20 flex items-center justify-between"
+                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold border flex items-center justify-between ${
+                      isNight
+                        ? 'bg-amber-900/30 text-amber-300 border-amber-500/30'
+                        : 'bg-amber-100 text-amber-950 border-amber-300'
+                    }`}
                   >
                     <span>Selected: {selectedCompanyObj?.name || selectedCompanySlug}</span>
                     <span className="text-[10px] underline">Remove</span>
@@ -201,14 +211,16 @@ export const EditorialSidebarFilters: React.FC<EditorialSidebarFiltersProps> = (
                       onClick={() => setSelectedCompanySlug(isSelected ? null : company.slug)}
                       className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center justify-between ${
                         isSelected
-                          ? 'bg-amber-800 text-white font-semibold'
+                          ? isNight
+                            ? 'bg-amber-500 text-slate-950 font-bold'
+                            : 'bg-amber-950 text-white font-bold'
                           : isNight
                           ? 'text-stone-300 hover:bg-stone-800'
-                          : 'text-stone-700 hover:bg-stone-200/60'
+                          : 'text-slate-800 hover:bg-stone-100 font-semibold'
                       }`}
                     >
                       <span className="truncate max-w-[170px]">{company.name}</span>
-                      <span className="text-[10px] font-mono opacity-60">
+                      <span className="text-[10px] font-mono opacity-80">
                         {company.articlesCount}
                       </span>
                     </button>

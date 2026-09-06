@@ -173,7 +173,7 @@ export const EditorialEngFeedDashboard: React.FC = () => {
   return (
     <div
       className={`min-h-screen flex flex-col font-sans transition-colors duration-200 ${
-        isNight ? 'bg-[#121315] text-stone-100' : 'bg-[#fcfbf9] text-stone-900'
+        isNight ? 'bg-[#121315] text-stone-100' : 'bg-[#f7f6f2] text-slate-900'
       }`}
     >
       {/* Editorial Navbar */}
@@ -229,11 +229,11 @@ export const EditorialEngFeedDashboard: React.FC = () => {
             className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-5 rounded-2xl border transition-colors ${
               isNight
                 ? 'bg-[#18191c] border-stone-800'
-                : 'bg-[#f8f6f0] border-stone-200/90 shadow-sm'
+                : 'bg-white border-stone-200 shadow-sm'
             }`}
           >
             <div>
-              <h2 className="text-base font-serif font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
+              <h2 className={`text-base font-serif font-bold flex items-center gap-2 ${isNight ? 'text-stone-100' : 'text-slate-950 font-bold'}`}>
                 {activeView === 'bookmarks' ? (
                   <>
                     <Bookmark className="w-4 h-4 text-amber-600 fill-amber-600" />
@@ -241,7 +241,7 @@ export const EditorialEngFeedDashboard: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    <BookOpen className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+                    <BookOpen className={`w-4 h-4 ${isNight ? 'text-amber-400' : 'text-amber-900'}`} />
                     <span>
                       {selectedCompanySlug
                         ? `Feed: ${companies.find((c) => c.slug === selectedCompanySlug)?.name || selectedCompanySlug}`
@@ -252,12 +252,12 @@ export const EditorialEngFeedDashboard: React.FC = () => {
                   </>
                 )}
               </h2>
-              <p className="text-xs font-sans text-stone-500 mt-0.5">
+              <p className={`text-xs font-sans mt-0.5 ${isNight ? 'text-stone-400' : 'text-slate-700 font-medium'}`}>
                 Showing {articles.length} of {pagination.totalCount.toLocaleString()} curated posts from top engineering teams.
               </p>
             </div>
 
-            <div className="text-xs font-sans text-stone-500 font-mono">
+            <div className={`text-xs font-sans font-mono ${isNight ? 'text-stone-400' : 'text-slate-700 font-semibold'}`}>
               Page {currentPage} of {pagination.totalPages || 1}
             </div>
           </div>
@@ -287,15 +287,15 @@ export const EditorialEngFeedDashboard: React.FC = () => {
               className={`p-12 text-center flex flex-col items-center justify-center space-y-4 my-8 rounded-2xl border ${
                 isNight
                   ? 'bg-[#18191c] border-stone-800 text-stone-300'
-                  : 'bg-[#f8f6f0] border-stone-200/90 text-stone-700 shadow-sm'
+                  : 'bg-white border-stone-200 text-slate-800 shadow-sm'
               }`}
             >
-              <div className="w-12 h-12 rounded-xl bg-stone-200/60 dark:bg-stone-800 flex items-center justify-center">
-                <Inbox className="w-6 h-6 text-stone-500" />
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${isNight ? 'bg-stone-800' : 'bg-stone-100'}`}>
+                <Inbox className={`w-6 h-6 ${isNight ? 'text-stone-400' : 'text-slate-600'}`} />
               </div>
               <div className="space-y-1 max-w-sm">
-                <h3 className="text-base font-serif font-bold text-stone-900 dark:text-stone-100">No Posts Found</h3>
-                <p className="text-xs text-stone-500">
+                <h3 className={`text-base font-serif font-bold ${isNight ? 'text-stone-100' : 'text-slate-950'}`}>No Posts Found</h3>
+                <p className={`text-xs ${isNight ? 'text-stone-400' : 'text-slate-600 font-medium'}`}>
                   {activeView === 'bookmarks'
                     ? 'You have not saved any bookmarks yet.'
                     : 'No engineering posts matched your active filters or search query.'}
@@ -303,7 +303,7 @@ export const EditorialEngFeedDashboard: React.FC = () => {
               </div>
               <button
                 onClick={handleResetFilters}
-                className="px-4 py-2 text-xs font-sans font-semibold text-white bg-stone-900 hover:bg-stone-800 rounded-xl transition-all shadow-sm"
+                className="px-4 py-2 text-xs font-sans font-bold text-white bg-slate-950 hover:bg-slate-800 rounded-xl transition-all shadow-sm"
               >
                 Reset Filters
               </button>

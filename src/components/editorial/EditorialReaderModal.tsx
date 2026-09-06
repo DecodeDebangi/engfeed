@@ -138,24 +138,24 @@ export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
           <div className="flex items-center gap-2">
             
             {/* Reading Theme Selector */}
-            <div className="hidden md:flex items-center p-1 rounded-lg bg-stone-200/60 dark:bg-stone-800 text-xs font-medium">
+            <div className={`hidden md:flex items-center p-1 rounded-lg text-xs font-semibold ${readerTheme === 'night' ? 'bg-stone-800' : 'bg-stone-200'}`}>
               <button
                 onClick={() => setReaderTheme('paper')}
-                className={`px-2 py-0.5 rounded-md ${readerTheme === 'paper' ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-600'}`}
+                className={`px-2 py-0.5 rounded-md ${readerTheme === 'paper' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-700'}`}
                 title="Paper Theme"
               >
                 Paper
               </button>
               <button
                 onClick={() => setReaderTheme('sepia')}
-                className={`px-2 py-0.5 rounded-md ${readerTheme === 'sepia' ? 'bg-[#f5ebd6] text-stone-900 shadow-sm' : 'text-stone-600'}`}
+                className={`px-2 py-0.5 rounded-md ${readerTheme === 'sepia' ? 'bg-[#f5ebd6] text-amber-950 shadow-sm font-bold' : 'text-slate-700'}`}
                 title="Sepia Theme"
               >
                 Sepia
               </button>
               <button
                 onClick={() => setReaderTheme('night')}
-                className={`px-2 py-0.5 rounded-md ${readerTheme === 'night' ? 'bg-[#121315] text-white shadow-sm' : 'text-stone-600'}`}
+                className={`px-2 py-0.5 rounded-md ${readerTheme === 'night' ? 'bg-[#121315] text-white shadow-sm font-bold' : 'text-slate-700'}`}
                 title="Night Theme"
               >
                 Night
@@ -163,38 +163,38 @@ export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
             </div>
 
             {/* Font Family Toggle */}
-            <div className="hidden sm:flex items-center p-1 rounded-lg bg-stone-200/60 dark:bg-stone-800 text-xs font-medium">
+            <div className={`hidden sm:flex items-center p-1 rounded-lg text-xs font-semibold ${readerTheme === 'night' ? 'bg-stone-800' : 'bg-stone-200'}`}>
               <button
                 onClick={() => setReaderFont('serif')}
-                className={`px-2 py-0.5 rounded-md font-serif ${readerFont === 'serif' ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900' : 'text-stone-600'}`}
+                className={`px-2 py-0.5 rounded-md font-serif ${readerFont === 'serif' ? (readerTheme === 'night' ? 'bg-stone-100 text-stone-900' : 'bg-slate-950 text-white') : 'text-slate-700'}`}
               >
                 Serif
               </button>
               <button
                 onClick={() => setReaderFont('sans')}
-                className={`px-2 py-0.5 rounded-md font-sans ${readerFont === 'sans' ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900' : 'text-stone-600'}`}
+                className={`px-2 py-0.5 rounded-md font-sans ${readerFont === 'sans' ? (readerTheme === 'night' ? 'bg-stone-100 text-stone-900' : 'bg-slate-950 text-white') : 'text-slate-700'}`}
               >
                 Sans
               </button>
             </div>
 
             {/* Font Size Adjuster */}
-            <div className="hidden sm:flex items-center p-1 rounded-lg bg-stone-200/60 dark:bg-stone-800 text-xs font-bold">
+            <div className={`hidden sm:flex items-center p-1 rounded-lg text-xs font-bold ${readerTheme === 'night' ? 'bg-stone-800' : 'bg-stone-200'}`}>
               <button
                 onClick={() => setFontSize('sm')}
-                className={`px-2 py-0.5 rounded ${fontSize === 'sm' ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900' : 'text-stone-600'}`}
+                className={`px-2 py-0.5 rounded ${fontSize === 'sm' ? (readerTheme === 'night' ? 'bg-stone-100 text-stone-900' : 'bg-slate-950 text-white') : 'text-slate-700'}`}
               >
                 A-
               </button>
               <button
                 onClick={() => setFontSize('md')}
-                className={`px-2 py-0.5 rounded ${fontSize === 'md' ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900' : 'text-stone-600'}`}
+                className={`px-2 py-0.5 rounded ${fontSize === 'md' ? (readerTheme === 'night' ? 'bg-stone-100 text-stone-900' : 'bg-slate-950 text-white') : 'text-slate-700'}`}
               >
                 A
               </button>
               <button
                 onClick={() => setFontSize('lg')}
-                className={`px-2 py-0.5 rounded ${fontSize === 'lg' ? 'bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900' : 'text-stone-600'}`}
+                className={`px-2 py-0.5 rounded ${fontSize === 'lg' ? (readerTheme === 'night' ? 'bg-stone-100 text-stone-900' : 'bg-slate-950 text-white') : 'text-slate-700'}`}
               >
                 A+
               </button>
@@ -204,16 +204,20 @@ export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
             <button
               onClick={handleBookmarkToggle}
               className={`p-2 rounded-xl transition-all ${
-                isBookmarked ? 'bg-amber-600/20 text-amber-700 dark:text-amber-400' : 'text-stone-500 hover:text-stone-800'
+                isBookmarked
+                  ? readerTheme === 'night'
+                    ? 'bg-amber-900/40 text-amber-400'
+                    : 'bg-amber-100 text-amber-950 border border-amber-300'
+                  : 'text-stone-500 hover:text-stone-900'
               }`}
             >
-              <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-amber-700 dark:fill-amber-400' : ''}`} />
+              <Bookmark className={`w-4 h-4 ${isBookmarked ? (readerTheme === 'night' ? 'fill-amber-400' : 'fill-amber-900') : ''}`} />
             </button>
 
             {/* Copy Link */}
             <button
               onClick={handleCopyLink}
-              className="p-2 text-stone-500 hover:text-stone-800 rounded-xl transition-all"
+              className="p-2 text-stone-500 hover:text-stone-900 rounded-xl transition-all"
               title="Copy URL"
             >
               {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
@@ -224,7 +228,7 @@ export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
               href={article.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-sans font-semibold text-white bg-stone-900 hover:bg-stone-800 rounded-xl shadow-sm transition-all"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-sans font-bold text-white bg-slate-950 hover:bg-slate-800 rounded-xl shadow-sm transition-all"
             >
               <span>Original</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
@@ -247,13 +251,17 @@ export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
           className="overflow-y-auto px-6 md:px-16 py-10 space-y-6 custom-scrollbar"
         >
           {/* Header Area */}
-          <div className="border-b border-stone-200/60 dark:border-stone-800 pb-6 space-y-4 max-w-2xl mx-auto">
+          <div className={`border-b pb-6 space-y-4 max-w-2xl mx-auto ${readerTheme === 'night' ? 'border-stone-800' : 'border-stone-300'}`}>
             {article.tags && article.tags.length > 0 && (
               <div className="flex flex-wrap gap-1.5 font-sans">
                 {article.tags.map((t) => (
                   <span
                     key={t}
-                    className="px-2.5 py-0.5 text-xs font-medium rounded-md bg-stone-200/60 dark:bg-stone-800 text-stone-700 dark:text-stone-300"
+                    className={`px-2.5 py-0.5 text-xs font-semibold rounded-md border ${
+                      readerTheme === 'night'
+                        ? 'bg-stone-800 text-stone-300 border-stone-700'
+                        : 'bg-stone-200 text-slate-800 border-stone-300'
+                    }`}
                   >
                     {t}
                   </span>
@@ -265,7 +273,7 @@ export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
               {article.title}
             </h1>
 
-            <div className="flex items-center gap-3 text-xs font-sans text-stone-500">
+            <div className={`flex items-center gap-3 text-xs font-sans font-medium ${readerTheme === 'night' ? 'text-stone-400' : 'text-slate-600'}`}>
               <span>Published {formatDateFull(article.publishedAt)}</span>
               <span>•</span>
               <span className="flex items-center gap-1">
@@ -278,9 +286,9 @@ export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
           {/* Body Content */}
           {loading ? (
             <div className="py-12 space-y-4 max-w-2xl mx-auto animate-pulse">
-              <div className="h-4 bg-stone-200 dark:bg-stone-800 rounded w-full" />
-              <div className="h-4 bg-stone-200 dark:bg-stone-800 rounded w-5/6" />
-              <div className="h-4 bg-stone-200 dark:bg-stone-800 rounded w-4/6" />
+              <div className={`h-4 rounded w-full ${readerTheme === 'night' ? 'bg-stone-800' : 'bg-stone-200'}`} />
+              <div className={`h-4 rounded w-5/6 ${readerTheme === 'night' ? 'bg-stone-800' : 'bg-stone-200'}`} />
+              <div className={`h-4 rounded w-4/6 ${readerTheme === 'night' ? 'bg-stone-800' : 'bg-stone-200'}`} />
             </div>
           ) : (
             <div
@@ -291,8 +299,8 @@ export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
             />
           )}
 
-          <div className="pt-8 border-t border-stone-200/60 dark:border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-4 font-sans max-w-2xl mx-auto">
-            <p className="text-xs text-stone-500">
+          <div className={`pt-8 border-t flex flex-col sm:flex-row items-center justify-between gap-4 font-sans max-w-2xl mx-auto ${readerTheme === 'night' ? 'border-stone-800' : 'border-stone-300'}`}>
+            <p className={`text-xs ${readerTheme === 'night' ? 'text-stone-400' : 'text-slate-700 font-medium'}`}>
               Reading in Editorial Mode from <strong className="font-semibold">{article.company.name}</strong>
             </p>
 
@@ -300,7 +308,11 @@ export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
               href={article.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2 text-xs font-semibold rounded-xl bg-stone-200/60 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 transition-all flex items-center gap-1.5"
+              className={`px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 ${
+                readerTheme === 'night'
+                  ? 'bg-stone-800 text-stone-200 hover:bg-stone-700'
+                  : 'bg-stone-200 text-slate-900 hover:bg-stone-300'
+              }`}
             >
               <span>Read on {article.company.name}</span>
               <ExternalLink className="w-3.5 h-3.5" />
