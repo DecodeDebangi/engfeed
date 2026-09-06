@@ -1,12 +1,12 @@
-import { MaterialEngFeedDashboard } from '@/components/material/MaterialEngFeedDashboard';
+import { EditorialEngFeedDashboard } from '@/components/editorial/EditorialEngFeedDashboard';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'EngFeed [Material You UI] - Real-Time Engineering Blog Aggregator',
+  title: 'EngFeed Editorial - Minimalist Reader for Engineering Blogs',
   description:
-    'Material Design 3 edition of EngFeed engineering blog aggregator and reader dashboard.',
+    'Distraction-free, editorial minimalist reader dashboard for top engineering blogs.',
 };
 
 export default function HomePage() {
-  return <MaterialEngFeedDashboard />;
+  return <EditorialEngFeedDashboard />;
 }
