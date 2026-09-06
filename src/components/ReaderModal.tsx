@@ -26,19 +26,24 @@ export const ReaderModal: React.FC<ReaderModalProps> = ({
   const [isRead, setIsRead] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
+  const openedArticleIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!article) return;
 
-    setIsBookmarked(article.isBookmarked || false);
-    setIsRead(article.isRead || false);
-    setLoading(true);
+    // Only trigger initial state and auto-read ONCE per modal session for this article
+    if (openedArticleIdRef.current !== article.id) {
+      openedArticleIdRef.current = article.id;
+      setIsBookmarked(article.isBookmarked || false);
+      setIsRead(article.isRead || false);
 
-    // Auto-mark article as read upon opening
-    if (onToggleRead && !article.isRead) {
-      setIsRead(true);
-      onToggleRead(article.id, true).catch(() => {});
+      if (onToggleRead && !article.isRead) {
+        setIsRead(true);
+        onToggleRead(article.id, true).catch(() => {});
+      }
     }
+
+    setLoading(true);
 
     // Fetch full article detail (including sanitized HTML)
     fetch(`/api/articles/${article.id}`)
@@ -47,9 +52,6 @@ export const ReaderModal: React.FC<ReaderModalProps> = ({
         if (json.success) {
           setFullArticleData(json.data);
           setIsBookmarked(json.data.isBookmarked);
-          if (json.data.isRead !== undefined) {
-            setIsRead(json.data.isRead);
-          }
         }
       })
       .catch((err) => console.error('Failed to load full article content:', err))
@@ -62,6 +64,17 @@ export const ReaderModal: React.FC<ReaderModalProps> = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [article, onClose]);
+
+  const handleReadToggle = async () => {
+    if (!article || !onToggleRead) return;
+    const nextState = !isRead;
+    setIsRead(nextState);
+    try {
+      await onToggleRead(article.id, nextState);
+    } catch (err) {
+      setIsRead(!nextState);
+    }
+  };
 
   // Track scroll reading progress inside modal container
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -165,11 +178,7 @@ export const ReaderModal: React.FC<ReaderModalProps> = ({
             {/* Read / Unread toggle */}
             {onToggleRead && (
               <button
-                onClick={() => {
-                  const nextState = !isRead;
-                  setIsRead(nextState);
-                  onToggleRead(article.id, nextState);
-                }}
+                onClick={handleReadToggle}
                 className={`p-2 rounded-xl border transition-all flex items-center gap-1.5 text-xs font-medium ${
                   isRead
                     ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'

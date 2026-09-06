@@ -26,18 +26,23 @@ export const MaterialReaderModal: React.FC<MaterialReaderModalProps> = ({
   const [isRead, setIsRead] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
+  const openedArticleIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!article) return;
 
-    setIsBookmarked(article.isBookmarked || false);
-    setIsRead(article.isRead || false);
-    setLoading(true);
+    if (openedArticleIdRef.current !== article.id) {
+      openedArticleIdRef.current = article.id;
+      setIsBookmarked(article.isBookmarked || false);
+      setIsRead(article.isRead || false);
 
-    if (onToggleRead && !article.isRead) {
-      setIsRead(true);
-      onToggleRead(article.id, true).catch(() => {});
+      if (onToggleRead && !article.isRead) {
+        setIsRead(true);
+        onToggleRead(article.id, true).catch(() => {});
+      }
     }
+
+    setLoading(true);
 
     fetch(`/api/articles/${article.id}`)
       .then((res) => res.json())
@@ -45,9 +50,6 @@ export const MaterialReaderModal: React.FC<MaterialReaderModalProps> = ({
         if (json.success) {
           setFullArticleData(json.data);
           setIsBookmarked(json.data.isBookmarked);
-          if (json.data.isRead !== undefined) {
-            setIsRead(json.data.isRead);
-          }
         }
       })
       .catch((err) => console.error('Failed to load article detail:', err))
@@ -59,6 +61,17 @@ export const MaterialReaderModal: React.FC<MaterialReaderModalProps> = ({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [article, onClose]);
+
+  const handleReadToggle = async () => {
+    if (!article || !onToggleRead) return;
+    const nextState = !isRead;
+    setIsRead(nextState);
+    try {
+      await onToggleRead(article.id, nextState);
+    } catch (err) {
+      setIsRead(!nextState);
+    }
+  };
 
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
@@ -157,11 +170,7 @@ export const MaterialReaderModal: React.FC<MaterialReaderModalProps> = ({
             {/* Read / Unread toggle */}
             {onToggleRead && (
               <button
-                onClick={() => {
-                  const nextState = !isRead;
-                  setIsRead(nextState);
-                  onToggleRead(article.id, nextState);
-                }}
+                onClick={handleReadToggle}
                 className={`p-2 rounded-full transition-all flex items-center gap-1.5 text-xs font-semibold ${
                   isRead ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                 }`}

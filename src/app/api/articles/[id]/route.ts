@@ -24,6 +24,10 @@ export async function GET(
           where: { userId },
           select: { id: true },
         },
+        reads: {
+          where: { userId },
+          select: { id: true },
+        },
       },
     });
 
@@ -45,7 +49,9 @@ export async function GET(
       data: {
         ...article,
         isBookmarked: article.bookmarks.length > 0,
+        isRead: article.reads.length > 0,
         bookmarks: undefined,
+        reads: undefined,
       },
     });
   } catch (error: any) {
