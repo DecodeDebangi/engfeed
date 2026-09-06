@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { X, ExternalLink, Bookmark, Clock, Check, Copy, Type, ArrowUpRight, Share2 } from 'lucide-react';
+import { X, ExternalLink, Bookmark, Clock, Check, Copy, Type, ArrowUpRight, Share2, CheckCircle2 } from 'lucide-react';
 import { ArticleItem } from './ArticleCard';
 import { formatDateFull } from '@/lib/utils';
 
@@ -9,18 +9,21 @@ interface ReaderModalProps {
   article: ArticleItem | null;
   onClose: () => void;
   onToggleBookmark: (articleId: string) => Promise<void>;
+  onToggleRead?: (articleId: string, markAsRead?: boolean) => Promise<void>;
 }
 
 export const ReaderModal: React.FC<ReaderModalProps> = ({
   article,
   onClose,
   onToggleBookmark,
+  onToggleRead,
 }) => {
   const [fullArticleData, setFullArticleData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg'>('md');
   const [copied, setCopied] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isRead, setIsRead] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +31,14 @@ export const ReaderModal: React.FC<ReaderModalProps> = ({
     if (!article) return;
 
     setIsBookmarked(article.isBookmarked || false);
+    setIsRead(article.isRead || false);
     setLoading(true);
+
+    // Auto-mark article as read upon opening
+    if (onToggleRead && !article.isRead) {
+      setIsRead(true);
+      onToggleRead(article.id, true).catch(() => {});
+    }
 
     // Fetch full article detail (including sanitized HTML)
     fetch(`/api/articles/${article.id}`)
@@ -37,6 +47,9 @@ export const ReaderModal: React.FC<ReaderModalProps> = ({
         if (json.success) {
           setFullArticleData(json.data);
           setIsBookmarked(json.data.isBookmarked);
+          if (json.data.isRead !== undefined) {
+            setIsRead(json.data.isRead);
+          }
         }
       })
       .catch((err) => console.error('Failed to load full article content:', err))
@@ -148,6 +161,26 @@ export const ReaderModal: React.FC<ReaderModalProps> = ({
                 A+
               </button>
             </div>
+
+            {/* Read / Unread toggle */}
+            {onToggleRead && (
+              <button
+                onClick={() => {
+                  const nextState = !isRead;
+                  setIsRead(nextState);
+                  onToggleRead(article.id, nextState);
+                }}
+                className={`p-2 rounded-xl border transition-all flex items-center gap-1.5 text-xs font-medium ${
+                  isRead
+                    ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                    : 'bg-slate-800/70 text-slate-400 border-slate-700/60 hover:text-emerald-400 hover:bg-slate-800'
+                }`}
+                title={isRead ? 'Mark as Unread' : 'Mark as Read'}
+              >
+                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <span className="hidden md:inline">{isRead ? 'Read' : 'Mark Read'}</span>
+              </button>
+            )}
 
             {/* Bookmark button */}
             <button

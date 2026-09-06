@@ -43,6 +43,7 @@ model Article {
 
   company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
   bookmarks   UserBookmark[]
+  reads       UserRead[]
 
   @@index([companyId])
   @@index([publishedAt(sort: Desc)])
@@ -50,6 +51,19 @@ model Article {
 }
 
 model UserBookmark {
+  id        String   @id @default(cuid())
+  userId    String   @default("default-user")
+  articleId String
+  createdAt DateTime @default(now())
+
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, articleId])
+  @@index([userId])
+  @@index([articleId])
+}
+
+model UserRead {
   id        String   @id @default(cuid())
   userId    String   @default("default-user")
   articleId String

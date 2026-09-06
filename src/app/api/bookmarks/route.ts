@@ -24,6 +24,10 @@ export async function GET(request: NextRequest) {
                 category: true,
               },
             },
+            reads: {
+              where: { userId },
+              select: { id: true },
+            },
           },
         },
       },
@@ -33,6 +37,8 @@ export async function GET(request: NextRequest) {
     const articles = bookmarks.map((b) => ({
       ...b.article,
       isBookmarked: true,
+      isRead: (b.article as any).reads?.length > 0,
+      reads: undefined,
       bookmarkedAt: b.createdAt,
     }));
 

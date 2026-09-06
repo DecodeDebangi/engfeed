@@ -93,6 +93,10 @@ export async function GET(request: NextRequest) {
             where: { userId },
             select: { id: true },
           },
+          reads: {
+            where: { userId },
+            select: { id: true },
+          },
         },
       }),
       db.article.count({ where: whereClause }),
@@ -102,7 +106,9 @@ export async function GET(request: NextRequest) {
     const formattedArticles = articles.map((art) => ({
       ...art,
       isBookmarked: art.bookmarks.length > 0,
+      isRead: art.reads.length > 0,
       bookmarks: undefined,
+      reads: undefined,
     }));
 
     const totalPages = Math.ceil(totalCount / limit);

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { X, ExternalLink, Bookmark, Clock, Check, Copy, ArrowUpRight } from 'lucide-react';
+import { X, ExternalLink, Bookmark, Clock, Check, Copy, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 import { ArticleItem } from '../ArticleCard';
 import { formatDateFull } from '@/lib/utils';
 
@@ -9,18 +9,21 @@ interface MaterialReaderModalProps {
   article: ArticleItem | null;
   onClose: () => void;
   onToggleBookmark: (articleId: string) => Promise<void>;
+  onToggleRead?: (articleId: string, markAsRead?: boolean) => Promise<void>;
 }
 
 export const MaterialReaderModal: React.FC<MaterialReaderModalProps> = ({
   article,
   onClose,
   onToggleBookmark,
+  onToggleRead,
 }) => {
   const [fullArticleData, setFullArticleData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg'>('md');
   const [copied, setCopied] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isRead, setIsRead] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +31,13 @@ export const MaterialReaderModal: React.FC<MaterialReaderModalProps> = ({
     if (!article) return;
 
     setIsBookmarked(article.isBookmarked || false);
+    setIsRead(article.isRead || false);
     setLoading(true);
+
+    if (onToggleRead && !article.isRead) {
+      setIsRead(true);
+      onToggleRead(article.id, true).catch(() => {});
+    }
 
     fetch(`/api/articles/${article.id}`)
       .then((res) => res.json())
@@ -36,6 +45,9 @@ export const MaterialReaderModal: React.FC<MaterialReaderModalProps> = ({
         if (json.success) {
           setFullArticleData(json.data);
           setIsBookmarked(json.data.isBookmarked);
+          if (json.data.isRead !== undefined) {
+            setIsRead(json.data.isRead);
+          }
         }
       })
       .catch((err) => console.error('Failed to load article detail:', err))
@@ -141,6 +153,24 @@ export const MaterialReaderModal: React.FC<MaterialReaderModalProps> = ({
                 A+
               </button>
             </div>
+
+            {/* Read / Unread toggle */}
+            {onToggleRead && (
+              <button
+                onClick={() => {
+                  const nextState = !isRead;
+                  setIsRead(nextState);
+                  onToggleRead(article.id, nextState);
+                }}
+                className={`p-2 rounded-full transition-all flex items-center gap-1.5 text-xs font-semibold ${
+                  isRead ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
+                title={isRead ? 'Mark as Unread' : 'Mark as Read'}
+              >
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <span className="hidden md:inline">{isRead ? 'Read' : 'Mark Read'}</span>
+              </button>
+            )}
 
             {/* Bookmark button */}
             <button

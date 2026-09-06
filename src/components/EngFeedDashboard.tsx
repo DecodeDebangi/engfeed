@@ -159,6 +159,28 @@ export const EngFeedDashboard: React.FC = () => {
     }
   };
 
+  const handleToggleRead = async (articleId: string, markAsRead?: boolean) => {
+    try {
+      const res = await fetch('/api/read', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ articleId, markAsRead }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setArticles((prev) =>
+          prev.map((a) => (a.id === articleId ? { ...a, isRead: data.isRead } : a))
+        );
+        if (activeArticleForReader && activeArticleForReader.id === articleId) {
+          setActiveArticleForReader((prev) => (prev ? { ...prev, isRead: data.isRead } : null));
+        }
+      }
+    } catch (err) {
+      console.error('Read toggle error:', err);
+    }
+  };
+
   const handleResetFilters = () => {
     setSelectedCategory(null);
     setSelectedTag(null);
@@ -262,6 +284,7 @@ export const EngFeedDashboard: React.FC = () => {
                   article={article}
                   onOpenReader={setActiveArticleForReader}
                   onToggleBookmark={handleToggleBookmark}
+                  onToggleRead={handleToggleRead}
                 />
               ))}
             </div>
@@ -274,47 +297,44 @@ export const EngFeedDashboard: React.FC = () => {
               <div className="space-y-1 max-w-sm">
                 <h3 className="text-base font-bold text-slate-200">No Articles Found</h3>
                 <p className="text-xs text-slate-400">
-                  {activeView === 'bookmarks'
-                    ? 'You have not saved any bookmarks yet. Click the bookmark icon on any article card to save it here.'
-                    : 'No articles matched your selected filters or search query. Try clearing filters or searching another keyword.'}
+                  We couldn't find any engineering articles matching your current search or selected filters.
                 </p>
               </div>
               <button
                 onClick={handleResetFilters}
-                className="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-all shadow-md"
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/30 transition-all"
               >
-                Reset Filters & Search
+                Reset All Filters
               </button>
             </div>
           )}
 
           {/* Pagination Controls */}
           {pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between pt-6 border-t border-slate-800/80">
+            <div className="mt-8 pt-6 border-t border-slate-800/80 flex items-center justify-between">
               <button
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                disabled={!pagination.hasPrevPage || loading}
-                className="px-3.5 py-2 text-xs font-semibold text-slate-300 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/60 rounded-xl transition-all disabled:opacity-40 flex items-center gap-1"
+                disabled={!pagination.hasPrevPage}
+                className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-semibold flex items-center gap-1.5 transition-all"
               >
                 <ChevronLeft className="w-4 h-4" />
-                <span>Previous</span>
+                Previous
               </button>
 
-              <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono">
-                <span>Page {currentPage} of {pagination.totalPages}</span>
-              </div>
+              <span className="text-xs text-slate-400 font-medium">
+                Page {currentPage} of {pagination.totalPages}
+              </span>
 
               <button
                 onClick={() => setCurrentPage((p) => p + 1)}
-                disabled={!pagination.hasNextPage || loading}
-                className="px-3.5 py-2 text-xs font-semibold text-slate-300 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/60 rounded-xl transition-all disabled:opacity-40 flex items-center gap-1"
+                disabled={!pagination.hasNextPage}
+                className="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-semibold flex items-center gap-1.5 transition-all"
               >
-                <span>Next</span>
+                Next
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           )}
-
         </section>
 
       </main>
@@ -324,6 +344,7 @@ export const EngFeedDashboard: React.FC = () => {
         article={activeArticleForReader}
         onClose={() => setActiveArticleForReader(null)}
         onToggleBookmark={handleToggleBookmark}
+        onToggleRead={handleToggleRead}
       />
 
       {/* Live Sync Progress Modal */}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Bookmark, Clock, ExternalLink } from 'lucide-react';
+import { Bookmark, Clock, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { ArticleItem } from '../ArticleCard';
 import { formatRelativeDate } from '@/lib/utils';
 
@@ -9,15 +9,19 @@ interface MaterialArticleCardProps {
   article: ArticleItem;
   onOpenReader: (article: ArticleItem) => void;
   onToggleBookmark: (articleId: string) => Promise<void>;
+  onToggleRead?: (articleId: string) => Promise<void>;
 }
 
 export const MaterialArticleCard: React.FC<MaterialArticleCardProps> = ({
   article,
   onOpenReader,
   onToggleBookmark,
+  onToggleRead,
 }) => {
   const [isBookmarked, setIsBookmarked] = useState(article.isBookmarked || false);
   const [isBookmarking, setIsBookmarking] = useState(false);
+  const [isRead, setIsRead] = useState(article.isRead || false);
+  const [isTogglingRead, setIsTogglingRead] = useState(false);
 
   const handleBookmarkClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -34,10 +38,28 @@ export const MaterialArticleCard: React.FC<MaterialArticleCardProps> = ({
     }
   };
 
+  const handleReadClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!onToggleRead) return;
+    setIsTogglingRead(true);
+    const nextState = !isRead;
+    setIsRead(nextState);
+
+    try {
+      await onToggleRead(article.id);
+    } catch (err) {
+      setIsRead(!nextState);
+    } finally {
+      setIsTogglingRead(false);
+    }
+  };
+
   return (
     <article
       onClick={() => onOpenReader(article)}
-      className="group bg-white rounded-3xl border border-slate-200/80 p-6 flex flex-col justify-between cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-200 ease-out relative overflow-hidden"
+      className={`group bg-white rounded-3xl border p-6 flex flex-col justify-between cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-200 ease-out relative overflow-hidden ${
+        isRead ? 'border-slate-200 bg-slate-50/60 opacity-80 hover:opacity-100' : 'border-slate-200/80'
+      }`}
     >
       <div>
         {/* Header Badges & Actions */}
@@ -55,9 +77,16 @@ export const MaterialArticleCard: React.FC<MaterialArticleCardProps> = ({
               </div>
             )}
             <div className="min-w-0 flex-1">
-              <span className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors block leading-tight">
-                {article.company.name}
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors block leading-tight">
+                  {article.company.name}
+                </span>
+                {isRead && (
+                  <span className="px-2 py-0.5 text-[9px] font-bold bg-emerald-100 text-emerald-800 rounded-full">
+                    Read
+                  </span>
+                )}
+              </div>
               <span className="text-[10px] font-medium text-slate-500 block truncate">
                 {article.company.category}
               </span>
@@ -65,6 +94,21 @@ export const MaterialArticleCard: React.FC<MaterialArticleCardProps> = ({
           </div>
 
           <div className="flex items-center gap-1 flex-shrink-0">
+            {onToggleRead && (
+              <button
+                onClick={handleReadClick}
+                disabled={isTogglingRead}
+                className={`p-2 rounded-full transition-all ${
+                  isRead
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'text-slate-400 hover:text-emerald-700 hover:bg-emerald-50'
+                }`}
+                title={isRead ? 'Mark as Unread' : 'Mark as Read'}
+              >
+                <CheckCircle2 className={`w-4 h-4 ${isRead ? 'text-emerald-700' : ''}`} />
+              </button>
+            )}
+
             <button
               onClick={handleBookmarkClick}
               disabled={isBookmarking}

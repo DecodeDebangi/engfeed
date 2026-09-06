@@ -155,6 +155,28 @@ export const BrutalistEngFeedDashboard: React.FC = () => {
     }
   };
 
+  const handleToggleRead = async (articleId: string, markAsRead?: boolean) => {
+    try {
+      const res = await fetch('/api/read', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ articleId, markAsRead }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setArticles((prev) =>
+          prev.map((a) => (a.id === articleId ? { ...a, isRead: data.isRead } : a))
+        );
+        if (activeArticleForReader && activeArticleForReader.id === articleId) {
+          setActiveArticleForReader((prev) => (prev ? { ...prev, isRead: data.isRead } : null));
+        }
+      }
+    } catch (err) {
+      console.error('Read toggle error:', err);
+    }
+  };
+
   const handleResetFilters = () => {
     setSelectedCategory(null);
     setSelectedTag(null);
@@ -257,6 +279,7 @@ export const BrutalistEngFeedDashboard: React.FC = () => {
                   article={article}
                   onOpenReader={setActiveArticleForReader}
                   onToggleBookmark={handleToggleBookmark}
+                  onToggleRead={handleToggleRead}
                 />
               ))}
             </div>
@@ -318,6 +341,7 @@ export const BrutalistEngFeedDashboard: React.FC = () => {
         article={activeArticleForReader}
         onClose={() => setActiveArticleForReader(null)}
         onToggleBookmark={handleToggleBookmark}
+        onToggleRead={handleToggleRead}
       />
 
       {/* Sync Progress Modal */}

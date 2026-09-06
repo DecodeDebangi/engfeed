@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { X, ExternalLink, Bookmark, Clock, Check, Copy, ArrowUpRight, Type, Sun, Moon } from 'lucide-react';
+import { X, ExternalLink, Bookmark, Clock, Check, Copy, ArrowUpRight, Type, Sun, Moon, CheckCircle2 } from 'lucide-react';
 import { ArticleItem } from '../ArticleCard';
 import { formatDateFull } from '@/lib/utils';
 
@@ -9,12 +9,14 @@ interface EditorialReaderModalProps {
   article: ArticleItem | null;
   onClose: () => void;
   onToggleBookmark: (articleId: string) => Promise<void>;
+  onToggleRead?: (articleId: string, markAsRead?: boolean) => Promise<void>;
 }
 
 export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
   article,
   onClose,
   onToggleBookmark,
+  onToggleRead,
 }) => {
   const [fullArticleData, setFullArticleData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -23,6 +25,7 @@ export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
   const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg'>('md');
   const [copied, setCopied] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isRead, setIsRead] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -30,7 +33,13 @@ export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
     if (!article) return;
 
     setIsBookmarked(article.isBookmarked || false);
+    setIsRead(article.isRead || false);
     setLoading(true);
+
+    if (onToggleRead && !article.isRead) {
+      setIsRead(true);
+      onToggleRead(article.id, true).catch(() => {});
+    }
 
     fetch(`/api/articles/${article.id}`)
       .then((res) => res.json())
@@ -38,6 +47,9 @@ export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
         if (json.success) {
           setFullArticleData(json.data);
           setIsBookmarked(json.data.isBookmarked);
+          if (json.data.isRead !== undefined) {
+            setIsRead(json.data.isRead);
+          }
         }
       })
       .catch((err) => console.error('Failed to load article detail:', err))
@@ -205,6 +217,28 @@ export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
                 A+
               </button>
             </div>
+
+            {/* Read / Unread toggle */}
+            {onToggleRead && (
+              <button
+                onClick={() => {
+                  const nextState = !isRead;
+                  setIsRead(nextState);
+                  onToggleRead(article.id, nextState);
+                }}
+                className={`p-2 rounded-xl transition-all flex items-center gap-1.5 text-xs font-semibold ${
+                  isRead
+                    ? readerTheme === 'night'
+                      ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800'
+                      : 'bg-emerald-50 text-emerald-800 border border-emerald-300'
+                    : 'text-stone-500 hover:text-stone-900'
+                }`}
+                title={isRead ? 'Mark as Unread' : 'Mark as Read'}
+              >
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <span className="hidden md:inline">{isRead ? 'Read' : 'Mark Read'}</span>
+              </button>
+            )}
 
             {/* Bookmark */}
             <button

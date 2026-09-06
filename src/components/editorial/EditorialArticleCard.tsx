@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Bookmark, Clock, ExternalLink } from 'lucide-react';
+import { Bookmark, Clock, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { ArticleItem } from '../ArticleCard';
 import { formatRelativeDate } from '@/lib/utils';
 
@@ -11,6 +11,7 @@ interface EditorialArticleCardProps {
   themeMode: 'paper' | 'night';
   onOpenReader: (article: ArticleItem) => void;
   onToggleBookmark: (articleId: string) => Promise<void>;
+  onToggleRead?: (articleId: string) => Promise<void>;
 }
 
 export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
@@ -19,9 +20,12 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
   themeMode,
   onOpenReader,
   onToggleBookmark,
+  onToggleRead,
 }) => {
   const [isBookmarked, setIsBookmarked] = useState(article.isBookmarked || false);
   const [isBookmarking, setIsBookmarking] = useState(false);
+  const [isRead, setIsRead] = useState(article.isRead || false);
+  const [isTogglingRead, setIsTogglingRead] = useState(false);
 
   const isNight = themeMode === 'night';
 
@@ -37,6 +41,22 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
       setIsBookmarked(!nextState);
     } finally {
       setIsBookmarking(false);
+    }
+  };
+
+  const handleReadClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!onToggleRead) return;
+    setIsTogglingRead(true);
+    const nextState = !isRead;
+    setIsRead(nextState);
+
+    try {
+      await onToggleRead(article.id);
+    } catch (err) {
+      setIsRead(!nextState);
+    } finally {
+      setIsTogglingRead(false);
     }
   };
 
@@ -163,6 +183,25 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
           </div>
 
           <div className="flex items-center gap-1 flex-shrink-0">
+            {onToggleRead && (
+              <button
+                onClick={handleReadClick}
+                disabled={isTogglingRead}
+                className={`p-2 rounded-xl transition-all ${
+                  isRead
+                    ? isNight
+                      ? 'bg-emerald-900/40 text-emerald-400 border border-emerald-500/30'
+                      : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                    : isNight
+                    ? 'text-stone-400 hover:text-stone-200 hover:bg-stone-800'
+                    : 'text-stone-500 hover:text-stone-900 hover:bg-stone-200/60'
+                }`}
+                title={isRead ? 'Mark as Unread' : 'Mark as Read'}
+              >
+                <CheckCircle2 className={`w-4 h-4 ${isRead ? (isNight ? 'text-emerald-400' : 'text-emerald-700') : ''}`} />
+              </button>
+            )}
+
             <button
               onClick={handleBookmarkClick}
               disabled={isBookmarking}

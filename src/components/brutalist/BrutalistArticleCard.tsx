@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Bookmark, Clock, ExternalLink, ArrowUpRight } from 'lucide-react';
+import { Bookmark, Clock, ExternalLink, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 import { ArticleItem } from '../ArticleCard';
 import { formatRelativeDate } from '@/lib/utils';
 
@@ -9,15 +9,19 @@ interface BrutalistArticleCardProps {
   article: ArticleItem;
   onOpenReader: (article: ArticleItem) => void;
   onToggleBookmark: (articleId: string) => Promise<void>;
+  onToggleRead?: (articleId: string) => Promise<void>;
 }
 
 export const BrutalistArticleCard: React.FC<BrutalistArticleCardProps> = ({
   article,
   onOpenReader,
   onToggleBookmark,
+  onToggleRead,
 }) => {
   const [isBookmarked, setIsBookmarked] = useState(article.isBookmarked || false);
   const [isBookmarking, setIsBookmarking] = useState(false);
+  const [isRead, setIsRead] = useState(article.isRead || false);
+  const [isTogglingRead, setIsTogglingRead] = useState(false);
 
   const handleBookmarkClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -34,10 +38,28 @@ export const BrutalistArticleCard: React.FC<BrutalistArticleCardProps> = ({
     }
   };
 
+  const handleReadClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!onToggleRead) return;
+    setIsTogglingRead(true);
+    const nextState = !isRead;
+    setIsRead(nextState);
+
+    try {
+      await onToggleRead(article.id);
+    } catch (err) {
+      setIsRead(!nextState);
+    } finally {
+      setIsTogglingRead(false);
+    }
+  };
+
   return (
     <article
       onClick={() => onOpenReader(article)}
-      className="group bg-white border-4 border-black p-5 flex flex-col justify-between cursor-pointer shadow-[6px_6px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_#000] transition-all font-mono"
+      className={`group bg-white border-4 border-black p-5 flex flex-col justify-between cursor-pointer shadow-[6px_6px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_#000] transition-all font-mono ${
+        isRead ? 'bg-slate-50 opacity-80 hover:opacity-100' : ''
+      }`}
     >
       <div>
         {/* Header Badges & Company Tag */}
@@ -46,12 +68,32 @@ export const BrutalistArticleCard: React.FC<BrutalistArticleCardProps> = ({
             <span className="px-2 py-0.5 text-[10px] font-black uppercase bg-yellow-300 text-black border border-black shadow-[1px_1px_0px_0px_#000]">
               {article.company.name}
             </span>
+            {isRead && (
+              <span className="px-1.5 py-0.5 text-[9px] font-black uppercase bg-lime-400 text-black border border-black shadow-[1px_1px_0px_0px_#000]">
+                READ
+              </span>
+            )}
             <span className="text-[10px] font-bold text-slate-600 truncate">
               {article.company.category}
             </span>
           </div>
 
           <div className="flex items-center gap-1.5 flex-shrink-0">
+            {onToggleRead && (
+              <button
+                onClick={handleReadClick}
+                disabled={isTogglingRead}
+                className={`p-1.5 border-2 border-black font-bold transition-all ${
+                  isRead
+                    ? 'bg-lime-400 text-black shadow-[2px_2px_0px_0px_#000]'
+                    : 'bg-slate-100 text-black hover:bg-lime-200 shadow-[1px_1px_0px_0px_#000]'
+                }`}
+                title={isRead ? 'Mark as Unread' : 'Mark as Read'}
+              >
+                <CheckCircle2 className="w-3.5 h-3.5 stroke-[3]" />
+              </button>
+            )}
+
             <button
               onClick={handleBookmarkClick}
               disabled={isBookmarking}

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Bookmark, Clock, ExternalLink, BookOpen, Building2 } from 'lucide-react';
+import { Bookmark, Clock, ExternalLink, BookOpen, Building2, CheckCircle2, Check } from 'lucide-react';
 import { formatRelativeDate } from '@/lib/utils';
 
 export interface ArticleItem {
@@ -14,6 +14,7 @@ export interface ArticleItem {
   readTime: number;
   tags: string[];
   isBookmarked?: boolean;
+  isRead?: boolean;
   company: {
     id: string;
     name: string;
@@ -28,37 +29,59 @@ interface ArticleCardProps {
   article: ArticleItem;
   onOpenReader: (article: ArticleItem) => void;
   onToggleBookmark: (articleId: string) => Promise<void>;
+  onToggleRead?: (articleId: string) => Promise<void>;
 }
 
 export const ArticleCard: React.FC<ArticleCardProps> = ({
   article,
   onOpenReader,
   onToggleBookmark,
+  onToggleRead,
 }) => {
   const [isBookmarked, setIsBookmarked] = useState(article.isBookmarked || false);
   const [isBookmarking, setIsBookmarking] = useState(false);
+  const [isRead, setIsRead] = useState(article.isRead || false);
+  const [isTogglingRead, setIsTogglingRead] = useState(false);
 
   const handleBookmarkClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
     setIsBookmarking(true);
-    // Optimistic state update
     const nextState = !isBookmarked;
     setIsBookmarked(nextState);
 
     try {
       await onToggleBookmark(article.id);
     } catch (err) {
-      // Revert if error
       setIsBookmarked(!nextState);
     } finally {
       setIsBookmarking(false);
     }
   };
 
+  const handleReadClick = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!onToggleRead) return;
+    setIsTogglingRead(true);
+    const nextState = !isRead;
+    setIsRead(nextState);
+
+    try {
+      await onToggleRead(article.id);
+    } catch (err) {
+      setIsRead(!nextState);
+    } finally {
+      setIsTogglingRead(false);
+    }
+  };
+
   return (
     <article
       onClick={() => onOpenReader(article)}
-      className="group glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer border border-slate-800/80 hover:border-indigo-500/40 relative overflow-hidden transition-all"
+      className={`group glass-card rounded-2xl p-5 flex flex-col justify-between cursor-pointer border relative overflow-hidden transition-all ${
+        isRead
+          ? 'border-slate-800/50 opacity-75 hover:opacity-100 hover:border-emerald-500/40 bg-slate-900/40'
+          : 'border-slate-800/80 hover:border-indigo-500/40'
+      }`}
     >
       {/* Top Company Badge & Actions */}
       <div>
@@ -80,9 +103,16 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
               </div>
             )}
             <div className="min-w-0">
-              <span className="text-xs font-semibold text-slate-200 group-hover:text-indigo-300 transition-colors truncate block">
-                {article.company.name}
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-semibold text-slate-200 group-hover:text-indigo-300 transition-colors truncate block">
+                  {article.company.name}
+                </span>
+                {isRead && (
+                  <span className="px-1.5 py-0.2 text-[9px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-md">
+                    Read
+                  </span>
+                )}
+              </div>
               <span className="text-[10px] text-slate-500 block truncate">
                 {article.company.category}
               </span>
@@ -90,7 +120,22 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-1.5 flex-shrink-0">
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {onToggleRead && (
+              <button
+                onClick={handleReadClick}
+                disabled={isTogglingRead}
+                className={`p-2 rounded-xl transition-all ${
+                  isRead
+                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                    : 'text-slate-400 hover:text-emerald-400 hover:bg-slate-800/60 border border-transparent'
+                }`}
+                title={isRead ? 'Mark as Unread' : 'Mark as Read'}
+              >
+                <CheckCircle2 className={`w-4 h-4 ${isRead ? 'text-emerald-400' : ''}`} />
+              </button>
+            )}
+
             <button
               onClick={handleBookmarkClick}
               disabled={isBookmarking}
