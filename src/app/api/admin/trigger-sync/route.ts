@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { syncAllFeeds, syncCompanyFeed } from '@/lib/ingestion';
 
+export const dynamic = 'force-dynamic';
+
+
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('authorization');
