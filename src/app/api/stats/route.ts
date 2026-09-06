@@ -55,7 +55,10 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(payload, {
-      headers: { 'X-Cache': 'MISS' },
+      headers: {
+        'X-Cache': 'MISS',
+        'Cache-Control': 'no-store, max-age=0, must-revalidate',
+      },
     });
   } catch (error: any) {
     console.error('Error fetching stats:', error);

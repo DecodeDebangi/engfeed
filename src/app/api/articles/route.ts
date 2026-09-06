@@ -20,19 +20,21 @@ export async function GET(request: NextRequest) {
     // Construct Redis Cache Key based on query params
     const cacheKey = `api:articles:p${page}:l${limit}:c${companySlug || 'all'}:t${tag || 'all'}:s${search || 'none'}:sort${sort}:bm${bookmarkedOnly}:u${userId}`;
 
-    // Check Redis cache first
-    try {
-      const cached = await redis.get(cacheKey);
-      if (cached) {
-        return NextResponse.json(JSON.parse(cached), {
-          headers: {
-            'X-Cache': 'HIT',
-            'Cache-Control': 'public, max-age=60, s-maxage=120',
-          },
-        });
+    // Check Redis cache first (skip for bookmarked query to guarantee instant updates)
+    if (!bookmarkedOnly) {
+      try {
+        const cached = await redis.get(cacheKey);
+        if (cached) {
+          return NextResponse.json(JSON.parse(cached), {
+            headers: {
+              'X-Cache': 'HIT',
+              'Cache-Control': 'no-store, max-age=0, must-revalidate',
+            },
+          });
+        }
+      } catch (cacheErr) {
+        console.warn('Redis cache read warning:', cacheErr);
       }
-    } catch (cacheErr) {
-      console.warn('Redis cache read warning:', cacheErr);
     }
 
     const skip = (page - 1) * limit;
@@ -126,17 +128,19 @@ export async function GET(request: NextRequest) {
       },
     };
 
-    // Store in Redis cache for 60 seconds
-    try {
-      await redis.setex(cacheKey, 60, JSON.stringify(responsePayload));
-    } catch (cacheErr) {
-      console.warn('Redis cache write warning:', cacheErr);
+    // Store in Redis cache for 60 seconds (skip for bookmarked query)
+    if (!bookmarkedOnly) {
+      try {
+        await redis.setex(cacheKey, 60, JSON.stringify(responsePayload));
+      } catch (cacheErr) {
+        console.warn('Redis cache write warning:', cacheErr);
+      }
     }
 
     return NextResponse.json(responsePayload, {
       headers: {
         'X-Cache': 'MISS',
-        'Cache-Control': 'public, max-age=60, s-maxage=120',
+        'Cache-Control': 'no-store, max-age=0, must-revalidate',
       },
     });
   } catch (error: any) {

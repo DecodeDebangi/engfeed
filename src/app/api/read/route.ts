@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
 
     // Invalidate cached Redis queries for user
     try {
-      const keys = await redis.keys(`api:articles:*u${userId}*`);
+      const keys = await redis.keys('api:articles:*');
       if (keys.length > 0) {
         await redis.del(...keys);
       }
@@ -76,12 +76,19 @@ export async function POST(request: NextRequest) {
       console.warn('Redis cache clear warning:', cacheErr);
     }
 
-    return NextResponse.json({
-      success: true,
-      isRead,
-      articleId,
-      message: isRead ? 'Article marked as read' : 'Article marked as unread',
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        isRead,
+        articleId,
+        message: isRead ? 'Article marked as read' : 'Article marked as unread',
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0, must-revalidate',
+        },
+      }
+    );
   } catch (error: any) {
     console.error('Error toggling read status:', error);
     return NextResponse.json(

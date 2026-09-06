@@ -42,10 +42,17 @@ export async function GET(request: NextRequest) {
       bookmarkedAt: b.createdAt,
     }));
 
-    return NextResponse.json({
-      success: true,
-      data: articles,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        data: articles,
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0, must-revalidate',
+        },
+      }
+    );
   } catch (error: any) {
     console.error('Error fetching user bookmarks:', error);
     return NextResponse.json(
@@ -107,7 +114,7 @@ export async function POST(request: NextRequest) {
 
     // Invalidate user article cache in Redis
     try {
-      const keys = await redis.keys(`api:articles:*u${userId}*`);
+      const keys = await redis.keys('api:articles:*');
       if (keys.length > 0) {
         await redis.del(...keys);
       }
@@ -115,12 +122,19 @@ export async function POST(request: NextRequest) {
       console.warn('Redis cache clear warning:', cacheErr);
     }
 
-    return NextResponse.json({
-      success: true,
-      bookmarked: isBookmarked,
-      articleId,
-      message: isBookmarked ? 'Article bookmarked successfully' : 'Article bookmark removed',
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        bookmarked: isBookmarked,
+        articleId,
+        message: isBookmarked ? 'Article bookmarked successfully' : 'Article bookmark removed',
+      },
+      {
+        headers: {
+          'Cache-Control': 'no-store, max-age=0, must-revalidate',
+        },
+      }
+    );
   } catch (error: any) {
     console.error('Error toggling bookmark:', error);
     return NextResponse.json(

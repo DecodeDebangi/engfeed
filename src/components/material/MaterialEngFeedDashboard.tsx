@@ -77,7 +77,7 @@ export const MaterialEngFeedDashboard: React.FC = () => {
       if (selectedCompanySlug) params.set('company', selectedCompanySlug);
       if (activeView === 'bookmarks') params.set('bookmarked', 'true');
 
-      const res = await fetch(`/api/articles?${params.toString()}`);
+      const res = await fetch(`/api/articles?${params.toString()}`, { cache: 'no-store' });
       const json = await res.json();
 
       if (json.success) {
@@ -104,8 +104,8 @@ export const MaterialEngFeedDashboard: React.FC = () => {
   const fetchGlobalStats = useCallback(async () => {
     try {
       const [statsRes, bookmarksRes] = await Promise.all([
-        fetch('/api/stats').then((r) => r.json()),
-        fetch('/api/bookmarks').then((r) => r.json()),
+        fetch('/api/stats', { cache: 'no-store' }).then((r) => r.json()),
+        fetch('/api/bookmarks', { cache: 'no-store' }).then((r) => r.json()),
       ]);
 
       if (statsRes.success) {
@@ -145,9 +145,17 @@ export const MaterialEngFeedDashboard: React.FC = () => {
       const data = await res.json();
 
       if (data.success) {
-        setArticles((prev) =>
-          prev.map((a) => (a.id === articleId ? { ...a, isBookmarked: data.bookmarked } : a))
-        );
+        setArticles((prev) => {
+          if (activeView === 'bookmarks' && !data.bookmarked) {
+            return prev.filter((a) => a.id !== articleId);
+          }
+          return prev.map((a) => (a.id === articleId ? { ...a, isBookmarked: data.bookmarked } : a));
+        });
+
+        if (activeArticleForReader && activeArticleForReader.id === articleId) {
+          setActiveArticleForReader((prev) => (prev ? { ...prev, isBookmarked: data.bookmarked } : null));
+        }
+
         fetchGlobalStats();
       }
     } catch (err) {
