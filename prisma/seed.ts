@@ -712,15 +712,6 @@ export const SEED_COMPANIES: SeedCompany[] = [
     description: 'GPS route processing, segment matching algorithms, social fitness graph, and mobile engineering.',
   },
   {
-    name: 'Thoughtbot (Robots)',
-    slug: 'thoughtbot',
-    logoUrl: 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?w=128&auto=format&fit=crop&q=80',
-    rssUrl: 'https://robots.thoughtbot.com/feed',
-    websiteUrl: 'https://robots.thoughtbot.com/',
-    category: 'DevTools',
-    description: 'Ruby on Rails, Elixir, iOS/Android design patterns, code refactoring, and agile product design.',
-  },
-  {
     name: 'Trivago Tech',
     slug: 'trivago',
     logoUrl: 'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=128&auto=format&fit=crop&q=80',
