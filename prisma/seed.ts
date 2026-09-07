@@ -622,6 +622,15 @@ export const SEED_COMPANIES: SeedCompany[] = [
     description: 'Hyperlocal graph networks, neighborhood feed indexing, Python/Go backend, and iOS/Android tech.',
   },
   {
+    name: 'ngrok Blog',
+    slug: 'ngrok',
+    logoUrl: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=128&auto=format&fit=crop&q=80',
+    rssUrl: 'https://ngrok.com/blog/rss.xml',
+    websiteUrl: 'https://ngrok.com/blog',
+    category: 'DevTools',
+    description: 'API gateway, ingress controllers, secure tunnels, network connectivity, and developer infrastructure.',
+  },
+  {
     name: 'NVIDIA Tech Blog',
     slug: 'nvidia',
     logoUrl: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=128&auto=format&fit=crop&q=80',
