@@ -804,6 +804,17 @@ async function main() {
 
   const count = await prisma.company.count();
   console.log(`✅ Seeded ${count} verified engineering blog sources into PostgreSQL!`);
+
+  try {
+    const { redis } = await import('../src/lib/redis');
+    const keys = await redis.keys('api:*');
+    if (keys.length > 0) {
+      await redis.del(...keys);
+      console.log(`🧹 Cleared ${keys.length} Redis cache keys.`);
+    }
+  } catch (err) {
+    // Ignore Redis errors if Redis is unconfigured
+  }
 }
 
 main()
@@ -814,3 +825,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
