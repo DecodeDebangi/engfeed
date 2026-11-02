@@ -115,6 +115,9 @@ export const SyncProgressModal: React.FC<SyncProgressModalProps> = ({
             </div>
             <p>Processed <strong>{result.stats?.totalFeedsProcessed}</strong> engineering blogs.</p>
             <p>Inserted <strong>{result.stats?.totalNewArticlesInserted}</strong> new articles into PostgreSQL.</p>
+            {result.stats?.totalFeedsFailed > 0 && (
+              <p className="text-rose-300"><strong>{result.stats.totalFeedsFailed}</strong> feeds failed and were skipped.</p>
+            )}
           </div>
         )}
 

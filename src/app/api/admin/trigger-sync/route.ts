@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { syncAllFeeds, syncCompanyFeed } from '@/lib/ingestion';
+import { syncAllFeeds, syncCompanyFeedOnce } from '@/lib/ingestion';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 
     let results;
     if (companyId) {
-      const res = await syncCompanyFeed(companyId);
+      const res = await syncCompanyFeedOnce(companyId);
       results = [res];
     } else {
       results = await syncAllFeeds();
@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
       stats: {
         totalFeedsProcessed: results.length,
         totalNewArticlesInserted: totalNewArticles,
+        totalFeedsFailed: results.filter((result) => result.error).length,
       },
       details: results,
     });

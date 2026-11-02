@@ -16,9 +16,10 @@ export async function GET(request: NextRequest) {
     const sort = searchParams.get('sort') === 'asc' ? 'asc' : 'desc';
     const userId = searchParams.get('userId') || 'default-user';
     const bookmarkedOnly = searchParams.get('bookmarked') === 'true';
+    const showAllKinds = searchParams.get('kinds') === 'all';
 
     // Construct Redis Cache Key based on query params
-    const cacheKey = `api:articles:p${page}:l${limit}:c${companySlug || 'all'}:t${tag || 'all'}:s${search || 'none'}:sort${sort}:bm${bookmarkedOnly}:u${userId}`;
+    const cacheKey = `api:articles:p${page}:l${limit}:c${companySlug || 'all'}:t${tag || 'all'}:s${search || 'none'}:sort${sort}:bm${bookmarkedOnly}:k${showAllKinds}:u${userId}`;
 
     // Check Redis cache first (skip for bookmarked query to guarantee instant updates)
     if (!bookmarkedOnly) {
@@ -63,6 +64,12 @@ export async function GET(request: NextRequest) {
       };
     }
 
+    // Hide non-engineering posts by default, but never something the user searched for or saved.
+    // Unclassified articles stay visible, so the feed still works without an LLM.
+    if (!showAllKinds && !search && !bookmarkedOnly) {
+      whereClause.AND = [{ OR: [{ kind: null }, { kind: 'ENGINEERING' }] }];
+    }
+
     // Query DB for articles and total count
     const [articles, totalCount] = await Promise.all([
       db.article.findMany({
@@ -79,6 +86,7 @@ export async function GET(request: NextRequest) {
           publishedAt: true,
           readTime: true,
           tags: true,
+          kind: true,
           viewsCount: true,
           createdAt: true,
           company: {

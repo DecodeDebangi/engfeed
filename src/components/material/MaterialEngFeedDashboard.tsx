@@ -11,7 +11,7 @@ import { ArticleItem } from '../ArticleCard';
 import { CompanyOption } from '../SidebarFilters';
 import { Layers, Bookmark, ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 
-export const MaterialEngFeedDashboard: React.FC = () => {
+export const MaterialEngFeedDashboard: React.FC<{ showAllKinds?: boolean }> = ({ showAllKinds = false }) => {
   const [articles, setArticles] = useState<ArticleItem[]>([]);
   const [companies, setCompanies] = useState<CompanyOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,6 +53,10 @@ export const MaterialEngFeedDashboard: React.FC = () => {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [showAllKinds]);
+
   const fetchCompanies = useCallback(async () => {
     try {
       const res = await fetch('/api/companies');
@@ -71,6 +75,7 @@ export const MaterialEngFeedDashboard: React.FC = () => {
       const params = new URLSearchParams();
       params.set('page', currentPage.toString());
       params.set('limit', '18');
+      if (showAllKinds) params.set('kinds', 'all');
 
       if (debouncedSearch) params.set('search', debouncedSearch);
       if (selectedTag) params.set('tag', selectedTag);
@@ -100,7 +105,7 @@ export const MaterialEngFeedDashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, debouncedSearch, selectedTag, selectedCompanySlug, activeView]);
+  }, [currentPage, debouncedSearch, selectedTag, selectedCompanySlug, activeView, showAllKinds]);
 
   const fetchGlobalStats = useCallback(async () => {
     try {

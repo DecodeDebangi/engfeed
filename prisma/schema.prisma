@@ -7,22 +7,47 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum FeedStatus {
+  ACTIVE
+  FAILING
+  BROKEN
+  RETIRED
+}
+
+enum ArticleKind {
+  ENGINEERING
+  ANNOUNCEMENT
+  CAREERS
+  MARKETING
+}
+
 model Company {
   id          String    @id @default(cuid())
   name        String    @unique
   slug        String    @unique
   logoUrl     String?
   rssUrl      String    @unique
+  rssUrlPinned Boolean  @default(true)
+  suggestedRssUrl String?
   websiteUrl  String
   category    String    // e.g. "Cloud & Infra", "Fintech", "AI & ML", "DevTools", "Big Tech", "Data Engineering"
   description String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  feedStatus          FeedStatus @default(ACTIVE)
+  consecutiveFailures Int        @default(0)
+  lastError           String?    @db.Text
+  lastFetchedAt       DateTime?
+  lastSuccessAt       DateTime?
+  etag                String?
+  lastModified        String?
+
   articles    Article[]
 
   @@index([category])
   @@index([slug])
+  @@index([feedStatus])
 }
 
 model Article {
@@ -38,6 +63,9 @@ model Article {
   readTime    Int       @default(3) // in minutes
   tags        String[]  // Tech tags e.g. ["AI", "Architecture", "Distributed Systems"]
   viewsCount  Int       @default(0)
+  kind        ArticleKind? // null until classified
+  classifiedAt DateTime?
+  classifyAttempts Int    @default(0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
@@ -46,6 +74,7 @@ model Article {
   reads       UserRead[]
 
   @@index([companyId])
+  @@index([kind])
   @@index([publishedAt(sort: Desc)])
   @@index([slug])
 }

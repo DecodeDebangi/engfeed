@@ -10,9 +10,16 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:seed": "prisma db seed",
+    "db:retag": "tsx scripts/retag-articles.ts",
+    "feeds:health": "tsx scripts/feed-health.ts",
+    "feeds:discover": "tsx scripts/discover-feed.ts",
+    "classify": "tsx scripts/classify-articles.ts",
     "worker": "tsx src/workers/standalone-worker.ts",
     "test:rss": "tsx scripts/test-rss.ts",
     "test:sync": "tsx scripts/test-sync.ts",
+    "test:tags": "tsx scripts/test-tags.ts",
+    "test:classify": "tsx scripts/test-classify.ts",
+    "eval:classify": "tsx scripts/eval-classifier.ts",
     "test:api": "tsx scripts/test-api.ts"
   },
   "prisma": {
@@ -34,6 +41,7 @@
     "rss-parser": "^3.13.0",
     "sanitize-html": "^2.13.0",
     "tailwind-merge": "^2.5.2",
+    "yaml": "^2.9.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {

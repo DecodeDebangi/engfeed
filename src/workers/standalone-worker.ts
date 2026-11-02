@@ -1,28 +1,24 @@
-import { createRssWorker, enqueueSyncJob } from '../lib/queue';
+import { createClassifyWorker, createRssWorker, scheduleClassification, scheduleFeedSync } from '../lib/queue';
 
 console.log('🚀 Starting EngFeed Standalone Ingestion Worker Process...');
 
 const worker = createRssWorker();
+const classifyWorker = createClassifyWorker();
 
-// Schedule automated feed sync every 2 hours
-const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
-
-console.log('⏱️ Automated 2-hour RSS polling schedule activated.');
-setInterval(async () => {
-  console.log('⏰ Cron trigger: Enqueueing full RSS feed sync...');
-  await enqueueSyncJob();
-}, TWO_HOURS_MS);
-
-// Perform initial sync on worker startup
-enqueueSyncJob().then(() => {
-  console.log('📌 Initial feed sync job enqueued successfully.');
+// Schedule automated feed sync every 2 hours. The first run fires as soon as the schedule is created.
+scheduleFeedSync().then(() => {
+  console.log('⏱️ Automated 2-hour RSS polling schedule activated.');
 }).catch((err) => {
-  console.error('Failed to enqueue initial sync job:', err);
+  console.error('Failed to schedule RSS polling:', err);
+});
+
+scheduleClassification().catch((err) => {
+  console.error('Failed to schedule article classification:', err);
 });
 
 // Handle graceful shutdown
 process.on('SIGTERM', async () => {
   console.log('Stopping worker...');
-  await worker.close();
+  await Promise.all([worker.close(), classifyWorker.close()]);
   process.exit(0);
 });

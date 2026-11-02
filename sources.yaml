@@ -1,0 +1,516 @@
+# The curated list of engineering blogs EngFeed follows. Run `npm run db:seed` after editing.
+#
+# To add a blog, give it a name, slug, websiteUrl and category; the feed and logo are found automatically.
+# Only set rssUrl when discovery can't find the feed or picks the wrong one (for example a whole company
+# blog instead of its engineering section). That pins the feed to this URL.
+#
+# Removing a blog retires it: it stops being polled, but its existing articles stay.
+
+- name: Netflix TechBlog
+  slug: netflix
+  websiteUrl: https://netflixtechblog.com
+  category: Big Tech
+  description: Learn about Netflix’s engineering culture, streaming architecture, and open source tools.
+
+- name: Meta Engineering
+  slug: meta
+  websiteUrl: https://engineering.fb.com
+  category: Big Tech
+  description: Engineering news, infrastructure breakthroughs, and AI research from Meta.
+
+- name: Cloudflare Blog
+  slug: cloudflare
+  websiteUrl: https://blog.cloudflare.com
+  category: Cloud & Infra
+  description: Insights into global edge networks, DDoS protection, Workers, and internet security.
+
+- name: Airbnb Tech
+  slug: airbnb
+  websiteUrl: https://medium.com/airbnb-engineering
+  category: Big Tech
+  description: Data science, design systems, machine learning, and frontend innovations at Airbnb.
+  rssUrl: https://medium.com/feed/airbnb-engineering
+
+- name: GitHub Engineering
+  slug: github
+  websiteUrl: https://github.blog/category/engineering/
+  category: DevTools
+  description: How GitHub builds, scales, and secures the home for all developers.
+  rssUrl: https://github.blog/category/engineering/feed/
+
+- name: Vercel Blog
+  slug: vercel
+  websiteUrl: https://vercel.com/blog
+  category: DevTools
+  description: Next.js updates, edge rendering, frontend performance, and serverless architecture.
+  rssUrl: https://vercel.com/atom
+
+- name: Discord Engineering
+  slug: discord
+  websiteUrl: https://discord.com/blog/category/engineering
+  category: Big Tech
+  description: Elixir, Rust, WebSockets, latency reduction, and scaling chat for hundreds of millions.
+
+- name: Slack Engineering
+  slug: slack
+  websiteUrl: https://slack.engineering
+  category: Big Tech
+  description: How Slack scales enterprise messaging, search indexing, desktop apps, and web infrastructure.
+
+- name: Datadog Engineering
+  slug: datadog
+  websiteUrl: https://www.datadoghq.com/blog/
+  category: Cloud & Infra
+  description: Observability at scale, metric pipelines, eBPF, and cloud infrastructure monitoring.
+
+- name: Shopify Engineering
+  slug: shopify
+  websiteUrl: https://shopify.engineering
+  category: Fintech
+  description: Ruby on Rails at scale, e-commerce infrastructure, GraphQL, and global merchant APIs.
+
+- name: Stripe Engineering
+  slug: stripe
+  websiteUrl: https://stripe.dev/blog
+  category: Fintech
+  description: Payment infrastructure, database reliability, TypeScript migrations, and API design from Stripe.
+
+- name: Spotify R&D
+  slug: spotify
+  websiteUrl: https://engineering.atspotify.com
+  category: Big Tech
+  description: Audio recommendation systems, Backstage platform engineering, data science, and mobile apps.
+
+- name: Pinterest Engineering
+  slug: pinterest
+  websiteUrl: https://medium.com/pinterest-engineering
+  category: Big Tech
+  description: Visual search, pin graph algorithms, multi-billion item indexing, and machine learning.
+  rssUrl: https://medium.com/feed/pinterest-engineering
+
+- name: Dropbox Tech
+  slug: dropbox
+  websiteUrl: https://dropbox.tech
+  category: Cloud & Infra
+  description: File sync engines, Magic Pocket custom storage hardware, Rust adoption, and cloud architecture.
+
+- name: AWS Architecture Blog
+  slug: aws
+  websiteUrl: https://aws.amazon.com/blogs/architecture/
+  category: Cloud & Infra
+  description: Official AWS architecture best practices, serverless design patterns, and cloud migrations.
+
+- name: OpenAI Blog
+  slug: openai
+  websiteUrl: https://openai.com/news/
+  category: AI & ML
+  description: Frontier AI models, GPT architectures, alignment research, and developer API breakthroughs.
+
+- name: Hugging Face Blog
+  slug: huggingface
+  websiteUrl: https://huggingface.co/blog
+  category: AI & ML
+  description: Open source AI, Transformers, model quantization, fine-tuning, and machine learning hubs.
+
+- name: Google DeepMind
+  slug: google-deepmind
+  websiteUrl: https://deepmind.google/blog/
+  category: AI & ML
+  description: AlphaFold, Gemini foundation models, reinforcement learning, and scientific AI.
+  rssUrl: https://deepmind.google/blog/rss.xml
+
+- name: Anthropic Research
+  slug: anthropic
+  websiteUrl: https://www.anthropic.com/news
+  category: AI & ML
+  description: Claude foundation models, constitutional AI, mechanistic interpretability, and AI safety research.
+  rssUrl: https://conoro.github.io/anthropic-engineering-rss-feed/anthropic_engineering_rss.xml
+
+- name: Anyscale Blog
+  slug: anyscale
+  websiteUrl: https://www.anyscale.com/blog
+  category: AI & ML
+  description: Ray distributed computing framework, LLM scaling, Ray Train, Ray Serve, and cluster management.
+
+- name: Google Cloud Tech
+  slug: google-cloud
+  websiteUrl: https://cloud.google.com/blog
+  category: Cloud & Infra
+  description: Google Cloud architecture, Kubernetes Engine, BigQuery, Vertex AI, and enterprise cloud solutions.
+  rssUrl: https://cloudblog.withgoogle.com/rss/
+
+- name: HashiCorp Blog
+  slug: hashicorp
+  websiteUrl: https://www.hashicorp.com/blog
+  category: Cloud & Infra
+  description: Terraform, Vault, Consul, Nomad, infrastructure as code, and cloud security.
+
+- name: Supabase Blog
+  slug: supabase
+  websiteUrl: https://supabase.com/blog
+  category: DevTools
+  description: Open source Firebase alternative, Postgres extensions, Row Level Security, and Realtime.
+  rssUrl: https://supabase.com/feed.xml
+
+- name: Neon Blog
+  slug: neon
+  websiteUrl: https://neon.tech/blog
+  category: Cloud & Infra
+  description: Serverless Postgres, compute/storage separation, database branching, and copy-on-write storage.
+  rssUrl: https://neon.tech/blog/rss.xml
+
+- name: MongoDB Engineering
+  slug: mongodb
+  websiteUrl: https://www.mongodb.com/blog
+  category: Data Engineering
+  description: Document database internals, distributed transactions, time-series indexing, and Atlas search.
+
+- name: Redis Blog
+  slug: redis
+  websiteUrl: https://redis.io/blog
+  category: Cloud & Infra
+  description: In-memory datastores, caching strategies, Redis Raft, vector search, and pub/sub performance.
+
+- name: Postman Blog
+  slug: postman
+  websiteUrl: https://blog.postman.com
+  category: DevTools
+  description: API development, OpenAPI specifications, testing automation, and API governance.
+
+- name: Sentry Blog
+  slug: sentry
+  websiteUrl: https://blog.sentry.io
+  category: DevTools
+  description: Application performance monitoring, crash reporting, symbolication, and error tracking.
+
+- name: Grafana Labs Blog
+  slug: grafana
+  websiteUrl: https://grafana.com/blog/
+  category: Cloud & Infra
+  description: Prometheus metrics, Loki log aggregation, Tempo tracing, and visualization dashboards.
+
+- name: Honeycomb Blog
+  slug: honeycomb
+  websiteUrl: https://www.honeycomb.io/blog
+  category: Cloud & Infra
+  description: High-cardinality observability, OpenTelemetry, structured events, and distributed tracing.
+
+- name: Instacart Tech
+  slug: instacart
+  websiteUrl: https://tech.instacart.com
+  category: Big Tech
+  description: Grocery catalog search engines, batching algorithms, data platform, and iOS/Android tech.
+
+- name: Lyft Engineering
+  slug: lyft
+  websiteUrl: https://eng.lyft.com
+  category: Big Tech
+  description: Envoy proxy origins, ride pricing algorithms, mapping engines, and mobile performance.
+
+- name: Mozilla Hacks
+  slug: mozilla-hacks
+  websiteUrl: https://hacks.mozilla.org
+  category: Frontend
+  description: Firefox developments, Rust web engines, WebGPU, web accessibility, and open web specs.
+
+- name: React Blog
+  slug: react-official
+  websiteUrl: https://react.dev/blog
+  category: Frontend
+  description: Official React core team announcements, Server Components, Hooks, and compiler releases.
+
+- name: CSS-Tricks
+  slug: css-tricks
+  websiteUrl: https://css-tricks.com
+  category: Frontend
+  description: Modern CSS layouts, Flexbox/Grid techniques, SVG animations, and responsive web design.
+
+- name: Chrome Developers Blog
+  slug: chrome-devs
+  websiteUrl: https://developer.chrome.com/blog
+  category: Frontend
+  description: Web platform features, DevTools updates, V8 JavaScript engine, and web performance specs.
+
+- name: Figma Engineering
+  slug: figma
+  websiteUrl: https://www.figma.com/blog
+  category: DevTools
+  description: WebGL multi-player canvas architecture, WebAssembly, design systems, and frontend performance.
+
+- name: Robinhood Engineering
+  slug: robinhood
+  websiteUrl: https://newsroom.robinhood.com
+  category: Fintech
+  description: Zero-commission trading infrastructure, market data streaming, Go backend, and mobile security.
+  rssUrl: https://medium.com/feed/robinhood-engineering
+
+- name: Trail of Bits Blog
+  slug: trailofbits
+  websiteUrl: https://blog.trailofbits.com
+  category: Security
+  description: Cybersecurity research, smart contract auditing, vulnerability analysis, and cryptography.
+  rssUrl: https://blog.trailofbits.com/feed/
+
+- name: Snyk Blog
+  slug: snyk
+  websiteUrl: https://snyk.io/blog
+  category: Security
+  description: Developer security, software supply chain vulnerability intelligence, and container security.
+  rssUrl: https://snyk.io/blog/feed.xml
+
+- name: Auth0 Blog
+  slug: auth0
+  websiteUrl: https://auth0.com/blog
+  category: Security
+  description: Identity management, OAuth 2.0, OpenID Connect, JWT security, and authentication flows.
+
+- name: Bandcamp Tech
+  slug: bandcamp
+  websiteUrl: https://bandcamptech.wordpress.com/
+  category: DevTools
+  description: Music streaming technology, artist platform engineering, and web development at Bandcamp.
+
+- name: Canva Engineering
+  slug: canva
+  websiteUrl: https://engineering.canva.com/
+  category: DevTools
+  description: WebGL graphics engine, design canvas performance, real-time collaboration, and frontend tech.
+
+- name: Confluent Blog
+  slug: confluent
+  websiteUrl: https://www.confluent.io/blog
+  category: Cloud & Infra
+  description: Apache Kafka, event streaming architecture, real-time data pipelines, and cloud infrastructure.
+
+- name: Databricks Blog
+  slug: databricks
+  websiteUrl: https://databricks.com/blog
+  category: Cloud & Infra
+  description: Lakehouse architecture, Apache Spark, Delta Lake, MLflow, and enterprise AI data platforms.
+  rssUrl: https://databricks.com/blog/feed.xml
+
+- name: Deezer I/O
+  slug: deezer
+  websiteUrl: https://deezer.io/
+  category: Big Tech
+  description: Audio processing, music recommendation algorithms, mobile development, and backend scaling.
+  rssUrl: https://medium.com/feed/deezer-engineering
+
+- name: Deliveroo Engineering
+  slug: deliveroo
+  websiteUrl: https://deliveroo.engineering/
+  category: Big Tech
+  description: Logistics algorithms, real-time dispatching, microservices, and food delivery engineering.
+  rssUrl: https://deliveroo.engineering/feed
+
+- name: eBay Tech
+  slug: ebay
+  websiteUrl: https://www.ebayinc.com/stories/blogs/tech/
+  category: Big Tech
+  description: High-scale e-commerce, search relevance, distributed databases, and buyer/seller platform tech.
+
+- name: Etsy (Code as Craft)
+  slug: etsy
+  websiteUrl: https://codeascraft.com/
+  category: Big Tech
+  description: Continuous deployment, search infrastructure, machine learning, and engineering culture at Etsy.
+
+- name: Expedia Group Tech
+  slug: expedia
+  websiteUrl: https://medium.com/expedia-group-tech
+  category: Big Tech
+  description: Travel platform engineering, cloud infrastructure, AI travel search, and microfrontends.
+  rssUrl: https://medium.com/feed/expedia-group-tech
+
+- name: Flickr Code
+  slug: flickr
+  websiteUrl: http://code.flickr.net/
+  category: Big Tech
+  description: Photo indexing, image serving at scale, API design, and legacy database engineering.
+
+- name: Foursquare Engineering
+  slug: foursquare
+  websiteUrl: https://engineering.foursquare.com/
+  category: Big Tech
+  description: Geospatial indexing, location intelligence, Graph placing algorithms, and mobile SDKs.
+  rssUrl: https://foursquare.com/feed/
+
+- name: GoDaddy Engineering
+  slug: godaddy
+  websiteUrl: https://godaddy.github.io/engineering/
+  category: DevTools
+  description: DNS infrastructure, open source tooling, web hosting automation, and Kubernetes platform engineering.
+
+- name: Google AI Research
+  slug: google-ai
+  websiteUrl: https://research.googleblog.com/
+  category: AI & ML
+  description: Computer vision, natural language understanding, TPU architecture, and foundational AI algorithms.
+  rssUrl: https://research.googleblog.com/rss.xml
+
+- name: Heroku Engineering
+  slug: heroku
+  websiteUrl: https://blog.heroku.com/engineering
+  category: DevTools
+  description: PaaS container orchestration, PostgreSQL managed databases, buildpack ecosystems, and developer experience.
+
+- name: Hootsuite Engineering
+  slug: hootsuite
+  websiteUrl: http://code.hootsuite.com/
+  category: Big Tech
+  description: Social media API integrations, high-throughput message streaming, Scala backend, and microservices.
+  rssUrl: https://medium.com/feed/hootsuite-engineering
+
+- name: Indeed Engineering
+  slug: indeed
+  websiteUrl: http://engineering.indeedblog.com/blog/
+  category: Big Tech
+  description: Job search indexing, resume matching algorithms, A/B testing infrastructure, and data science.
+  rssUrl: http://engineering.indeedblog.com/blog/feed
+
+- name: Jane Street Tech
+  slug: janestreet
+  websiteUrl: https://blogs.janestreet.com/category/ocaml/
+  category: Fintech
+  description: OCaml functional programming, low-latency trading infrastructure, compiler optimizations, and systems.
+  rssUrl: https://blogs.janestreet.com/feed.xml
+
+- name: Just Eat Takeaway Tech
+  slug: just-eat
+  websiteUrl: https://tech.just-eat.com/
+  category: Big Tech
+  description: Global food marketplace engineering, event-driven architecture, Swift iOS apps, and cloud infrastructure.
+  rssUrl: https://medium.com/feed/justeattakeaway-tech
+
+- name: Khan Academy Engineering
+  slug: khan-academy
+  websiteUrl: http://engineering.khanacademy.org/
+  category: DevTools
+  description: EdTech engineering, Go backend migration, GraphQL schemas, React frontend, and learning analytics.
+
+- name: Medium Engineering
+  slug: medium
+  websiteUrl: https://medium.com/medium-eng
+  category: Big Tech
+  description: Publishing engine, rich text editor tech, article recommendation algorithms, and backend architecture.
+  rssUrl: https://medium.com/feed/medium-eng
+
+- name: Mews Developers
+  slug: mews
+  websiteUrl: https://developers.mews.com/blog/
+  category: DevTools
+  description: Hospitality cloud APIs, property management platform tech, payments processing, and C#/.NET.
+
+- name: Nextdoor Engineering
+  slug: nextdoor
+  websiteUrl: https://engblog.nextdoor.com/
+  category: Big Tech
+  description: Hyperlocal graph networks, neighborhood feed indexing, Python/Go backend, and iOS/Android tech.
+
+- name: ngrok Blog
+  slug: ngrok
+  websiteUrl: https://ngrok.com/blog
+  category: DevTools
+  description: API gateway, ingress controllers, secure tunnels, network connectivity, and developer infrastructure.
+
+- name: NVIDIA Tech Blog
+  slug: nvidia
+  websiteUrl: https://blogs.nvidia.com/
+  category: AI & ML
+  description: CUDA acceleration, GPU compute architectures, TensorRT, Omniverse, and generative AI systems.
+
+- name: NYTimes Open
+  slug: nytimes
+  websiteUrl: https://open.blogs.nytimes.com/
+  category: Big Tech
+  description: Digital publishing infrastructure, interactive journalism tech, Go services, and data pipelines.
+  rssUrl: https://open.blogs.nytimes.com/feed
+
+- name: Okta Developer Blog
+  slug: okta
+  websiteUrl: https://developer.okta.com/blog/
+  category: Security
+  description: Customer Identity Cloud, Zero Trust architecture, OIDC, web security, and developer SDKs.
+
+- name: OLX Engineering
+  slug: olx
+  websiteUrl: https://tech.olx.com/
+  category: Big Tech
+  description: Marketplace search relevance, fraud detection AI, image processing pipelines, and global tech scaling.
+
+- name: Prezi Engineering
+  slug: prezi
+  websiteUrl: https://medium.com/prezi-engineering
+  category: DevTools
+  description: Infinite canvas rendering, WebGL performance, video presentation tech, and frontend architecture.
+  rssUrl: https://medium.com/feed/prezi-engineering
+
+- name: Skyscanner Tech
+  slug: skyscanner
+  websiteUrl: http://codevoyagers.com/
+  category: Big Tech
+  description: Flight search aggregation engines, microservices, mobile apps, and high-concurrency travel APIs.
+
+- name: SoundCloud Backstage
+  slug: soundcloud
+  websiteUrl: https://developers.soundcloud.com/blog/
+  category: Big Tech
+  description: Audio streaming infrastructure, Domain-Driven Design (DDD), Finagle microservices, and mobile SDKs.
+
+- name: Squarespace Engineering
+  slug: squarespace
+  websiteUrl: https://engineering.squarespace.com/
+  category: DevTools
+  description: Website builder engine, template rendering, CMS scaling, and cloud infrastructure at Squarespace.
+
+- name: Stack Overflow Blog
+  slug: stackoverflow
+  websiteUrl: https://stackoverflow.blog/engineering/
+  category: DevTools
+  description: Community platform architecture, SQL Server scaling, OverflowAI, and developer survey insights.
+
+- name: Strava Engineering
+  slug: strava
+  websiteUrl: https://medium.com/strava-engineering/
+  category: Big Tech
+  description: GPS route processing, segment matching algorithms, social fitness graph, and mobile engineering.
+  rssUrl: https://medium.com/feed/strava-engineering
+
+- name: Trivago Tech
+  slug: trivago
+  websiteUrl: http://tech.trivago.com/
+  category: Big Tech
+  description: Hotel price indexing, GraphQL federation, Webpack micro-apps, and global search performance.
+
+- name: Twilio Blog
+  slug: twilio
+  websiteUrl: https://www.twilio.com/blog/
+  category: DevTools
+  description: Telephony APIs, Programmable Voice & SMS, WebRTC, serverless functions, and developer tutorials.
+  rssUrl: https://www.twilio.com/blog/feed
+
+- name: Tumblr Engineering
+  slug: tumblr
+  websiteUrl: https://engineering.tumblr.com/
+  category: Big Tech
+  description: Blogging platform architecture, PHP/HPHP, MySQL sharding, and real-time dashboard notification streams.
+
+- name: Vinted Engineering
+  slug: vinted
+  websiteUrl: http://engineering.vinted.com/
+  category: Fintech
+  description: Second-hand marketplace infrastructure, Ruby on Rails scaling, elastic search, and payments tech.
+  rssUrl: http://engineering.vinted.com/atom.xml
+
+- name: Yelp Engineering
+  slug: yelp
+  websiteUrl: https://engineeringblog.yelp.com/
+  category: Big Tech
+  description: Local search indexing, PaaSTA container management, Python microservices, and review AI.
+
+- name: Zendesk Engineering
+  slug: zendesk
+  websiteUrl: https://medium.com/zendesk-engineering
+  category: DevTools
+  description: Customer service platform tech, ticket indexing, Ruby/Go microservices, and cloud security.
+  rssUrl: https://medium.com/feed/zendesk-engineering

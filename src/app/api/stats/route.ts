@@ -20,8 +20,9 @@ export async function GET(request: NextRequest) {
       console.warn('Redis read warning:', cacheErr);
     }
 
-    const [totalArticles, totalCompanies, latestArticle, categoriesGroup] = await Promise.all([
+    const [totalArticles, classifiedArticles, totalCompanies, latestArticle, categoriesGroup] = await Promise.all([
       db.article.count(),
+      db.article.count({ where: { kind: { not: null } } }),
       db.company.count(),
       db.article.findFirst({
         orderBy: { publishedAt: 'desc' },
@@ -42,6 +43,7 @@ export async function GET(request: NextRequest) {
       success: true,
       stats: {
         totalArticles,
+        classifiedArticles,
         totalCompanies,
         lastSyncedAt: latestArticle?.publishedAt || new Date(),
         categories,

@@ -9,7 +9,7 @@ import { ReaderModal } from './ReaderModal';
 import { SyncProgressModal } from './SyncProgressModal';
 import { Layers, Bookmark, Search, RefreshCw, ChevronLeft, ChevronRight, Inbox, Sparkles } from 'lucide-react';
 
-export const EngFeedDashboard: React.FC = () => {
+export const EngFeedDashboard: React.FC<{ showAllKinds?: boolean }> = ({ showAllKinds = false }) => {
   const [articles, setArticles] = useState<ArticleItem[]>([]);
   const [companies, setCompanies] = useState<CompanyOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -53,6 +53,10 @@ export const EngFeedDashboard: React.FC = () => {
   }, [searchQuery]);
 
   // Fetch registered companies list
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [showAllKinds]);
+
   const fetchCompanies = useCallback(async () => {
     try {
       const res = await fetch('/api/companies');
@@ -72,6 +76,7 @@ export const EngFeedDashboard: React.FC = () => {
       const params = new URLSearchParams();
       params.set('page', currentPage.toString());
       params.set('limit', '18');
+      if (showAllKinds) params.set('kinds', 'all');
 
       if (debouncedSearch) params.set('search', debouncedSearch);
       if (selectedTag) params.set('tag', selectedTag);
@@ -101,7 +106,7 @@ export const EngFeedDashboard: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, debouncedSearch, selectedTag, selectedCompanySlug, activeView]);
+  }, [currentPage, debouncedSearch, selectedTag, selectedCompanySlug, activeView, showAllKinds]);
 
   // Fetch user bookmarks count & global stats
   const fetchGlobalStats = useCallback(async () => {
