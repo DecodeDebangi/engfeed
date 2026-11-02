@@ -1,0 +1,282 @@
+[
+ {
+  "company": "Neon Blog",
+  "title": "Build a Real-time Materialized View from Postgres Changes using Confluent’s ksqlDB",
+  "excerpt": "Neon’s support for Postgres’ logical replication features opens up a variety of interesting use cases, including for real-time streaming architectures based on change data capture. We previously demonstrated how to use Debezium to fan-out changes from Postgres by using Redis as a...",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Vercel Flags are now optimized for agents",
+  "excerpt": "The now supports programmatic flag management, giving teams a direct way to create and manage feature flags from the terminal without opening the dashboard.Vercel CLIAdd the Flags SDK skillBuilding on this foundation, the lets AI agents generate and manage flags through natural language prompts. Flags SDK skillThe skill leverages the CLI under the hood, enabling agents to implement server-side evaluation that prevents layout shifts and maintains confidentiality. Using the SDK's adapter pattern, agents can connect multiple providers and evaluate user segments without rewriting core flag logic.Once added, try prompting your agent with this prompt to create your first flag. Start generating flags with the .Flags SDK skillRead more",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Lyft Engineering",
+  "title": "Beyond A/B Testing: Using Surrogacy and Region-Splits to Measure Long-Term Effects in Marketplaces",
+  "excerpt": "Image generated with Gemini 3 Pro (Google), 2026.Written by Amber Wang and Yoonji Kim at Lyft.BackgroundWhenever you use the Lyft app, there is a complex balancing act happening behind the scenes. Various levers are used to keep the marketplace running smoothly; Base prices and coupons for riders affect demand, while driver pay and bonuses impact the level of available supply. Since every change to prices and payments impacts Lyft’s costs and revenue, they lead to key optimization problems, such as:How should we allocate budget between driver incentives and rider incentives?How do we invest resources to achieve x% rides growth, and how much does it cost in terms of short term profit?These are the questions the Foundational Models team at Lyft tries to answer in a systematic way. A key ingr",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "Airbnb widens access to GPT-6 Astra and OpenAI frontier models",
+  "excerpt": "Learn how Airbnb is expanding access to GPT-6 Astra and OpenAI frontier models to help engineering teams solve bugs, design systems, and ship faster.",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "MongoDB Engineering",
+  "title": "The Cost of Not Knowing MongoDB, Part 3: appV6R0 to appV6R4",
+  "excerpt": "Welcome to the third and final part of the series \"The Cost of Not Knowing MongoDB.\" Building upon the foundational optimizations explored in Part 1 and Part 2, this article delves into advanced MongoDB design patterns that can dramatically transform application performance. In Part 1, we improved application performance by concatenating fields, changing data types, and shortening field names. In Part 2, we implemented the Bucket Pattern and Computed Pattern and optimized the aggregation pipeline to achieve even better performance. In this final article, we address the issues and improvements identified in appV5R4. Specifically, we focus on reducing the document size in our application to alleviate the disk throughput bottleneck on the MongoDB server. This reduction will be accomplished by",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Chat SDK now supports Vercel Connect",
+  "excerpt": "You can now use to manage credentials for your bots, with no tokens or signing secrets to store or rotate yourself.Vercel ConnectChat SDKThe new subpath provides adapter helpers for Slack, GitHub, and Linear. Each helper takes a connector UID and returns a config you spread into the matching adapter factory.@vercel/connect/chatOutbound bot calls use a function-form token field backed by , so each API request gets a fresh, short-lived token that Vercel Connect rotates for you.getTokenInbound use a that validates the OIDC token Connect attaches to forwarded events, eliminating the need for a .triggerswebhookVerifiersigningSecretRead the to set up your first connector with Chat SDK or follow the to build your own Slackbot with Vercel Connect.documentationknowledge base guideRead more",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Hugging Face Blog",
+  "title": "Google releases Gemma 2 2B, ShieldGemma and Gemma Scope",
+  "excerpt": "Google releases Gemma 2 2B, ShieldGemma and Gemma Scope",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "BNP Paribas Open: Serving up scores and experiences in real time with Work & Co and Vercel",
+  "excerpt": "The prestigious BNP Paribas Open, held annually in Indian Wells, California, attracts top tennis talent and a global audience. To match its world-class status, the tournament required a significant digital upgrade, enabling dynamic, real-time tracking and engagement with hundreds of players for their fanbase of millions. Read more",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Expanded Audit Log coverage, now delivered through Vercel Drains",
+  "excerpt": "Audit Logs now capture 400+ unique team , giving teams broader coverage for security reviews, compliance workflows, and investigations.activity eventsWith Vercel Drains support, teams can export those events to custom HTTP endpoints or Amazon S3, replacing with a flexible Drains-based workflow.Custom SIEM Log StreamingAudit Log Drains are available for all Enterprise teams, replacing Custom SIEM Log Streaming. They are priced at $0.50/GB through standard Drains pricing, replacing a separate paid add-on. or learn more about and . Try it outAudit Log Drainsdraining Audit Logs to S3Read more",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Datadog Engineering",
+  "title": "Visualize how CUPED adjusts experiment results with Datadog",
+  "excerpt": "Learn how Datadog visualizes CUPED adjustments so you can trace which covariates change experiment lift estimates and improve precision.",
+  "kind": "ANNOUNCEMENT",
+  "debatable": true
+ },
+ {
+  "company": "Datadog Engineering",
+  "title": "Datadog acquires Adaptive ML",
+  "excerpt": "Datadog has acquired Adaptive ML, a platform for building, owning, and deploying specialized AI agents and models.",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "MongoDB Engineering",
+  "title": "MongoDB.local NYC 2025：定义 AI 时代的理想数据库",
+  "excerpt": "昨天，我们迎来了数千名开发者和高管参加 MongoDB.local NYC，这是我们全球 .local 系列的最新一站。在过去的一年里，我们与全球 20 个城市的数万名合作伙伴和客户建立了联系。而纽约更是意义重大，因为这里是 MongoDB 的诞生地，也是我们的总部所在地。 活动期间，我们推出了新功能，进一步巩固了 MongoDB 作为全球领先现代数据库的地位。MongoDB 8.2 是我们迄今为止功能最丰富、性能最高的版本，我们提高了开发者的能力标准。我们还分享了更多关于 Voyage AI 嵌入模型和重排序器的信息，它们为构建值得信赖、可靠的 AI 应用程序带来了最先进的准确性和效率。目前，MongoDB Community Edition 和 Enterprise Server 的搜索和向量搜索功能已进入公开预览阶段，我们将强大的检索功能直接应用到客户环境中，无论他们喜欢在哪里运行。 我对 MongoDB 应用程序现代化平台 (AMP) 的推出感到特别兴奋。世界各地的企业都在努力应对旧版系统带来的巨额成本问题，因为这些系统无法支持 AI 的需求。AMP 不是简单的“搬运”，而是可重复的端到端平台，结合 AI 驱动的工具、成熟的技术和专业的人才，重塑关键业务系统，同时最大限度地降低成本和风险。早期成果令人印象深刻：企业从旧系统迁移到 MongoDB 的速度提高了两到三倍，代码重写等任务的速度也提高了一个数量级。 图 1.MongoDB.local NYC 主题演讲。 在 YouTube 上观看完整的主题演讲。 成为全球最受欢迎的现代数据库 当我回顾 MongoDB 的历程时，我对我们所取得的进步感到震惊。十多年前我加入公司时，我们的客户数量只有几千名。如今， MongoDB 为各行业和垂直领域的近 60,000 个组织提供服务，其中包括超过 70% 的 Fortune ",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "Hugging Face Blog",
+  "title": "Hugging Face on AMD Instinct MI300 GPU",
+  "excerpt": "Hugging Face on AMD Instinct MI300 GPU",
+  "kind": "ANNOUNCEMENT",
+  "debatable": true
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Microfrontends Routing is now free for Firewall-mitigated traffic",
+  "excerpt": "is now free for requests that the (WAF) denies, challenges, or rate limits. CDN Requests and Fast Data Transfer are for this traffic.Microfrontends RoutingWeb Application Firewallalready freeThe change applies automatically to every project using microfrontends. Learn how to in the Firewall documentation.set up WAF rulesRead more",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Spotify R&D",
+  "title": "Encoding Your Domain Expert: The Context Layer Behind Spotify's Data Assistant",
+  "excerpt": "At Spotify, data problems used to follow a specific pattern. You'd look for the relevant dashboard, there... The post Encoding Your Domain Expert: The Context Layer Behind Spotify's Data Assistant appeared first on Spotify Engineering.",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "Increasing accuracy of pediatric visit notes",
+  "excerpt": "Summer Health reimagines pediatric doctor’s visits with OpenAI.",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "Shopify Engineering",
+  "title": "Building an agentic harness that outlasts the model",
+  "excerpt": "We built an agentic code review and test oracle harness that discovers vulnerabilities, proves them with real tests, and provides Shopify-tuned fixes.",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "Stack Overflow Blog",
+  "title": "Inside LinkedIn's cognitive memory agent for agentic personalization",
+  "excerpt": "Ryan is joined by Praveen Bodigutla, Principal AI Researcher at LinkedIn, to chat about the four-layer memory system his team built to give LinkedIn's hiring assistant a persistent, personalized state.",
+  "kind": "ENGINEERING",
+  "debatable": true
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Grok 4.6 now available on AI Gateway",
+  "excerpt": "from SpaceXAI is now available on .Grok 4.6AI GatewayThe model has a 500K token context window and accepts text and image inputs. Grok 4.6 supports low, medium, high, and xhigh reasoning levels and defaults to high.To use Grok 4.6, set to in the :modelxai/grok-4.6AI SDKTo use it in a , run to connect Claude Code, Codex, OpenCode, or Pi, then select inside the agent.coding agentvercel ai-gateway coding-agents setupxai/grok-4.6To try Grok 4.5 with no code, try the model in the .model playgroundAI Gateway provides a unified API for calling models, tracking usage and cost, and configuring retries, failover, and performance optimizations for higher-than-provider uptime. It includes built-in , , , , and more.custom reportingZero Data Retention supportbudgets for API keysrouting rulesAI Gateway r",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Snyk Blog",
+  "title": "Snyk UNFILTERED: Inside Our First-Ever Customer Summit",
+  "excerpt": "At Snyk’s first customer summit, security leaders shared candid perspectives on AI risk, vulnerability remediation, and governing autonomous agents. Five themes reveal how teams are adapting security for AI speed.",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "Neon Blog",
+  "title": "Using app.build to Create Production-Ready Laravel Apps",
+  "excerpt": "In the Stack Overflow 2025 Developer Survey, “84% of respondents are using or planning to use AI tools in their development process.” They don’t break this number down by developer language, but if they did, they would likely find a wide disparity between different languages. Whi...",
+  "kind": "ENGINEERING",
+  "debatable": true
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Deployments now show billable duration and CPU minutes",
+  "excerpt": "Deployments now show their billable duration and CPU minutes in the dashboard, , and the . Use it to understand how each build contributes to your usage.vc inspectREST APIBillable duration is the build and post-build time combined, rounded up to the next whole minute. CPU minutes are that figure multiplied by the machine's vCPUs.To see the same breakdown from the CLI, update to version 59.23.1 or later with , then run :npm i -g vercel@latestvc inspectLearn more about in the docs.build machines and CPU minutesRead more",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Hugging Face Blog",
+  "title": "Parquet Content-Defined Chunking",
+  "excerpt": "Parquet Content-Defined Chunking",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "ngrok Blog",
+  "title": "Free plan users can now purchase AI Gateway credits",
+  "excerpt": "Purchase credits, create AI Gateway API keys, and route to multiple providers—even if you don't use the rest of ngrok... yet.",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Google DeepMind",
+  "title": "Start building with Gemini 3",
+  "excerpt": "Start building with Gemini 3",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "A free version of ChatGPT built for teachers",
+  "excerpt": "ChatGPT for Teachers is a secure workspace with education‑grade privacy and admin controls. Free for verified U.S. K–12 educators through June 2027.",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Agent responsibly",
+  "excerpt": "The following is based on an internal talk given at Vercel. We're sharing it publicly because the problem it describes isn't unique to us, and the framework is useful for any team shipping with agents.Coding agents generate code at unprecedented speeds. In the hands of disciplined engineers, they are a productivity multiplier. But without rigorous judgment, they are a highly efficient way to ship bad assumptions directly to production.When teams deploy agent-generated code blindly, the fallout can be immediate and severe. A flawless-looking pull request can ship a query that passes tests, but scans every row in production. Retry logic that seems correct can cause a thundering herd on a downstream service. And a cache with no TTL can quietly grow until Redis dies.Green CI is no longer proof",
+  "kind": "ENGINEERING",
+  "debatable": true
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Shopify and Vercel are rebuilding Hydrogen for faster storefronts",
+  "excerpt": "Shopify and Vercel Open source and runtime agnostic, runs anywhere JavaScript doesSkills let agents extend any storefront with a single command Feature development cut from months to a week for retailers like Paige powers commerce for millions of merchants worldwide, and Hydrogen is its framework for building headless storefronts. The Shopify team is partnering with Vercel to rebuild Hydrogen from the ground up. The new version is open source and runtime agnostic so developers can build with Next.js, Nuxt, Svelte, or any framework they choose. As a result, storefronts that once required custom glue code now ship with best practices built in, from type-safe API clients to cart state in a single import.ShopifyRead more",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Team-wide provider allowlist on AI Gateway",
+  "excerpt": "AI Gateway now supports a team-wide provider allowlist. Teams can restrict which providers can serve requests, so traffic only routes to approved providers. The allowlist applies to every request through AI Gateway, including Bring Your Own Key (BYOK) traffic.Regulated teams typically vet AI providers across multiple dimensions with security and legal sign-off, ending up with a vendor set that reflects the specific requirements of their org. The allowlist turns that approved-vendor list into a routing guarantee:Toggle on in the AI Gateway tab. All current providers are allowed by default, so existing traffic is unaffected. Disable any providers your team shouldn't use.Provider AllowlistSettingsThe allowlist filters by provider, not by model. AI Gateway falls back to other allowed providers",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Muse Image now available on AI Gateway",
+  "excerpt": "from Meta Superintelligence Labs is now available on AI Gateway. It is their first image model and a separate family from Muse Spark, returning images rather than text. Send a prompt and get an image back, or send an image with an instruction and get it changed. One model does both, so you don't switch models to move from generating to editing.Muse ImageTo use Muse Image, set to and call from the :modelmeta/muse-image-1.0generateImageAI SDKTo steer the result toward art you already have, pass reference images in alongside the text, and the model blends them into what it draws.prompt.imagesPass the image you want changed in with an instruction, and the model changes what you asked for and leaves the rest:prompt.imagesTry Muse Image in the .model playgroundAI Gateway provides a unified API f",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Google Cloud Tech",
+  "title": "How KDDI built Buffmee, a faster, reliable consumer RAG app",
+  "excerpt": "When building consumer-facing generative AI applications, balancing high generation quality with fast response times across diverse media types, can be challenging. KDDI, a major telecommunications carrier in Japan, tackled this challenge head-on when they developed Buffmee, their consumer Retrieval-Augmented Generation (RAG) app. Buffmee is an interactive AI service built on the concept of 'AI that helps you grow.' By grounding responses in over 100 sources — including books, magazines, and web media — it helps users search for information, summarize key points, and explore personalized learning and hobby interests. By citing sources, Buffmee alleviates concerns about information reliability, allowing users to safely deepen their knowledge. To achieve this, KDDI collaborated closely with ",
+  "kind": "ENGINEERING",
+  "debatable": true
+ },
+ {
+  "company": "HashiCorp Blog",
+  "title": "AI speeds software development. Is your secret security keeping up?",
+  "excerpt": "Developers are no longer manually writing every line of code. They are prompting AI assistants, generating applications from natural language, creating infrastructure through templates, and assembling prototypes in hours instead of weeks. AI has dramatically reduced the friction between idea and implementation.This speed is powerful, but it is creating a whole new level of risk. Every application, automation script, cloud integration, and AI-powered workflow introduces credentials that need to be managed securely. API keys are copied into prompts. Tokens are embedded into test environments. Service account credentials are reused across projects to accelerate delivery. And temporary workarounds often become permanent architecture.In 2025 alone, nearly 30 million secrets were detected in pub",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "Mews Developers",
+  "title": "Hackers unmasked: who they are, and how to stop them",
+  "excerpt": "Another day, another attack. It seems hackers just can’t stop hacking for a hot minute. You turn on the news and here it is; another breach, panic. What happened? Are you in danger? What should you do? But most of all, how does no one catch them? How hard can it be to find a guy in front of a computer, with a hoodie? Turns out, not all hackers are the same, and not all of them wear hoodies. Source",
+  "kind": "MARKETING",
+  "debatable": true
+ },
+ {
+  "company": "Neon Blog",
+  "title": "Launching a Web UI for app.build",
+  "excerpt": "We’re very excited to announce that app.build is launching a web interface that builds and deploys React, Laravel or FastAPI applications with zero configuration required! Just visit the website, type your prompt, and we’ll get your app built and deployed: This makes the experien...",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Neon Blog",
+  "title": "How 222 uses Neon to handle their frequent spikes in demand",
+  "excerpt": "“Our database traffic peaks at nights and on weekends when thousands of our members are attending experiences. Building on a database that preemptively autoscales allows us to regularly handle these traffic spikes.” Lex Nasser, Founding Engineer at 222 Life in a tech-enabled worl...",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "Delivering contextual job matching for millions with OpenAI",
+  "excerpt": "Indeed, whose mission is to help people get jobs, is the world’s #1 job site. Over 350 million unique visitors come to Indeed every month to connect with more than 3.5 million employers and over 32 million jobs. But what’s more is that every three seconds someone gets hired on Indeed.",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "GPT-5.4 Thinking System Card",
+  "excerpt": "GPT-5.4 Thinking System Card",
+  "kind": "ANNOUNCEMENT",
+  "debatable": true
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "Update to GPT-5 System Card: GPT-5.2",
+  "excerpt": "GPT-5.2 is the latest model family in the GPT-5 series. The comprehensive safety mitigation approach for these models is largely the same as that described in the GPT-5 System Card and GPT-5.1 System Card. Like OpenAI’s other models, the GPT-5.2 models were trained on diverse datasets, including information that is publicly available on the internet, information that we partner with third parties to access, and information that our users or human trainers and researchers provide or generate.",
+  "kind": "ANNOUNCEMENT",
+  "debatable": true
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "OpenAI for Education",
+  "excerpt": "An affordable offering for universities to responsibly bring AI to campus.",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Introducing Vercel Drains: Complete observability data, anywhere",
+  "excerpt": "Vercel Log Drains are now Vercel Drains.Why? They’re not just for logs anymore, as you can now also export OpenTelemetry traces, Web Analytics events, and Speed Insights metrics.Drains give you a single way to stream observability data out of Vercel and into the systems your team already rely on.Read more",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ }
+]

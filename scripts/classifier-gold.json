@@ -1,0 +1,492 @@
+[
+ {
+  "company": "Squarespace Engineering",
+  "title": "Stain the Page: How I Prototype with AI",
+  "excerpt": "AI is incredible for rapid idea and hypothesis testing by prototyping. Prototyping isn't about writing code. It’s about protecting your most valuable resource: cognitive energy.This is how I approach it.The ProblemAs engineers, we often face the overwhelming task of determining the look, feel, and architecture of an idea through hundreds of tiny decisions.When coding by hand from a blank slate, we are making low-level choices: What should I call this variable? What loop structure is best here? When should I split out this file? We bikeshed on whether a ternary operator is readable before we even figure out if the feature is worth building. By the time we get to the novel part of the problem we’re trying to solve, our brains are tired. We can burn out before we even truly begin.To solve thi",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "Hugging Face Blog",
+  "title": "Streaming datasets: 100x More Efficient",
+  "excerpt": "Streaming datasets: 100x More Efficient",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "Hugging Face Blog",
+  "title": "Welcome Falcon Mamba: The first strong attention-free 7B model",
+  "excerpt": "Welcome Falcon Mamba: The first strong attention-free 7B model",
+  "kind": "ANNOUNCEMENT",
+  "debatable": true
+ },
+ {
+  "company": "Stripe Engineering",
+  "title": "Go from idea to company without leaving your development workflow",
+  "excerpt": "You've built the product, deployed it, and found the first people willing to pay for it. The next step is forming the company behind it. Now you can begin that process in the same tools you use to build your product. Start an Atlas application from an AI agent through Stripe's Model Context Protocol (MCP) server, or from your terminal with the Stripe Atlas commands available in the tools plugin. Atlas saves your progress, so you can move between your agent, terminal, and the Stripe Dashboard without starting over. Bring company formation into your development workflow Forming a company often begins in the middle of other technical work. You might be configuring payments, preparing a production launch, or getting ready to hire your first employee. Moving into a separate process means changi",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Chrome Developers Blog",
+  "title": "A developer toolkit to make your website agent-ready",
+  "excerpt": "Learn how to build agent-ready websites using the Lighthouse Agentic browsing category and Chrome DevTools for agents.",
+  "kind": "ENGINEERING",
+  "debatable": true
+ },
+ {
+  "company": "Twilio Blog",
+  "title": "What is CIAM in 2026 and why does it matter?",
+  "excerpt": "Discover how customer identity and access management (CIAM) uses continuous trust, deepfake defense, and agentic AI governance to protect users.",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Chat SDK now has an adapter directory",
+  "excerpt": "Chat SDK now has an , so you can search platform and state adapters from Vercel and the community.adapter directoryThese include:We encourage teams to build and submit adapters to be included in this new directory, like Resend's adapter that connects email to Chat SDK:Browse the or read the to learn how to build, test, document, and publish your own adapter.adapter directorycontributing guideRead more adapters: maintained by the core Chat SDK team and published under Official@chat-adapter/* adapters: built and maintained by the platform companies, like and . These live in their GitHub org and are documented in their docs.Vendor-officialResendBeeper adapters are built by third-party developers, and can be published by one, following the same model as .CommunityAI SDK community providers",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Stack Overflow Blog",
+  "title": "Why your platform team shouldn't build an AI context layer (even though they probably could)",
+  "excerpt": "Most engineering teams capable of building an internal AI knowledge system think they should. But six months later, it's a platform team's full-time job. Building an in-house AI context layer costs more money and energy than you think.",
+  "kind": "ENGINEERING",
+  "debatable": true
+ },
+ {
+  "company": "Sentry Blog",
+  "title": "Your agent can't fix what it can't see",
+  "excerpt": "Agents are getting better and better at fixing bugs. They're even getting better at testing their work, thanks to headless browsers, sandboxes, simulators, etc. But what about the bugs that only show up once you bring in different browsers, languages, extensions, internet speeds, and all the other variables that get mixed in the second you ship to prod? Or all the bugs that only show up when you account for… well, humans being humans and doing weird stuff you didn't expect them to do? The bottleneck for self-healing software isn't agent intelligence. It's that agents have no idea what actually broke. They're debugging from source code alone, which is roughly as effective as diagnosing a server outage by skimming the README. What they're missing is production context: the stack trace, the r",
+  "kind": "ENGINEERING",
+  "debatable": true
+ },
+ {
+  "company": "Hugging Face Blog",
+  "title": "Building for an Open Future - our new partnership with Google Cloud",
+  "excerpt": "Building for an Open Future - our new partnership with Google Cloud",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "Operation “STORM-2035”: Iran-origin influence activity",
+  "excerpt": "OpenAI banned Iran-origin STORM-2035 accounts using AI to generate US and UK election content and publish it across sites.",
+  "kind": "ANNOUNCEMENT",
+  "debatable": true
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Deployments now show build cache size",
+  "excerpt": "Deployment summaries now show the size of the build cache each deployment saved and how close it is to the limit for its . The same information is in the CLI with on version 65.1.0 or newer, and in the .build machineget-deployment REST API endpointvercel inspectUploading the build cache is billable build time, and a cache that goes over the limit is discarded, so the next build starts without one. This is on by default on all plans for deployments built on or after October 21. See the in the docs.maximum build cache size for each build machineRead more",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Heroku Engineering",
+  "title": "Amazon Nova Models: Now Available on Heroku",
+  "excerpt": "Building intelligent applications requires powerful, cost-effective AI. Today, we’re simplifying that process by making Amazon’s cutting-edge Nova models directly available via Heroku Managed Inference and Agents. Provisioning these models is as simple as attaching the add-on to your Heroku application, providing a direct, managed path for developers and businesses to leverage a new class of powerful and cost-effective AI models with unparalleled simplicity. Heroku AI: balancing performance and cost with Nova models The Amazon Nova family of models is engineered to provide an exceptional balance of performance and cost. Both nova-pro and nova-lite are optimized for modern development patterns like Retrieval-Augmented Generation (RAG) and building powerful AI agents. While these models have",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Vercel Sandbox now supports Devin Outposts",
+  "excerpt": "now supports . Each Devin session executes in its own isolated Sandbox microVM, with no local Outpost worker to keep online.Vercel SandboxDevin OutpostsThe Devin control plane stays with Cognition, where the agent loop handles inference and planning. Session orchestration and command execution run in your Vercel project, and a manages each session's lifecycle.durable workflowWith the integration, teams can:To get started, and approve the connection as a Devin administrator. Encrypted credentials are added to your project automatically, with no token or API key to copy. Then start a session in Devin and select the new Vercel outpost as its virtual environment.deploy the quickstartThe integration is available to Pro and Enterprise teams with Devin Outposts enabled. Learn more in the .knowled",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "Our First Proof submissions",
+  "excerpt": "We share our AI model’s proof attempts for the First Proof math challenge, testing research-grade reasoning on expert-level problems.",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "NVIDIA Tech Blog",
+  "title": "With Groq 3 LPX in Full Production, NVIDIA Extends Vera Rubin Inference for Agents",
+  "excerpt": "The next era of AI inference won’t be defined by a single breakthrough chip, network or system. It’ll be defined by how every layer of the AI factory works together. That’s why NVIDIA is extending Vera Rubin NVL72 with fast token generation for agentic systems. Announced today, the NVIDIA Vera Rubin rack-scale system NVIDIA Groq 3 LPX is in full production. In an Artificial Analysis benchmark running Gemma 4 31B, an open source agentic model, it delivered 3,400 output tokens per second for 100,000-token long-context use cases critical to agentic systems, 4x faster than the nearest alternative platform. Industry partners worldwide are adopting Vera Rubin platform solutions. SpaceXAI announced that NVIDIA Vera CPUs will power its next generation of agentic AI. CoreWeave has deployed into pro",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "LaunchDarkly's approach to AI-powered product management",
+  "excerpt": "A conversation with Claire Vo, Chief Product Officer of LaunchDarkly, about the changing role of product managers, her anti-to-do list, and building AI-native teams.",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "Hugging Face Blog",
+  "title": "Alyah ⭐️: Toward Robust Evaluation of Emirati Dialect Capabilities in Arabic LLMs",
+  "excerpt": "Alyah ⭐️: Toward Robust Evaluation of Emirati Dialect Capabilities in Arabic LLMs",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "Cyber Operation: Phishing and scripting support",
+  "excerpt": "OpenAI banned accounts involved in activity that overlapped with publicly reported threat groups and displayed hallmarks consistent with PRC intelligence requirements, using AI to support phishing and scripting workflows.",
+  "kind": "ANNOUNCEMENT",
+  "debatable": true
+ },
+ {
+  "company": "ngrok Blog",
+  "title": "Battle against search and AI bots on your ngrok endpoints",
+  "excerpt": "Are search and AI bots invading your ngrok endpoints? Fight back with three developer-friendly traffic policies you can deploy in minutes.",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "Introducing the Model Spec",
+  "excerpt": "Introducing the Model Spec",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Hugging Face Blog",
+  "title": "Training and Finetuning Embedding Models with Sentence Transformers",
+  "excerpt": "Training and Finetuning Embedding Models with Sentence Transformers",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Inkling Small from Thinking Machines is now available on AI Gateway",
+  "excerpt": "from Thinking Machines is now available on AI Gateway.Inkling SmallInkling Small reaches performance comparable to the larger Inkling model at about a quarter of the size, using much less compute per task. It is a broad generalist with native reasoning over audio and images, and it holds up well on reasoning, agentic coding, and tool use. Controllable thinking effort lets you trade quality against cost and latency, from minimal to maximum reasoning.For visual tasks, it can crop, zoom, and inspect images programmatically, which helps on documents and charts where the relevant detail is small.To use Inkling, set to in the :modelthinkingmachines/inkling-smallAI SDKInkling-Small is compatible with . Turn it on team-wide from the dashboard, or per request with , and AI Gateway routes only to pr",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "Vallée Duhamel & Sora",
+  "excerpt": "Filmmaking duo Vallée Duhamel explains how Sora helps build new worlds.",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "NVIDIA Tech Blog",
+  "title": "NVIDIA Cosmos Opens New Tools to Train, Evaluate and Deploy World Models",
+  "excerpt": "To help developers rapidly build world models, which help physical AI systems understand and simulate the real world, NVIDIA has expanded the Cosmos platform with new training tools, simulation checkpoints and Cosmos Data Factory blueprints. Ranking top five on six different open models leaderboards, the NVIDIA Cosmos platform gives world model builders the frontier open models — as well as data, training and optimization tools and recipes — to scale training data, adapt models, test behavior and optimize for performance before deployment. Build Better Training Data Building world models begins with multimodal, multisensory data. NVIDIA Cosmos Data Factory brings together the tools and skills for labeling, curating, augmenting and evaluating data at scale for training physical AI. Cosmos C",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "Customizing models for legal professionals",
+  "excerpt": "Harvey partners with OpenAI to build a custom-trained model for legal professionals.",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "Snyk Blog",
+  "title": "Security vs. Development: A game of priorities",
+  "excerpt": "To harness the full potential of developer-first security tools, a strategic alignment between the Development and Security organizations is essential. Learn steps to take to create that alignment.",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "Introducing SimpleQA",
+  "excerpt": "A factuality benchmark called SimpleQA that measures the ability for language models to answer short, fact-seeking questions.",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "Neon Blog",
+  "title": "The problem with Postgres replicas",
+  "excerpt": "Read replicas in Neon are different from what you’re used to – they’re lightweight, affordable, and fast to provision. You can rely on them to scale your performance horizontally when you need a boost. We’ve been working hard on our read replicas lately, improving their stability...",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Drives for Vercel Sandbox in Private Beta",
+  "excerpt": "now supports drives in private beta. Drives are persistent, attachable storage with a lifecycle independent from any sandbox.Vercel SandboxCreate a drive once, then mount it at a configurable path when starting a sandbox. When the sandbox stops, the drive remains available to attach to a later sandbox.Install the beta () or beta (), then create and mount a drive:SDKCLI@vercel/sandbox@betasandbox@betaSandbox Drives are useful for:During the private beta, a drive can be mounted read-write by one sandbox at a time. Sandbox drives should not be used for production data while in private beta. Sign up to join the waitlist, learn more in the , or read the .heredocscomplete guideRead moreKeeping agent workspaces across disposable sandboxesRetaining cloned repositories, dependencies, and build outp",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Canva Engineering",
+  "title": "Yes, You Can Use AI in Our Interviews. In fact, we insist",
+  "excerpt": "How We Redesigned Technical Interviews for the AI Era",
+  "kind": "CAREERS",
+  "debatable": false
+ },
+ {
+  "company": "AWS Architecture Blog",
+  "title": "Testing application resilience with Amazon SQS and AWS Fault Injection Service",
+  "excerpt": "When your application can no longer send or receive messages through an Amazon Simple Queue Service (Amazon SQS) queue, downstream processing can stall. The cause might be a misconfigured Identity and Access Management (IAM) policy, a network partition, a bad deployment, or a transient service event. Your application sees much the same thing regardless: SQS operations start failing. How your services handle those failures (failing fast on what won’t succeed, opening circuit breakers, buffering on the producer side) can be the difference between a brief disruption and a cascading outage. If you’ve never tested those mechanisms under failure, you’re relying on assumptions. With AWS Fault Injection Service (AWS FIS), you can find out first. The goal isn’t to verify that SQS works, it’s to lea",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "Spotify R&D",
+  "title": "Advancing Generative Recommendation Inference: our collaboration with NVIDIA on TensorRT LLM",
+  "excerpt": "At Spotify, every surface and interaction is personalized to you as a user: the content on the Home page, the... The post Advancing Generative Recommendation Inference: our collaboration with NVIDIA on TensorRT LLM appeared first on Spotify Engineering.",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "Honeycomb Blog",
+  "title": "Lattice Watch: Smarter Guardrails for Design System Observability",
+  "excerpt": "In the past, I was part of a group of engineers responsible for doing random code reviews with an eye for design system adherence. The design system team had been tracking who used their system the most and invited those engineers to help them review PRs, with the hope that education would be the key to getting more product engineers to use the system. I wanted to create something like that here at Honeycomb for our design system, Lattice.",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "Neon Blog",
+  "title": "Calling all YC startups: we have a special deal for you",
+  "excerpt": "YC startups: we know the grind (customer obsession, rapid iterations, the need to scale with tight budgets) so we’re rolling out a special deal for you. If you’re in Y Combinator, you can claim $100k worth of Neon credits for your first year. And if you stumble upon a better deal...",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Free domain with Pro offer now includes .app and .dev",
+  "excerpt": "We recently announced that all teams can claim . That offer now includes and , bringing the eligible TLDs to eight:Proa free domain for one year.app.devThe offer still covers one domain per team, and premium domains are not eligible. After the first year, your domain will at the regular price shown at checkout when you claim it.renew automaticallyClaim yours at , and see the for full terms.vercel.com/domainsfree domain FAQRead more.app.dev.online.site.space.store.tech.website",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "Disrupting deceptive uses of AI by covert influence operations",
+  "excerpt": "We’ve terminated accounts linked to covert influence operations; no significant audience increase due to our services.",
+  "kind": "ANNOUNCEMENT",
+  "debatable": true
+ },
+ {
+  "company": "Heroku Engineering",
+  "title": "6 Lesser-Known Heroku CLI Commands You Probably Aren’t Using",
+  "excerpt": "Every time you move your hands off the keyboard to reach for the mouse, your engineering velocity drops. Clicking through web UIs to find an environment variable feels fast in the moment, but those micro-interruptions steadily chip away at your focus and disrupt your workflow. The cost of context switching adds up fast. Bouncing between your terminal and browser breaks your stride, and if a quick check derails into a secondary distraction, regaining your focus takes far longer than just switching windows. Over a standard sprint, those context switches can cost you hours. Improving developer experience in the command line relies on minimizing these context switches. While most engineers use the Heroku CLI strictly for basic tasks like pushing code, it contains a powerful suite of command li",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Vercel Plugin now available in Kimi Code CLI",
+  "excerpt": "The is now available in the .Vercel PluginKimi Code CLIKimi Code can now draw on Vercel platform knowledge on demand, with skills for Next.js, AI SDK, Vercel Functions, and more. The Vercel Plugin also helps Kimi Code stay up to date with the latest Vercel APIs and recommended patterns.To install it, upgrade to the latest Kimi Code CLI and select the Vercel Plugin from the Third-party section of the menu./pluginLearn more in the .Vercel Plugin documentationRead more",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Anyscale Blog",
+  "title": "Introducing the Anyscale Agent Skill for LLM Post-Training",
+  "excerpt": "",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "ngrok Blog",
+  "title": "The ultimate guide to Kubernetes ingress",
+  "excerpt": "Simplify your Kubernetes ingress stack: global load balancing, DDoS protection, and flexible routing all built into ngrok’s Operator.",
+  "kind": "ENGINEERING",
+  "debatable": true
+ },
+ {
+  "company": "AWS Architecture Blog",
+  "title": "Stopping business email compromise with AI-driven email security: How VIPRE protects modern enterprises on AWS",
+  "excerpt": "If your organization has experienced sophisticated email impersonation attempts that bypass traditional security tools, you need advanced protection against business email compromise (BEC). This post shows you how VIPRE uses AI in its email security solution, deployed on AWS for enterprise customers. The solution identifies and stops these incidents before they reach end users, and it integrates directly with existing Microsoft 365 environments. In this post, you will discover: How AI-powered detection identifies and blocks BEC attempts. Why cloud-native architecture on AWS provides stronger protection. Steps to implement VIPRE IES without disrupting your email flow. Email security challenges facing modern enterprises BEC presents significant security challenges for your organization as yo",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "Neon Blog",
+  "title": "Zero-ETL lakehouses for Postgres people",
+  "excerpt": "Neon is made by Postgres people. Since Neon became part of Databricks, we Postgres people also find ourselves part of a larger organisation of enterprise data people. This post is about what I’ve learned as a result. It aims to explain ‘data lakehouses’ and related enterprise-dat...",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "Snyk Blog",
+  "title": "Snyk Fetch the Flag CTF 2023 writeup: Silent Cartographer",
+  "excerpt": "If you were at Snyk’s 2023 Fetch the Flag and are looking for the answer to the Silent Cartographer challenge, you’ve come to the right place. Let’s walk through the solution together!",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "Accelerating scientific discovery with ChatGPT for Academic Researchers",
+  "excerpt": "OpenAI is giving 100,000 academic researchers free access to ChatGPT's most advanced AI models to accelerate scientific research, collaboration, and discovery.",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Chat SDK now supports conversation history",
+  "excerpt": "Chat SDK now supports cross-platform conversation history through the new and options. User transcripts persist across every , allowing the same user to keep their message history wherever they message your bot.transcriptsidentityplatform adapter exposes four methods, backed by one of the :bot.transcriptsofficial state adaptersRead the to get started, or try one of the .documentationtemplatesRead more: persist an inbound message or a bot replyappend: return entries chronologically with filterslist: total entries stored for a usercount: wipe every entry for a userdelete",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Chat SDK now supports reactions and ephemeral messages on Teams",
+  "excerpt": "Chat SDK's now supports reactions and ephemeral messages through the same API as other adapters.Microsoft Teams adapterBots can add and remove reactions on Teams messages, and call or to send native, targeted messages that only the intended user sees, like permission prompts.thread.postEphemeral()channel.postEphemeral()This release also adds:Read the to get started, or learn more about and .Teams adapter documentationephemeral messagesreactionsSpecial thanks to for their contributions to this release.onmaxRead moreIncoming Teams messages include the author's Microsoft Graph email, with their user principal name as a fallback.Author emails: Pass a token function in to supply your own access tokens, so bots on runtimes without Azure IMDS can authenticate without a static client secret.Custom",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Anyscale Blog",
+  "title": "Announcing Ray Direct Transport: RDMA Support in Ray Core (Part 1)",
+  "excerpt": "Announcing Ray Direct Transport: RDMA Support in Ray Core (Part 1)",
+  "kind": "ENGINEERING",
+  "debatable": true
+ },
+ {
+  "company": "Datadog Engineering",
+  "title": "How we built data-driven AI Golden Paths at Datadog",
+  "excerpt": "See how a Datadog guild achieved 13% faster agent runs by building Golden Paths for AI-assisted development using controls, experiments, and dashboards.",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "GPT-6.1 Sol now available on AI Gateway",
+  "excerpt": "from OpenAI is now available on AI Gateway. It improves on GPT-6 Sol for coding, computer use, and professional work, including reading complex documents and carrying out multi-step workflows.GPT-6.1 SolThe model is suited to agents that need to debug code, work through business tasks, or extract answers from PDFs with tables and charts. It also improves factual accuracy on difficult questions. Its standard input and output pricing is lower than GPT-6 Astra's, while cheaper cached input makes it useful for requests that reuse a long shared context.Use as the model name with the , , or . You can also select it in connected to AI Gateway:openai/gpt-6.1-solAI SDKOpenAI-compatible Chat Completions APIResponses APIcoding agentsTo use the model in coding agents like Codex, Cursor, and more, inst",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Anyscale Blog",
+  "title": "Optimizing LLM Serving Efficiency: Moving Beyond KV Cache Reuse to Token-Load Awareness with Ray Serve LLM",
+  "excerpt": "Optimizing LLM Serving Efficiency: Moving Beyond KV Cache Reuse to Token-Load Awareness with Ray Serve LLM",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "New webhook events for domain management",
+  "excerpt": "You can now subscribe to webhook events for deeper visibility into domain operations on Vercel.New event categories include:These events are especially valuable for multi-tenant platforms that dynamically assign domains per user or customer. They also help teams build monitoring and alerting into critical domain and certificate operations.For details on how to subscribe, visit the .webhook documentationRead more: Track key stages in inbound domain transfers.Domain transfers: Monitor renewal attempts and auto-renew status changes, ideal for catching failures before they impact availability.Domain renewals: Get notified when certificates are issued, renewed, or removed, helping you maintain valid HTTPS coverage across environments.Domain certificates: Receive alerts when DNS records are crea",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Redis Blog",
+  "title": "Scale your workloads without paying all-RAM prices",
+  "excerpt": "AI is pushing memory prices up, fast For decades, memory got cheaper every year. In late 2025 that reversed. Memory makers shifted capacity to the high-bandwidth memory AI accelerators need, cloud providers locked up the rest, and server DRAM prices ...",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "Snyk Blog",
+  "title": "Six takeaways from our ASPM masterclass series",
+  "excerpt": "Read an overview of our ASPM masterclass, including the definition of ASPM, its uses in today’s organizations, and a few implementation tips.",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "Sentry Blog",
+  "title": "How to evaluate session replay software: a developer's guide",
+  "excerpt": "Session replay software lets you see exactly what your users saw without having to pull a Freaky Friday with your customer. The question is: which tool actually delivers on that for your team, your stack, and your regulatory environment? This guide covers the architectural decisions that separate session replay tools: how they capture data, where they mask it, how they connect to your error monitoring, what overhead they add, whether their data is consumable by AI debugging agents, and how they handle mobile. Not all session replay tools are built for the same job It can help to think of session replay software as falling into two categories: UX analytics tools are built for Product Managers and UX researchers trying to understand how users navigate a product: where they click, where they ",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "Google DeepMind",
+  "title": "Veo 3.1 Ingredients to Video: More consistency, creativity and control",
+  "excerpt": "Our latest Veo update generates lively, dynamic clips that feel natural and engaging — and supports vertical video generation.",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "ngrok Blog",
+  "title": "Vulnerability management in BYOC environments",
+  "excerpt": "Explore vulnerability management in cloud apps, focusing on SaaS accessing customer databases in BYOC environments, with security and compliance insights.",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "Datadog Engineering",
+  "title": "Centralize human and agentic work with Datadog Work Management",
+  "excerpt": "Learn how Datadog Work Management helps you coordinate human and AI agent–driven work while preserving context, ownership, and activity across tools.",
+  "kind": "ANNOUNCEMENT",
+  "debatable": true
+ },
+ {
+  "company": "Supabase Blog",
+  "title": "Searchable field-level encryption on Supabase with CipherStash",
+  "excerpt": "Add field-level encryption to your Supabase project with CipherStash. Searchable ciphertext, zero-knowledge key management, and no schema changes required.",
+  "kind": "ENGINEERING",
+  "debatable": true
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Building a software factory for AI SDK",
+  "excerpt": "The is one of the most popular open-source AI projects in the world. It serves over 20 million npm downloads a week and the repo has over 26,000 stars. Maintaining the codebase means tracking four moving targets at once:AI SDKAfter multiple years of growth, the repo was getting 100+ new issues every month, and when Anthropic's Opus 4.6 model was released, PRs hit an inflection point. By late June, that compounding had accumulated over 1,000 open issues and almost 800 pull requests.That backlog is not a discipline problem. No maintainer, however good, can close that gap by working harder, and because generating code is cheap, it will only grow.Instead of trying to scale ourselves, we built a software factory. Four weeks in, it authors between 25 and 35% of PRs we merge and closes 70-80% of ",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Building the Black Friday-Cyber Monday live dashboard",
+  "excerpt": "This year, we built a to celebrate the success of our customers through the busy retail weekend. The dashboard gave a real-time look inside Vercel's infrastructure, showing live metrics for deployments, requests, blocked traffic, and more. Black Friday-Cyber Monday (BFCM) dashboardBuilding a data-heavy, real-time dashboard with a good user experience comes with challenges. Let's walk through how we overcame them. Read more",
+  "kind": "ENGINEERING",
+  "debatable": false
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "Introducing ChatGPT agent",
+  "excerpt": "Introducing ChatGPT agent: it thinks and acts, using tools to complete tasks like research, bookings, and slideshows—all with your guidance.",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Supabase Blog",
+  "title": "A local Supabase project per agent, with or without Docker",
+  "excerpt": "Run several local Supabase projects on one machine, one per coding agent, with or without Docker. Faster starts, less memory, and branches ready in seconds.",
+  "kind": "ENGINEERING",
+  "debatable": true
+ },
+ {
+  "company": "OpenAI Blog",
+  "title": "How Cooley is accelerating IPO work with ChatGPT",
+  "excerpt": "Cooley built GO Public with ChatGPT Work to bring intelligence to the IPO process, helping lawyers surface issues earlier and focus judgment where it matters most.",
+  "kind": "MARKETING",
+  "debatable": false
+ },
+ {
+  "company": "Google DeepMind",
+  "title": "Partnering with industry leaders to accelerate AI transformation",
+  "excerpt": "Google DeepMind partners with global consultancies to bring the power of frontier AI to organizations around the world.",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Streaming is now supported in Vercel Functions for the Python runtime",
+  "excerpt": "is now supported and will soon be enabled by default in Vercel Functions for the , allowing functions to send data to the client as it’s generated rather than waiting for the full response. This is particularly useful for AI applications.StreamingPython runtimeThis change will be rolled out progressively. Starting today, . On this date, projects using will be migrated, and streaming responses .it will apply to all new projects and will take effect for all existing projects on January 5, 2025Log Drainswill impact the format and frequency of runtime logsTo enable streaming as the default for your Vercel Functions using Python, add the environment variable in your project. Streaming will then be enabled on your next production deployment.VERCEL_FORCE_PYTHON_STREAMING=1For more information, re",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Anyscale Blog",
+  "title": "Introducing Anyscale KubeRay Connect: Doubling down on Kubernetes",
+  "excerpt": "Introducing Anyscale KubeRay Connect: Doubling down on Kubernetes",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Hugging Face Blog",
+  "title": "Falcon Perception",
+  "excerpt": "Falcon Perception",
+  "kind": "ANNOUNCEMENT",
+  "debatable": true
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Chat SDK now supports scheduled Slack messages",
+  "excerpt": "now supports scheduled messages on Slack, allowing you to deliver a message at a future time.Chat SDKUse and pass your message and a date, like:thread.schedule()postAtRead the to get started, and learn more about the .documentationSlack adapterRead more",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ },
+ {
+  "company": "Vercel Blog",
+  "title": "Vercel acquires Better Auth to accelerate open source auth",
+  "excerpt": "Vercel is acquiring , the company behind the open source , which has 4.7M+ weekly npm downloads and more than 850 contributors. Founder Bereket Engida and the core team are joining Vercel to continue their work on Better Auth and agent identity.Better AuthTypeScript authentication libraryLast year, we behind Next.js, AI SDK, and Nuxt: software that's open by default, loosely coupled, and portable to any platform.published our approachBetter Auth applies it to authentication: framework-agnostic, runs anywhere, and gives developers auth they own.When an agent acts on your behalf, it runs under your identity and access, so every service it touches sees you, not the agent. There's no clean way to limit what any one agent or subagent can do, or to shut down just one without cutting off the rest",
+  "kind": "ANNOUNCEMENT",
+  "debatable": false
+ }
+]
