@@ -12,7 +12,16 @@ It polls, cleans, normalizes, and indexes thousands of technical engineering pos
   - Polling worker utilizing BullMQ and `rss-parser`.
   - HTML scrubbing and sanitization via `cheerio` & `sanitize-html`.
   - SHA-256 GUID hash deduplication preventing duplicate entries.
-  - Automatic tech topic classifier (AI & ML, Infrastructure, Distributed Systems, Databases, Backend, Frontend, Security, DevOps, Mobile, Fintech).
+  - Keyword-based topic tags (AI & ML, Infrastructure, Distributed Systems, Databases, Backend, Frontend, Security, DevOps, Mobile, Fintech), refined by the optional LLM classifier below.
+  - Feed health tracking: failing feeds retry, then get marked `FAILING` or `BROKEN`, and unchanged feeds are skipped with `ETag`/`Last-Modified`.
+
+- **🗂️ Curated Source List**:
+  - Blogs live in `sources.yaml`. Give a blog a name, slug, website and category, and its feed and logo are found automatically.
+  - Removing a blog retires it: polling stops and its articles stay. A broken discovered feed is re-discovered automatically; a broken pinned feed gets a suggested replacement in `npm run feeds:health`.
+
+- **🧠 Optional LLM Classifier**:
+  - Sorts posts into engineering, announcement, careers or marketing, and hides everything but engineering by default. Search and bookmarks always show everything, and the feed has a toggle to turn the filter off.
+  - Works with any OpenAI-compatible API (see `.env.example`). With no LLM configured the feed still works, using keyword tags and no filtering.
   - Estimated reading time calculator (words / 200 WPM).
 
 - **⚡ Sub-100ms API Layer & Caching**:
@@ -48,9 +57,10 @@ engineering-blogs/
 ├── package.json                 # Project dependencies & scripts
 ├── tsconfig.json                # Strict TypeScript configuration
 ├── tailwind.config.js           # Dark theme design system & typography plugin
+├── sources.yaml                 # The curated list of engineering blogs
 ├── prisma/
 │   ├── schema.prisma            # PostgreSQL models (Company, Article, UserBookmark)
-│   └── seed.ts                  # Seed script with 48+ top tech engineering blogs
+│   └── seed.ts                  # Syncs sources.yaml into the database
 ├── scripts/
 │   ├── test-rss.ts              # Ingestion worker test script
 │   └── test-api.ts              # Full API integration & Redis cache test suite
@@ -145,7 +155,7 @@ Ensure you have the following installed:
    ```bash
    npm run test:rss
    ```
-   *This will ingest over 7,300+ engineering articles from 48 company RSS feeds into PostgreSQL.*
+   *This ingests the articles from every feed in `sources.yaml` into PostgreSQL.*
 
 ---
 
@@ -161,7 +171,17 @@ Ensure you have the following installed:
    ```bash
    npm run worker
    ```
-   *Runs automated background feed syncs on a 2-hour cron schedule.*
+   *Syncs every feed on a 2-hour schedule and, if `LLM_MODEL` is set, classifies new articles every 10 minutes.*
+
+3. **Useful Commands**:
+   ```bash
+   npm run db:seed                       # Apply changes to sources.yaml
+   npm run feeds:health                  # List failing, broken and stale feeds
+   npm run feeds:discover -- <website>   # See which feed and logo a website resolves to
+   npm run classify -- [max articles]    # Classify pending articles now
+   npm run eval:classify                 # Score the configured LLM against hand-labelled articles
+   npm run test:tags && npm run test:sync && npm run test:classify
+   ```
 
 ---
 
@@ -178,6 +198,7 @@ Fetch paginated and filtered articles. Response is cached in Redis for sub-100ms
 - `search` (string, keyword search in title/summary)
 - `sort` (`desc` or `asc`, default: `desc`)
 - `bookmarked` (`true` or `false`)
+- `kinds` (`all` to include announcements, careers and marketing posts, which are hidden by default)
 
 **Example Response:**
 ```json
