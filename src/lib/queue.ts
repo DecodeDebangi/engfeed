@@ -1,9 +1,16 @@
 import { FeedStatus } from '@prisma/client';
 import { Queue, Worker, Job } from 'bullmq';
+import Redis from 'ioredis';
 import { db } from './db';
-import { redis } from './redis';
+import { REDIS_URL } from './redis';
 import { classifyPendingArticles } from './classifier';
 import { recordFeedFailure, syncCompanyFeed } from './ingestion';
+
+// BullMQ needs a connection that retries indefinitely, unlike the cache client
+export const queueConnection = new Redis(REDIS_URL, {
+  maxRetriesPerRequest: null,
+  enableReadyCheck: false,
+});
 
 export const RSS_QUEUE_NAME = 'rss-ingestion-queue';
 
@@ -16,7 +23,7 @@ const CLASSIFY_SCHEDULER_ID = 'classify-articles-schedule';
 const CLASSIFY_INTERVAL_MS = 10 * 60 * 1000;
 
 export const rssQueue = new Queue(RSS_QUEUE_NAME, {
-  connection: redis,
+  connection: queueConnection,
   defaultJobOptions: {
     attempts: 3,
     backoff: {
@@ -29,7 +36,7 @@ export const rssQueue = new Queue(RSS_QUEUE_NAME, {
 });
 
 export const classifyQueue = new Queue(CLASSIFY_QUEUE_NAME, {
-  connection: redis,
+  connection: queueConnection,
   defaultJobOptions: { removeOnComplete: 20, removeOnFail: 20 },
 });
 
@@ -124,7 +131,7 @@ export function createRssWorker(queueName = RSS_QUEUE_NAME) {
       }
     },
     {
-      connection: redis,
+      connection: queueConnection,
       concurrency: 3,
     }
   );
@@ -145,7 +152,7 @@ export function createRssWorker(queueName = RSS_QUEUE_NAME) {
  */
 export function createClassifyWorker() {
   const worker = new Worker(CLASSIFY_QUEUE_NAME, async () => await classifyPendingArticles(), {
-    connection: redis,
+    connection: queueConnection,
     concurrency: 1,
   });
 

@@ -53,15 +53,18 @@ async function testApi() {
   console.log(`5️⃣ Testing POST /api/bookmarks (Bookmark toggle for article ${targetArticle.id})...`);
   const reqBookmark = new NextRequest('http://localhost:3000/api/bookmarks', {
     method: 'POST',
-    body: JSON.stringify({ articleId: targetArticle.id, userId: 'test-user-123' }),
+    body: JSON.stringify({ articleId: targetArticle.id }),
+    headers: { cookie: 'engfeed_visitor=test-user-123' },
   });
   const resBookmark = await toggleBookmark(reqBookmark);
   const dataBookmark = await resBookmark.json();
   console.log(`   Status: ${resBookmark.status} | Bookmarked: ${dataBookmark.bookmarked} | Message: ${dataBookmark.message}\n`);
 
   // Test 6: GET /api/bookmarks (Fetch bookmarks for user)
-  console.log('6️⃣ Testing GET /api/bookmarks?userId=test-user-123...');
-  const reqUserBookmarks = new NextRequest('http://localhost:3000/api/bookmarks?userId=test-user-123');
+  console.log('6️⃣ Testing GET /api/bookmarks for one visitor...');
+  const reqUserBookmarks = new NextRequest('http://localhost:3000/api/bookmarks', {
+    headers: { cookie: 'engfeed_visitor=test-user-123' },
+  });
   const resUserBookmarks = await getBookmarks(reqUserBookmarks);
   const dataUserBookmarks = await resUserBookmarks.json();
   console.log(`   Status: ${resUserBookmarks.status} | Bookmarked Articles Count: ${dataUserBookmarks.data.length}\n`);

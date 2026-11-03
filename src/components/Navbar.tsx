@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { ADMIN_SYNC_ENABLED } from '@/lib/utils';
 import { Rss, Search, Bookmark, RefreshCw, Zap, Layers, X } from 'lucide-react';
 
 interface NavbarProps {
@@ -57,6 +58,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Sync Trigger for Mobile */}
+          {ADMIN_SYNC_ENABLED && (
           <button
             onClick={onOpenSyncModal}
             disabled={isSyncing}
@@ -65,6 +67,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           >
             <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin text-indigo-400' : ''}`} />
           </button>
+          )}
         </div>
 
         {/* Instant Search Bar */}
@@ -123,6 +126,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Sync Trigger Desktop */}
+          {ADMIN_SYNC_ENABLED && (
           <button
             onClick={onOpenSyncModal}
             disabled={isSyncing}
@@ -131,6 +135,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-indigo-400' : 'text-slate-400'}`} />
             <span>{isSyncing ? 'Syncing Feeds...' : 'Force Sync RSS'}</span>
           </button>
+          )}
         </div>
 
       </div>

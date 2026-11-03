@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getVisitorId } from '@/lib/visitor';
 import { db } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
@@ -10,7 +11,7 @@ export async function GET(
 ) {
   try {
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId') || 'default-user';
+    const userId = getVisitorId(request);
     const articleId = params.id;
 
     // Find article by id or slug

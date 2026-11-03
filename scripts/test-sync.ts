@@ -2,8 +2,7 @@ import http from 'http';
 import { AddressInfo } from 'net';
 import { Queue } from 'bullmq';
 import { db } from '../src/lib/db';
-import { createRssWorker, rssQueue } from '../src/lib/queue';
-import { redis } from '../src/lib/redis';
+import { createRssWorker, queueConnection, rssQueue } from '../src/lib/queue';
 import { discoverFeed, findLogo } from '../src/lib/feed-discovery';
 import { syncCompanyFeedOnce } from '../src/lib/ingestion';
 
@@ -154,7 +153,7 @@ async function main() {
 
     console.log('\n⏳ Running a failing job through the real worker (about 15s of retry backoff)...');
     // Its own queue, so a real scheduled sync coming due can't poll this feed and skew the counts
-    const testQueue = new Queue(TEST_QUEUE_NAME, { connection: redis, defaultJobOptions: rssQueue.defaultJobOptions });
+    const testQueue = new Queue(TEST_QUEUE_NAME, { connection: queueConnection, defaultJobOptions: rssQueue.defaultJobOptions });
     const worker = createRssWorker(TEST_QUEUE_NAME);
     requests = [];
     const job = await testQueue.add('sync-single-feed', { companyId: id }, { jobId: `test-sync-${Date.now()}` });

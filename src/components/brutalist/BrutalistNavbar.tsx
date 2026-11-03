@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { ADMIN_SYNC_ENABLED } from '@/lib/utils';
 import { Rss, Search, Bookmark, RefreshCw, Layers, X } from 'lucide-react';
 
 interface BrutalistNavbarProps {
@@ -112,6 +113,7 @@ export const BrutalistNavbar: React.FC<BrutalistNavbarProps> = ({
           </div>
 
           {/* Sync Trigger */}
+          {ADMIN_SYNC_ENABLED && (
           <button
             onClick={onOpenSyncModal}
             disabled={isSyncing}
@@ -120,6 +122,7 @@ export const BrutalistNavbar: React.FC<BrutalistNavbarProps> = ({
             <RefreshCw className={`w-3.5 h-3.5 stroke-[3] ${isSyncing ? 'animate-spin' : ''}`} />
             <span>SYNC</span>
           </button>
+          )}
 
         </div>
 

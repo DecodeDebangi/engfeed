@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { redis } from '@/lib/redis';
+import { getVisitorId } from '@/lib/visitor';
 
 export const dynamic = 'force-dynamic';
 
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId') || 'default-user';
+    const userId = getVisitorId(request);
 
     const bookmarks = await db.userBookmark.findMany({
       where: { userId },
@@ -67,7 +66,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { articleId, userId = 'default-user', markAsBookmarked } = body;
+    const { articleId, markAsBookmarked } = body;
+    const userId = getVisitorId(request);
 
     if (!articleId) {
       return NextResponse.json(
@@ -130,16 +130,6 @@ export async function POST(request: NextRequest) {
         });
         isBookmarked = true;
       }
-    }
-
-    // Invalidate user article cache in Redis
-    try {
-      const keys = await redis.keys('api:articles:*');
-      if (keys.length > 0) {
-        await redis.del(...keys);
-      }
-    } catch (cacheErr) {
-      console.warn('Redis cache clear warning:', cacheErr);
     }
 
     return NextResponse.json(

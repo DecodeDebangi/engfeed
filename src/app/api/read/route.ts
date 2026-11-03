@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { redis } from '@/lib/redis';
+import { getVisitorId } from '@/lib/visitor';
 
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { articleId, userId = 'default-user', markAsRead } = body;
+    const { articleId, markAsRead } = body;
+    const userId = getVisitorId(request);
 
     if (!articleId) {
       return NextResponse.json(
@@ -64,16 +65,6 @@ export async function POST(request: NextRequest) {
         });
         isRead = true;
       }
-    }
-
-    // Invalidate cached Redis queries for user
-    try {
-      const keys = await redis.keys('api:articles:*');
-      if (keys.length > 0) {
-        await redis.del(...keys);
-      }
-    } catch (cacheErr) {
-      console.warn('Redis cache clear warning:', cacheErr);
     }
 
     return NextResponse.json(

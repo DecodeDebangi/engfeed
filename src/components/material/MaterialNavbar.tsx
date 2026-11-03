@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { ADMIN_SYNC_ENABLED } from '@/lib/utils';
 import { Rss, Search, Bookmark, RefreshCw, Layers, X, Sparkles } from 'lucide-react';
 
 interface MaterialNavbarProps {
@@ -110,6 +111,7 @@ export const MaterialNavbar: React.FC<MaterialNavbarProps> = ({
           </div>
 
           {/* Material Sync FAB Button */}
+          {ADMIN_SYNC_ENABLED && (
           <button
             onClick={onOpenSyncModal}
             disabled={isSyncing}
@@ -118,6 +120,7 @@ export const MaterialNavbar: React.FC<MaterialNavbarProps> = ({
             <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
             <span>{isSyncing ? 'Syncing...' : 'Force Sync'}</span>
           </button>
+          )}
         </div>
 
       </div>

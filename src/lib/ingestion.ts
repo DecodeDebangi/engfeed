@@ -14,6 +14,7 @@ export interface IngestionResult {
 
 // Consecutive failed polls before a feed counts as broken rather than temporarily down
 const BROKEN_FEED_THRESHOLD = 5;
+const SYNC_CONCURRENCY = 5;
 
 /**
  * Invalidate Redis API caches after articles change
@@ -236,10 +237,15 @@ export async function syncAllFeeds(): Promise<IngestionResult[]> {
   console.log(`🚀 Starting batch RSS ingestion for ${companies.length} engineering blogs...`);
 
   const results: IngestionResult[] = [];
+  const pending = [...companies];
 
-  for (const company of companies) {
-    results.push(await syncCompanyFeedOnce(company.id));
-  }
+  await Promise.all(
+    Array.from({ length: SYNC_CONCURRENCY }, async () => {
+      for (let company = pending.shift(); company; company = pending.shift()) {
+        results.push(await syncCompanyFeedOnce(company.id));
+      }
+    })
+  );
 
   const totalNew = results.reduce((acc, curr) => acc + curr.newArticlesInserted, 0);
   console.log(`✅ Batch sync finished! ${totalNew} new articles stored across ${companies.length} blogs.`);

@@ -1,9 +1,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { redis } from '@/lib/redis';
+import { getVisitorId } from '@/lib/visitor';
 
 export const dynamic = 'force-dynamic';
 
+
+/**
+ * Add this visitor's bookmarks and read marks to a page of articles. The list itself is the same
+ * for everyone, so it can be cached once rather than per visitor.
+ */
+async function withVisitorState<T extends { data: { id: string }[] }>(payload: T, userId: string) {
+  const articleIds = payload.data.map((article) => article.id);
+  const where = { userId, articleId: { in: articleIds } };
+  const select = { articleId: true };
+  const [bookmarks, reads] = await Promise.all([
+    db.userBookmark.findMany({ where, select }),
+    db.userRead.findMany({ where, select }),
+  ]);
+  const bookmarked = new Set(bookmarks.map((bookmark) => bookmark.articleId));
+  const read = new Set(reads.map((entry) => entry.articleId));
+
+  return {
+    ...payload,
+    data: payload.data.map((article) => ({
+      ...article,
+      isBookmarked: bookmarked.has(article.id),
+      isRead: read.has(article.id),
+    })),
+  };
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,19 +40,19 @@ export async function GET(request: NextRequest) {
     const tag = searchParams.get('tag') || undefined;
     const search = searchParams.get('search') || undefined;
     const sort = searchParams.get('sort') === 'asc' ? 'asc' : 'desc';
-    const userId = searchParams.get('userId') || 'default-user';
+    const userId = getVisitorId(request);
     const bookmarkedOnly = searchParams.get('bookmarked') === 'true';
     const showAllKinds = searchParams.get('kinds') === 'all';
 
     // Construct Redis Cache Key based on query params
-    const cacheKey = `api:articles:p${page}:l${limit}:c${companySlug || 'all'}:t${tag || 'all'}:s${search || 'none'}:sort${sort}:bm${bookmarkedOnly}:k${showAllKinds}:u${userId}`;
+    const cacheKey = `api:articles:p${page}:l${limit}:c${companySlug || 'all'}:t${tag || 'all'}:s${search || 'none'}:sort${sort}:k${showAllKinds}`;
 
     // Check Redis cache first (skip for bookmarked query to guarantee instant updates)
     if (!bookmarkedOnly) {
       try {
         const cached = await redis.get(cacheKey);
         if (cached) {
-          return NextResponse.json(JSON.parse(cached), {
+          return NextResponse.json(await withVisitorState(JSON.parse(cached), userId), {
             headers: {
               'X-Cache': 'HIT',
               'Cache-Control': 'no-store, max-age=0, must-revalidate',
@@ -99,33 +125,16 @@ export async function GET(request: NextRequest) {
               websiteUrl: true,
             },
           },
-          bookmarks: {
-            where: { userId },
-            select: { id: true },
-          },
-          reads: {
-            where: { userId },
-            select: { id: true },
-          },
         },
       }),
       db.article.count({ where: whereClause }),
     ]);
 
-    // Format response payload
-    const formattedArticles = articles.map((art) => ({
-      ...art,
-      isBookmarked: art.bookmarks.length > 0,
-      isRead: art.reads.length > 0,
-      bookmarks: undefined,
-      reads: undefined,
-    }));
-
     const totalPages = Math.ceil(totalCount / limit);
 
     const responsePayload = {
       success: true,
-      data: formattedArticles,
+      data: articles,
       pagination: {
         page,
         limit,
@@ -145,7 +154,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.json(responsePayload, {
+    return NextResponse.json(await withVisitorState(responsePayload, userId), {
       headers: {
         'X-Cache': 'MISS',
         'Cache-Control': 'no-store, max-age=0, must-revalidate',

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { ADMIN_SYNC_ENABLED } from '@/lib/utils';
 import { BookOpen, Search, Bookmark, RefreshCw, LayoutGrid, List, Sun, Moon, Sparkles, X } from 'lucide-react';
 
 interface EditorialNavbarProps {
@@ -186,6 +187,7 @@ export const EditorialNavbar: React.FC<EditorialNavbarProps> = ({
           </button>
 
           {/* Sync Trigger */}
+          {ADMIN_SYNC_ENABLED && (
           <button
             onClick={onOpenSyncModal}
             disabled={isSyncing}
@@ -198,6 +200,7 @@ export const EditorialNavbar: React.FC<EditorialNavbarProps> = ({
             <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">{isSyncing ? 'Syncing...' : 'Sync Feeds'}</span>
           </button>
+          )}
 
         </div>
 

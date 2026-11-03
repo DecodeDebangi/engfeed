@@ -25,3 +25,6 @@ export function formatDateFull(dateString: string | Date): string {
     return '';
   }
 }
+
+// The sync button is for the site owner; feeds also sync on a schedule. The API still requires the admin key.
+export const ADMIN_SYNC_ENABLED = process.env.NEXT_PUBLIC_ENABLE_ADMIN_SYNC === 'true';

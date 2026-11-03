@@ -179,9 +179,24 @@ Ensure you have the following installed:
    npm run feeds:health                  # List failing, broken and stale feeds
    npm run feeds:discover -- <website>   # See which feed and logo a website resolves to
    npm run classify -- [max articles]    # Classify pending articles now
+   npm run sync:scheduled                # One pass of sync and classify, as GitHub Actions runs it
    npm run eval:classify                 # Score the configured LLM against hand-labelled articles
    npm run test:tags && npm run test:sync && npm run test:classify
    ```
+
+---
+
+## 🚀 Deploying
+
+The site runs on Vercel, with the database on Neon and the cache on Upstash Redis. Vercel can't keep a worker running, so GitHub Actions syncs feeds and classifies articles every 2 hours instead (`.github/workflows/sync-feeds.yml`).
+
+1. **Neon:** create a database and copy its pooled and direct connection strings. Add `?pgbouncer=true` to the pooled one.
+2. **Upstash:** create a Redis database and copy its `rediss://` URL.
+3. **Schema and data:** with `DATABASE_URL` and `DIRECT_URL` pointing at Neon, run `npx prisma db push`, then either `npm run db:seed` for an empty start or `pg_restore` a dump of your local database.
+4. **Vercel:** import the GitHub repo and set `DATABASE_URL`, `DIRECT_URL`, `REDIS_URL` and `ADMIN_API_KEY`. Leave `NEXT_PUBLIC_ENABLE_ADMIN_SYNC` unset so the sync button stays hidden.
+5. **GitHub Actions secrets:** add `DATABASE_URL`, `DIRECT_URL`, `REDIS_URL`, `LLM_MODEL`, `LLM_BASE_URL` and `LLM_API_KEY`.
+
+Pushing to `main` then deploys the site, and a change to `sources.yaml` also applies itself to the database (`.github/workflows/seed-sources.yml`). Run schema changes by hand with `npx prisma db push`. On public repos, GitHub pauses scheduled workflows after 60 days with no repo activity.
 
 ---
 
