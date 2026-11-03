@@ -132,7 +132,7 @@ Ensure you have the following installed:
    ```env
    DATABASE_URL="postgresql://engfeed:engfeed123@localhost:5432/engfeed?schema=public"
    REDIS_URL="redis://localhost:6379"
-   ADMIN_API_KEY="engfeed_secret_admin_key_2026"
+   ADMIN_API_KEY=""   # Generate your own with: openssl rand -hex 32
    NODE_ENV="development"
    ```
 

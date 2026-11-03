@@ -14,7 +14,7 @@ export const SyncProgressModal: React.FC<SyncProgressModalProps> = ({
   onClose,
   onRefreshData,
 }) => {
-  const [apiKey, setApiKey] = useState('engfeed_secret_admin_key_2026');
+  const [apiKey, setApiKey] = useState('');
   const [isSyncing, setIsSyncing] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -60,7 +60,7 @@ export const SyncProgressModal: React.FC<SyncProgressModalProps> = ({
             </div>
             <div>
               <h3 className="text-base font-bold text-slate-100">Live RSS Ingestion Worker</h3>
-              <p className="text-xs text-slate-400">Trigger on-demand polling across 48+ engineering blogs</p>
+              <p className="text-xs text-slate-400">Trigger on-demand polling across all engineering blogs</p>
             </div>
           </div>
           <button
@@ -84,6 +84,9 @@ export const SyncProgressModal: React.FC<SyncProgressModalProps> = ({
             className="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-mono"
             placeholder="Enter ADMIN_API_KEY..."
           />
+          <p className="text-[11px] text-slate-500">
+            Only the site owner needs this. Feeds also sync automatically in the background.
+          </p>
         </div>
 
         {/* Sync Trigger Action */}

@@ -6,12 +6,16 @@ export const dynamic = 'force-dynamic';
 
 export async function POST(request: NextRequest) {
   try {
-    const authHeader = request.headers.get('authorization');
-    const { searchParams } = new URL(request.url);
-    const keyParam = searchParams.get('key');
-    const adminKey = process.env.ADMIN_API_KEY || 'engfeed_secret_admin_key_2026';
+    const adminKey = process.env.ADMIN_API_KEY;
+    if (!adminKey) {
+      return NextResponse.json(
+        { success: false, error: 'Sync is disabled: ADMIN_API_KEY is not set on the server' },
+        { status: 503 }
+      );
+    }
 
-    const providedKey = authHeader ? authHeader.replace('Bearer ', '').trim() : keyParam;
+    const { searchParams } = new URL(request.url);
+    const providedKey = request.headers.get('authorization')?.replace('Bearer ', '').trim();
 
     // Secure authorization check
     if (providedKey !== adminKey) {
