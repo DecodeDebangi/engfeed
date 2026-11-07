@@ -69,9 +69,9 @@ async function main() {
 
   try {
     const { redis } = await import('../src/lib/redis');
-    const keys = await redis.keys('api:*');
+    const keys = (await redis?.keys('api:*')) ?? [];
     if (keys.length > 0) {
-      await redis.del(...keys);
+      await redis?.del(...keys);
       console.log(`🧹 Cleared ${keys.length} Redis cache keys.`);
     }
   } catch (err) {

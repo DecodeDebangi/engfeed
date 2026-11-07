@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const cacheKey = 'api:companies:list';
 
     try {
-      const cached = await redis.get(cacheKey);
+      const cached = await redis?.get(cacheKey);
       if (cached) {
         return NextResponse.json(JSON.parse(cached), {
           headers: { 'X-Cache': 'HIT' },
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     };
 
     try {
-      await redis.setex(cacheKey, 300, JSON.stringify(responsePayload));
+      await redis?.setex(cacheKey, 300, JSON.stringify(responsePayload));
     } catch (cacheErr) {
       console.warn('Redis write warning:', cacheErr);
     }

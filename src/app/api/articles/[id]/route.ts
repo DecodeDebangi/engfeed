@@ -7,12 +7,12 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { searchParams } = new URL(request.url);
     const userId = getVisitorId(request);
-    const articleId = params.id;
+    const { id: articleId } = await params;
 
     // Find article by id or slug
     const article = await db.article.findFirst({

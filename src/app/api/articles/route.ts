@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     // Check Redis cache first (skip for bookmarked query to guarantee instant updates)
     if (!bookmarkedOnly) {
       try {
-        const cached = await redis.get(cacheKey);
+        const cached = await redis?.get(cacheKey);
         if (cached) {
           return NextResponse.json(await withVisitorState(JSON.parse(cached), userId), {
             headers: {
@@ -148,7 +148,7 @@ export async function GET(request: NextRequest) {
     // Store in Redis cache for 60 seconds (skip for bookmarked query)
     if (!bookmarkedOnly) {
       try {
-        await redis.setex(cacheKey, 60, JSON.stringify(responsePayload));
+        await redis?.setex(cacheKey, 60, JSON.stringify(responsePayload));
       } catch (cacheErr) {
         console.warn('Redis cache write warning:', cacheErr);
       }

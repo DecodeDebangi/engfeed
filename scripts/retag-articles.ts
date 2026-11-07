@@ -33,8 +33,8 @@ async function main() {
     console.log(`🏷️ Processed ${total} articles (${changed} changed)...`);
   }
 
-  const keys = await redis.keys('api:*');
-  if (keys.length > 0) await redis.del(...keys);
+  const keys = (await redis?.keys('api:*')) ?? [];
+  if (keys.length > 0) await redis?.del(...keys);
 
   console.log(`✅ Retagged ${changed} of ${total} articles.`);
 }

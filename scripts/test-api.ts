@@ -44,7 +44,7 @@ async function testApi() {
   const targetArticle = data1.data[0];
   console.log(`4️⃣ Testing GET /api/articles/${targetArticle.id} (Detail View)...`);
   const reqDetail = new NextRequest(`http://localhost:3000/api/articles/${targetArticle.id}`);
-  const resDetail = await getArticleById(reqDetail, { params: { id: targetArticle.id } });
+  const resDetail = await getArticleById(reqDetail, { params: Promise.resolve({ id: targetArticle.id }) });
   const dataDetail = await resDetail.json();
   console.log(`   Status: ${resDetail.status} | Title: "${dataDetail.data.title}"`);
   console.log(`   Sanitized Content HTML Length: ${dataDetail.data.content.length} chars\n`);

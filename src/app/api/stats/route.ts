@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const cacheKey = 'api:stats:global';
 
     try {
-      const cached = await redis.get(cacheKey);
+      const cached = await redis?.get(cacheKey);
       if (cached) {
         return NextResponse.json(JSON.parse(cached), {
           headers: { 'X-Cache': 'HIT' },
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     };
 
     try {
-      await redis.setex(cacheKey, 120, JSON.stringify(payload));
+      await redis?.setex(cacheKey, 120, JSON.stringify(payload));
     } catch (cacheErr) {
       console.warn('Redis write warning:', cacheErr);
     }

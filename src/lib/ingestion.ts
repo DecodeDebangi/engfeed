@@ -21,9 +21,9 @@ const SYNC_CONCURRENCY = 5;
  */
 export async function invalidateArticleCache() {
   try {
-    const keys = await redis.keys('api:articles:*');
+    const keys = (await redis?.keys('api:articles:*')) ?? [];
     if (keys.length > 0) {
-      await redis.del(...keys);
+      await redis?.del(...keys);
     }
   } catch (cacheErr) {
     console.warn('Redis cache invalidation warning:', cacheErr);
