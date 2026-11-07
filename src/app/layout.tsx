@@ -4,7 +4,7 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'EngFeed - Top Engineering Blogs Aggregator & Reader Dashboard',
   description:
-    'EngFeed is a centralized, real-time reader dashboard and aggregator for top engineering blogs including Netflix, Meta, Cloudflare, Uber, Stripe, Airbnb, GitHub, OpenAI, and Vercel.',
+    'EngFeed is a reader for top engineering blogs including Netflix, Meta, Cloudflare, Uber, Stripe, Airbnb, GitHub, OpenAI, and Vercel.',
   keywords: [
     'engineering blogs',
     'tech blogs',

@@ -9,9 +9,12 @@ import { ArticleSkeleton } from '../ArticleSkeleton';
 import { SyncProgressModal } from '../SyncProgressModal';
 import { ArticleItem } from '../ArticleCard';
 import { CompanyOption } from '../SidebarFilters';
-import { BookOpen, Bookmark, ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
+import { KindFilterToggle } from '../KindFilterToggle';
+import { BookOpen, Bookmark, ChevronLeft, ChevronRight, Filter, Inbox } from 'lucide-react';
 
-export const EditorialEngFeedDashboard: React.FC<{ showAllKinds?: boolean }> = ({ showAllKinds = false }) => {
+const SHOW_ALL_KINDS_KEY = 'engfeed_show_all_kinds';
+
+export const EditorialEngFeedDashboard: React.FC = () => {
   const [articles, setArticles] = useState<ArticleItem[]>([]);
   const [companies, setCompanies] = useState<CompanyOption[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,6 +24,13 @@ export const EditorialEngFeedDashboard: React.FC<{ showAllKinds?: boolean }> = (
   // Editorial Theme & Layout State
   const [themeMode, setThemeMode] = useState<'paper' | 'night'>('paper');
   const [layoutMode, setLayoutMode] = useState<'grid' | 'list'>('grid');
+
+  // Classifier filter: hides non-engineering posts. Only shown once some articles are classified.
+  const [showAllKinds, setShowAllKinds] = useState(false);
+  const [hasClassifiedArticles, setHasClassifiedArticles] = useState(false);
+
+  // On phones the filters start collapsed, so the feed is the first thing on screen
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   // Filters State
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -60,8 +70,22 @@ export const EditorialEngFeedDashboard: React.FC<{ showAllKinds?: boolean }> = (
   }, [searchQuery]);
 
   useEffect(() => {
+    try {
+      setShowAllKinds(localStorage.getItem(SHOW_ALL_KINDS_KEY) === 'true');
+    } catch {
+      // Storage can be blocked; the default is fine
+    }
+  }, []);
+
+  const handleShowAllKindsChange = (showAll: boolean) => {
+    setShowAllKinds(showAll);
     setCurrentPage(1);
-  }, [showAllKinds]);
+    try {
+      localStorage.setItem(SHOW_ALL_KINDS_KEY, String(showAll));
+    } catch {
+      // Storage can be blocked; the choice just won't be remembered
+    }
+  };
 
   const fetchCompanies = useCallback(async () => {
     try {
@@ -125,6 +149,7 @@ export const EditorialEngFeedDashboard: React.FC<{ showAllKinds?: boolean }> = (
           ...prev,
           totalCompanies: statsRes.stats.totalCompanies,
         }));
+        setHasClassifiedArticles(statsRes.stats.classifiedArticles > 0);
       }
 
       if (bookmarksRes.success) {
@@ -247,7 +272,23 @@ export const EditorialEngFeedDashboard: React.FC<{ showAllKinds?: boolean }> = (
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
         
-        {/* Sidebar Filters */}
+        {/* Sidebar Filters: collapsed behind a button on phones */}
+        <button
+          type="button"
+          onClick={() => setShowMobileFilters((open) => !open)}
+          aria-expanded={showMobileFilters}
+          className={`lg:hidden flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl border text-xs font-semibold font-sans ${
+            isNight ? 'bg-[#18191c] border-stone-800 text-stone-200' : 'bg-white border-stone-200 text-slate-900 shadow-sm'
+          }`}
+        >
+          <Filter className="w-3.5 h-3.5" />
+          <span>
+            {showMobileFilters ? 'Hide filters' : 'Filter by topic or blog'}
+            {[selectedTag, selectedCategory, selectedCompanySlug].filter(Boolean).length > 0 &&
+              ` (${[selectedTag, selectedCategory, selectedCompanySlug].filter(Boolean).length} active)`}
+          </span>
+        </button>
+        <div className={`${showMobileFilters ? 'flex' : 'hidden'} lg:flex lg:flex-shrink-0`}>
         <EditorialSidebarFilters
           selectedCategory={selectedCategory}
           setSelectedCategory={(cat) => {
@@ -268,6 +309,7 @@ export const EditorialEngFeedDashboard: React.FC<{ showAllKinds?: boolean }> = (
           onResetFilters={handleResetFilters}
           themeMode={themeMode}
         />
+        </div>
 
         {/* Feed Section */}
         <section className="flex-1 flex flex-col min-w-0 space-y-6">
@@ -295,7 +337,7 @@ export const EditorialEngFeedDashboard: React.FC<{ showAllKinds?: boolean }> = (
                         ? `Feed: ${companies.find((c) => c.slug === selectedCompanySlug)?.name || selectedCompanySlug}`
                         : selectedTag
                         ? `Topic: ${selectedTag}`
-                        : 'Real-Time Engineering Feed'}
+                        : 'Engineering Feed'}
                     </span>
                   </>
                 )}
@@ -305,8 +347,13 @@ export const EditorialEngFeedDashboard: React.FC<{ showAllKinds?: boolean }> = (
               </p>
             </div>
 
-            <div className={`text-xs font-sans font-mono ${isNight ? 'text-stone-400' : 'text-slate-700 font-semibold'}`}>
-              Page {currentPage} of {pagination.totalPages || 1}
+            <div className="flex flex-col items-start sm:items-end gap-2">
+              {hasClassifiedArticles && activeView === 'all' && (
+                <KindFilterToggle showAll={showAllKinds} onChange={handleShowAllKindsChange} isNight={isNight} />
+              )}
+              <div className={`text-xs font-sans font-mono ${isNight ? 'text-stone-400' : 'text-slate-700 font-semibold'}`}>
+                Page {currentPage} of {pagination.totalPages || 1}
+              </div>
             </div>
           </div>
 

@@ -20,7 +20,9 @@ export async function GET(request: NextRequest) {
       console.warn('Redis read warning:', cacheErr);
     }
 
+    // Retired blogs aren't listed; their articles still appear in the feed
     const companies = await db.company.findMany({
+      where: { feedStatus: { not: 'RETIRED' } },
       orderBy: { name: 'asc' },
       select: {
         id: true,

@@ -1,12 +1,12 @@
-import { MultiUiDashboardWrapper } from '@/components/MultiUiDashboardWrapper';
+import { EditorialEngFeedDashboard } from '@/components/editorial/EditorialEngFeedDashboard';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'EngFeed - Multi-Style Engineering Blog Reader & Aggregator',
+  title: 'EngFeed - Engineering posts from top company blogs',
   description:
-    'Real-time engineering feed with customizable UI styles: Editorial Minimalist, Glassmorphism Dark, Material Design 3, and Neo-Brutalist.',
+    'Engineering posts from 80 company engineering blogs, with announcements, hiring and marketing posts filtered out.',
 };
 
 export default function HomePage() {
-  return <MultiUiDashboardWrapper />;
+  return <EditorialEngFeedDashboard />;
 }

@@ -81,7 +81,7 @@ export const EditorialSidebarFilters: React.FC<EditorialSidebarFiltersProps> = (
           <div className="flex items-center gap-2">
             <Filter className={`w-4 h-4 ${isNight ? 'text-amber-400' : 'text-amber-900'}`} />
             <h2 className={`text-xs font-serif font-bold uppercase tracking-wider ${isNight ? 'text-stone-200' : 'text-slate-950 font-bold'}`}>
-              Editorial Topics
+              Filters
             </h2>
           </div>
           {activeFiltersCount > 0 && (

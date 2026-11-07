@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     const [totalArticles, classifiedArticles, totalCompanies, latestArticle, categoriesGroup] = await Promise.all([
       db.article.count(),
       db.article.count({ where: { kind: { not: null } } }),
-      db.company.count(),
+      db.company.count({ where: { feedStatus: { not: 'RETIRED' } } }),
       db.article.findFirst({
         orderBy: { publishedAt: 'desc' },
         select: { publishedAt: true },

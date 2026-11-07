@@ -1,6 +1,6 @@
 # EngFeed 🚀
 
-**EngFeed** is a production-grade, real-time aggregator and distraction-free reader dashboard for top engineering blogs (Netflix, Meta, Cloudflare, Uber, Stripe, Airbnb, GitHub, OpenAI, Vercel, Supabase, etc.).
+**EngFeed** is a production-grade aggregator and distraction-free reader dashboard for top engineering blogs (Netflix, Meta, Cloudflare, Uber, Stripe, Airbnb, GitHub, OpenAI, Vercel, Supabase, etc.).
 
 It polls, cleans, normalizes, and indexes thousands of technical engineering posts, providing sub-100ms API response times with Redis caching, tech-topic categorization, automated read-time estimation, bookmark management, and a clean Reader Mode UI.
 
@@ -29,8 +29,8 @@ It polls, cleans, normalizes, and indexes thousands of technical engineering pos
   - Intelligent Redis caching (`ioredis`) for articles, stats, and company lists.
   - Support for pagination (`page`, `limit`), instant keyword search, domain category filters, tech tag filters, and bookmark filters.
 
-- **🎨 Modern Dark-Glassmorphic Dashboard UI**:
-  - Built with Next.js 14 (App Router), TypeScript, and Tailwind CSS.
+- **🎨 Editorial Reader UI**:
+  - Built with Next.js 15 (App Router), TypeScript, and Tailwind CSS.
   - Multi-column responsive article feed grid with company badges, relative publish dates ("2 hours ago"), and read times.
   - **Distraction-Free Reader Mode**: Accessible modal stripping out corporate sidebars, headers, popups, with reading progress indicator, font size toggle (`A-`, `A`, `A+`), and direct post links.
   - **Live RSS Sync Modal**: On-demand feed sync execution with live progress reporting.
@@ -40,7 +40,7 @@ It polls, cleans, normalizes, and indexes thousands of technical engineering pos
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: Next.js 14 (App Router), React 18, TypeScript, Tailwind CSS, Lucide Icons, Date-Fns, `@tailwindcss/typography`
+- **Frontend**: Next.js 15 (App Router), React 18, TypeScript, Tailwind CSS, Lucide Icons, Date-Fns, `@tailwindcss/typography`
 - **Backend API**: Next.js Server API Routes & Server Actions
 - **Database & ORM**: PostgreSQL managed via Prisma ORM
 - **Caching & Queues**: Redis 7, Ioredis, BullMQ

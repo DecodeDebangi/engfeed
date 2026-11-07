@@ -60,7 +60,7 @@ export const EditorialNavbar: React.FC<EditorialNavbarProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h1 className={`text-xl font-serif font-bold tracking-tight ${isNight ? 'text-stone-100' : 'text-slate-950'}`}>
-                  EngFeed <span className={`text-xs font-sans font-bold italic ${isNight ? 'text-amber-400' : 'text-amber-900'}`}>Editorial</span>
+                  EngFeed
                 </h1>
               </div>
               <p className={`text-xs font-sans flex items-center gap-2 ${isNight ? 'text-stone-400' : 'text-slate-600 font-medium'}`}>
