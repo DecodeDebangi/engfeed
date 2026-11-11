@@ -4,107 +4,154 @@ import { GET as getCompanies } from '../src/app/api/companies/route';
 import { GET as getBookmarks, POST as toggleBookmark } from '../src/app/api/bookmarks/route';
 import { POST as triggerSync } from '../src/app/api/admin/trigger-sync/route';
 import { GET as getStats } from '../src/app/api/stats/route';
+import { GET as getFeed } from '../src/app/feed.xml/route';
+import { GET as getTopicFeed } from '../src/app/feed/[topic]/route';
 import { NextRequest } from 'next/server';
 import { db } from '../src/lib/db';
+import { redis } from '../src/lib/redis';
 
-async function testApi() {
-  console.log('🧪 Starting Full Backend API Layer Tests...\n');
+// Exercises the API routes against temporary blogs and articles, so it works on an empty database
+// and never touches real data.
+const RUN = Date.now().toString(36);
+const ACTIVE_SLUG = `test-api-${RUN}`;
+const RETIRED_SLUG = `test-api-retired-${RUN}`;
+const BASE = 'http://localhost:3000';
 
-  // Test 1: GET /api/articles (First call - Redis Cache MISS)
-  console.log('1️⃣ Testing GET /api/articles (Cache MISS)...');
-  const req1 = new NextRequest('http://localhost:3000/api/articles?page=1&limit=10');
-  const t0 = performance.now();
-  const res1 = await getArticles(req1);
-  const data1 = await res1.json();
-  const t1 = performance.now();
-  console.log(`   Status: ${res1.status} | Time: ${(t1 - t0).toFixed(2)}ms | Cache: ${res1.headers.get('X-Cache')}`);
-  console.log(`   Fetched ${data1.data.length} articles | Total Count: ${data1.pagination.totalCount}\n`);
+let failures = 0;
 
-  // Test 2: GET /api/articles (Second call - Redis Cache HIT sub-100ms)
-  console.log('2️⃣ Testing GET /api/articles (Cache HIT)...');
-  const t2 = performance.now();
-  const res2 = await getArticles(req1);
-  const data2 = await res2.json();
-  const t3 = performance.now();
-  console.log(`   Status: ${res2.status} | Time: ${(t3 - t2).toFixed(2)}ms | Cache: ${res2.headers.get('X-Cache')}`);
-  console.log(`   Sub-100ms Verified: ${(t3 - t2) < 100 ? '✅ YES' : '❌ NO'}\n`);
-
-  // Test 3: GET /api/articles with Tag Filter (e.g. tag=AI & ML)
-  console.log('3️⃣ Testing GET /api/articles?tag=AI & ML...');
-  const reqTag = new NextRequest('http://localhost:3000/api/articles?tag=AI%20%26%20ML&limit=5');
-  const resTag = await getArticles(reqTag);
-  const dataTag = await resTag.json();
-  console.log(`   Fetched ${dataTag.data.length} AI & ML articles.`);
-  if (dataTag.data.length > 0) {
-    console.log(`   Sample Title: "${dataTag.data[0].title}" [Company: ${dataTag.data[0].company.name}]`);
-  }
-  console.log();
-
-  // Test 4: GET /api/articles/[id] Detail & Reader Mode
-  const targetArticle = data1.data[0];
-  console.log(`4️⃣ Testing GET /api/articles/${targetArticle.id} (Detail View)...`);
-  const reqDetail = new NextRequest(`http://localhost:3000/api/articles/${targetArticle.id}`);
-  const resDetail = await getArticleById(reqDetail, { params: Promise.resolve({ id: targetArticle.id }) });
-  const dataDetail = await resDetail.json();
-  console.log(`   Status: ${resDetail.status} | Title: "${dataDetail.data.title}"`);
-  console.log(`   Sanitized Content HTML Length: ${dataDetail.data.content.length} chars\n`);
-
-  // Test 5: POST /api/bookmarks (Toggle bookmark)
-  console.log(`5️⃣ Testing POST /api/bookmarks (Bookmark toggle for article ${targetArticle.id})...`);
-  const reqBookmark = new NextRequest('http://localhost:3000/api/bookmarks', {
-    method: 'POST',
-    body: JSON.stringify({ articleId: targetArticle.id }),
-    headers: { cookie: 'engfeed_visitor=test-user-123' },
-  });
-  const resBookmark = await toggleBookmark(reqBookmark);
-  const dataBookmark = await resBookmark.json();
-  console.log(`   Status: ${resBookmark.status} | Bookmarked: ${dataBookmark.bookmarked} | Message: ${dataBookmark.message}\n`);
-
-  // Test 6: GET /api/bookmarks (Fetch bookmarks for user)
-  console.log('6️⃣ Testing GET /api/bookmarks for one visitor...');
-  const reqUserBookmarks = new NextRequest('http://localhost:3000/api/bookmarks', {
-    headers: { cookie: 'engfeed_visitor=test-user-123' },
-  });
-  const resUserBookmarks = await getBookmarks(reqUserBookmarks);
-  const dataUserBookmarks = await resUserBookmarks.json();
-  console.log(`   Status: ${resUserBookmarks.status} | Bookmarked Articles Count: ${dataUserBookmarks.data.length}\n`);
-
-  // Test 7: GET /api/companies (List all sources)
-  console.log('7️⃣ Testing GET /api/companies...');
-  const reqCompanies = new NextRequest('http://localhost:3000/api/companies');
-  const resCompanies = await getCompanies(reqCompanies);
-  const dataCompanies = await resCompanies.json();
-  console.log(`   Status: ${resCompanies.status} | Companies Count: ${dataCompanies.data.length}`);
-  console.log(`   Sample Company: ${dataCompanies.data[0].name} (${dataCompanies.data[0].articlesCount} articles)\n`);
-
-  // Test 8: GET /api/stats
-  console.log('8️⃣ Testing GET /api/stats...');
-  const reqStats = new NextRequest('http://localhost:3000/api/stats');
-  const resStats = await getStats(reqStats);
-  const dataStats = await resStats.json();
-  console.log(`   Status: ${resStats.status} | Articles: ${dataStats.stats.totalArticles} | Companies: ${dataStats.stats.totalCompanies}\n`);
-
-  // Test 9: POST /api/admin/trigger-sync (Unauthorized check)
-  console.log('9️⃣ Testing POST /api/admin/trigger-sync (Unauthorized Key Check)...');
-  const reqSyncBad = new NextRequest('http://localhost:3000/api/admin/trigger-sync', {
-    method: 'POST',
-    headers: { Authorization: 'Bearer invalid_key' },
-  });
-  const resSyncBad = await triggerSync(reqSyncBad);
-  console.log(`   Status: ${resSyncBad.status} (Expected 401)\n`);
-
-  // Cleanup test bookmark
-  await db.userBookmark.deleteMany({ where: { userId: 'test-user-123' } });
-
-  console.log('🎉 All Backend API Layer Tests Passed 100% Successfully!');
+function check(name: string, passed: boolean, detail?: unknown) {
+  if (!passed) failures++;
+  console.log(`${passed ? '✅' : '❌'} ${name}${passed ? '' : ` -> ${JSON.stringify(detail)}`}`);
 }
 
-testApi()
+const get = (path: string, visitor?: string) =>
+  new NextRequest(`${BASE}${path}`, visitor ? { headers: { cookie: `engfeed_visitor=${visitor}` } } : undefined);
+
+async function main() {
+  // Header counts and the blog list are cached; clear them so the temporary blogs are seen
+  await redis?.del('api:stats:global', 'api:companies:list');
+
+  const statsBefore = await (await getStats(get('/api/stats'))).json();
+
+  const company = await db.company.create({
+    data: { name: `Test API ${RUN}`, slug: ACTIVE_SLUG, rssUrl: `https://test-api.invalid/${RUN}/feed`, websiteUrl: 'https://test-api.invalid', category: 'Test' },
+  });
+  const retired = await db.company.create({
+    data: {
+      name: `Test API retired ${RUN}`,
+      slug: RETIRED_SLUG,
+      rssUrl: `https://test-api.invalid/${RUN}/retired`,
+      websiteUrl: 'https://test-api.invalid',
+      category: 'Test',
+      feedStatus: 'RETIRED',
+    },
+  });
+  // Newest-but-not-future dates, so the posts head the RSS feed
+  const article = (title: string, kind: 'ENGINEERING' | 'ANNOUNCEMENT' | null, minutesAgo: number) =>
+    db.article.create({
+      data: {
+        companyId: company.id,
+        title: `${title} ${RUN}`,
+        slug: `test-api-${title.toLowerCase().replace(/\W+/g, '-')}-${RUN}`,
+        url: `https://test-api.invalid/${RUN}/${title.toLowerCase().replace(/\W+/g, '-')}`,
+        guidHash: `test-api-${title}-${RUN}`,
+        summary: `${title} summary`,
+        content: `<p>${title} body</p>`,
+        publishedAt: new Date(Date.now() - minutesAgo * 60_000),
+        tags: ['Databases'],
+        kind,
+      },
+    });
+  const engineering = await article('Engineering post', 'ENGINEERING', 1);
+  const announcement = await article('Announcement post', 'ANNOUNCEMENT', 2);
+  const unclassified = await article('Unclassified post', null, 3);
+
+  try {
+    // Articles
+    const list = (query: string) => getArticles(get(`/api/articles?company=${ACTIVE_SLUG}&${query}`)).then((r) => r.json());
+    const defaultList = await list('limit=10');
+    const ids = (data: { data: { id: string }[] }) => data.data.map((a) => a.id).sort();
+    check('the feed hides posts classified as non-engineering', ids(defaultList).join() === [engineering.id, unclassified.id].sort().join(), ids(defaultList));
+    check('kinds=all shows every post', (await list('limit=10&kinds=all')).data.length === 3);
+    check('search shows hidden kinds too', (await list(`search=Announcement`)).data.some((a: { id: string }) => a.id === announcement.id));
+    check('the newest post comes first', defaultList.data[0]?.id === engineering.id, defaultList.data[0]?.title);
+    check('a tag filter returns only posts with that tag', (await list('limit=10&tag=Security')).data.length === 0);
+
+    if (redis) {
+      const first = await getArticles(get(`/api/articles?company=${ACTIVE_SLUG}&limit=7`));
+      const second = await getArticles(get(`/api/articles?company=${ACTIVE_SLUG}&limit=7`));
+      check('a repeated request is served from the Redis cache', first.headers.get('X-Cache') === 'MISS' && second.headers.get('X-Cache') === 'HIT');
+    }
+
+    const detail = await getArticleById(get(`/api/articles/${engineering.id}`), { params: Promise.resolve({ id: engineering.id }) });
+    const detailBody = await detail.json();
+    check('an article opens with its content', detail.status === 200 && detailBody.data?.content?.includes('Engineering post body'), detail.status);
+    const missing = await getArticleById(get('/api/articles/nope'), { params: Promise.resolve({ id: 'nope' }) });
+    check('an unknown article is a 404', missing.status === 404, missing.status);
+
+    // Bookmarks belong to the visitor
+    const save = await toggleBookmark(
+      new NextRequest(`${BASE}/api/bookmarks`, {
+        method: 'POST',
+        body: JSON.stringify({ articleId: engineering.id, markAsBookmarked: true }),
+        headers: { cookie: `engfeed_visitor=visitor-a-${RUN}` },
+      })
+    );
+    check('a visitor can save a post', (await save.json()).bookmarked === true);
+    const savedA = await (await getBookmarks(get('/api/bookmarks', `visitor-a-${RUN}`))).json();
+    const savedB = await (await getBookmarks(get('/api/bookmarks', `visitor-b-${RUN}`))).json();
+    check("a visitor sees their saved post, and another visitor doesn't", savedA.data.length === 1 && savedB.data.length === 0, { a: savedA.data.length, b: savedB.data.length });
+    const flagged = await list('limit=10');
+    const asA = await getArticles(get(`/api/articles?company=${ACTIVE_SLUG}&limit=10`, `visitor-a-${RUN}`)).then((r) => r.json());
+    check('the feed marks saved posts only for the visitor who saved them', asA.data.find((a: { id: string }) => a.id === engineering.id)?.isBookmarked === true && !flagged.data.some((a: { isBookmarked: boolean }) => a.isBookmarked));
+
+    // Blogs and header totals (reading the totals above cached them, so clear that first)
+    await redis?.del('api:stats:global', 'api:companies:list');
+    const companies = await (await getCompanies(get('/api/companies'))).json();
+    const listed = companies.data.find((c: { slug: string }) => c.slug === ACTIVE_SLUG);
+    check('the blog list includes active blogs with their article count', listed?.articlesCount === 3, listed);
+    check('the blog list leaves out retired blogs', !companies.data.some((c: { slug: string }) => c.slug === RETIRED_SLUG));
+    const stats = await (await getStats(get('/api/stats'))).json();
+    check('the header counts active blogs only', stats.stats.totalCompanies === statsBefore.stats.totalCompanies + 1, { before: statsBefore.stats.totalCompanies, after: stats.stats.totalCompanies });
+
+    // Admin sync
+    const sync = (headers: Record<string, string>) =>
+      triggerSync(new NextRequest(`${BASE}/api/admin/trigger-sync?companyId=${retired.id}`, { method: 'POST', headers }));
+    const savedKey = process.env.ADMIN_API_KEY;
+    delete process.env.ADMIN_API_KEY;
+    check('sync is refused when no admin key is configured', (await sync({ Authorization: 'Bearer anything' })).status === 503);
+    process.env.ADMIN_API_KEY = `test-admin-key-${RUN}`;
+    check('sync is refused with a wrong key', (await sync({ Authorization: 'Bearer wrong' })).status === 401);
+    check('sync is refused when the key is only in the URL', (await triggerSync(new NextRequest(`${BASE}/api/admin/trigger-sync?key=test-admin-key-${RUN}`, { method: 'POST' }))).status === 401);
+    const allowed = await sync({ Authorization: `Bearer test-admin-key-${RUN}` });
+    check('sync runs with the right key (and skips a retired blog)', allowed.status === 200 && (await allowed.json()).details?.[0]?.error === 'Feed is retired');
+    if (savedKey === undefined) delete process.env.ADMIN_API_KEY;
+    else process.env.ADMIN_API_KEY = savedKey;
+
+    // RSS
+    const feed = await getFeed(get('/feed.xml'));
+    const xml = await feed.text();
+    check('the RSS feed is served as RSS', feed.status === 200 && (feed.headers.get('content-type') ?? '').includes('application/rss+xml'));
+    check('the RSS feed includes engineering posts and leaves out hidden ones', xml.includes(engineering.title) && !xml.includes(announcement.title));
+    check('RSS items link to the original post', xml.includes(`<link>${engineering.url}</link>`));
+    const topic = await getTopicFeed(get('/feed/databases.xml'), { params: Promise.resolve({ topic: 'databases.xml' }) });
+    check('a topic feed includes posts with that topic', topic.status === 200 && (await topic.text()).includes(engineering.title));
+    const unknown = await getTopicFeed(get('/feed/nope.xml'), { params: Promise.resolve({ topic: 'nope.xml' }) });
+    check('an unknown topic feed is a 404', unknown.status === 404);
+  } finally {
+    await db.company.deleteMany({ where: { slug: { in: [ACTIVE_SLUG, RETIRED_SLUG] } } });
+    await redis?.del('api:stats:global', 'api:companies:list');
+  }
+
+  console.log(failures === 0 ? '\n✅ All API checks passed' : `\n❌ ${failures} API checks failed`);
+}
+
+main()
   .catch((e) => {
-    console.error('❌ API Test Failed:', e);
-    process.exit(1);
+    console.error('❌ Test failed:', e);
+    failures++;
   })
   .finally(async () => {
     await db.$disconnect();
-    process.exit(0);
+    process.exit(failures > 0 ? 1 : 0);
   });

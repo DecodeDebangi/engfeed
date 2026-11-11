@@ -17,6 +17,7 @@
     "classify": "tsx scripts/classify-articles.ts",
     "worker": "tsx src/workers/standalone-worker.ts",
     "sync:scheduled": "tsx scripts/run-scheduled.ts",
+    "test": "npm run test:tags && npm run test:sync && npm run test:classify && npm run test:api",
     "test:rss": "tsx scripts/test-rss.ts",
     "test:sync": "tsx scripts/test-sync.ts",
     "test:tags": "tsx scripts/test-tags.ts",

@@ -2,7 +2,7 @@
 
 A reader for 80 company engineering blogs that shows the engineering posts and hides the product announcements, hiring posts and marketing that make up most of what those blogs publish.
 
-**Live: https://engfeed.vercel.app**
+**Live: https://engfeed.vercel.app** · [![Tests](https://github.com/DecodeDebangi/engfeed/actions/workflows/test.yml/badge.svg)](https://github.com/DecodeDebangi/engfeed/actions/workflows/test.yml)
 
 ![The EngFeed feed on desktop: topic and blog filters on the left, and a grid of engineering posts from Meta, Google DeepMind, Databricks, MongoDB, Cloudflare and Hugging Face, with "Engineering posts only" ticked above them.](docs/screenshot.png)
 
@@ -112,11 +112,13 @@ Pushing to `main` deploys the site, and a change to `sources.yaml` applies itsel
 
 ## Tests
 
+`npm test` runs all four suites, and GitHub Actions runs them, plus a type check and a production build, on every push to `main` and every pull request ([`test.yml`](.github/workflows/test.yml)), against fresh Postgres and Redis containers.
+
 ```bash
 npm run test:tags       # keyword tagging rules
 npm run test:sync       # feed sync, health states, discovery and retries, against real Postgres and Redis
 npm run test:classify   # classifier error handling: rate limits, outages, bad answers
-npm run test:api        # API routes, including per-visitor bookmarks
+npm run test:api        # API routes, filters, per-visitor bookmarks, admin key and RSS feeds
 ```
 
-`test:sync` and `test:classify` use temporary records and a local stand-in server, so they never touch real articles or call a real LLM.
+The suites create temporary records and remove them afterwards, so they never touch real articles; `test:sync` and `test:classify` use a local stand-in server instead of real feeds or a real LLM.
