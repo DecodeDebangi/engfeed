@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
+  alternates: {
+    types: { 'application/rss+xml': [{ url: '/feed.xml', title: 'EngFeed: engineering posts' }] },
+  },
   title: 'EngFeed - Top Engineering Blogs Aggregator & Reader Dashboard',
   description:
     'EngFeed is a reader for top engineering blogs including Netflix, Meta, Cloudflare, Uber, Stripe, Airbnb, GitHub, OpenAI, and Vercel.',

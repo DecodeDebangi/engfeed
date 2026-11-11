@@ -26,5 +26,10 @@ export function formatDateFull(dateString: string | Date): string {
   }
 }
 
+// URL-safe name for a topic, as used in /feed/<slug>.xml: 'AI & ML' -> 'ai-ml'
+export function topicSlug(tag: string): string {
+  return tag.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
 // The sync button is for the site owner; feeds also sync on a schedule. The API still requires the admin key.
 export const ADMIN_SYNC_ENABLED = process.env.NEXT_PUBLIC_ENABLE_ADMIN_SYNC === 'true';

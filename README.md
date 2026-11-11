@@ -6,9 +6,9 @@ A reader for 80 company engineering blogs that shows the engineering posts and h
 
 ![The EngFeed feed on desktop: topic and blog filters on the left, and a grid of engineering posts from Meta, Google DeepMind, Databricks, MongoDB, Cloudflare and Hugging Face, with "Engineering posts only" ticked above them.](docs/screenshot.png)
 
-Company blogs mix deep technical write-ups with launch notes and customer stories. EngFeed polls every blog in a curated list, and an LLM labels each post as engineering, announcement, careers or marketing, so the feed can show only the engineering ones. One tick box brings the rest back, and search and saved posts always show everything.
+Company blogs mix deep technical write-ups with launch notes and customer stories. EngFeed polls every blog in a curated list, and an LLM labels each post as engineering, announcement, careers or marketing, so the feed can show only the engineering ones. One tick box brings the rest back, and search and saved posts always show everything. The filtered feed is also available as RSS, for the whole feed or one topic.
 
-> Status: running in production. Feeds sync every 2 hours through GitHub Actions; about two thirds of the 11,500 stored articles had been classified on 2026-11-12, and the rest are being worked through at 300 per run.
+> Status: running in production. Feeds sync every 2 hours through GitHub Actions; about two thirds of the 11,500 stored articles had been classified on 2026-11-12, and the rest are being worked through at up to 1,000 per run.
 
 ## How it works
 
@@ -29,6 +29,7 @@ flowchart LR
 - **Sync:** every feed is polled with `ETag`/`Last-Modified`, so unchanged feeds cost one small request. Posts are cleaned with `sanitize-html`, de-duplicated by a hash of their id, and given keyword topic tags that match whole words only.
 - **Feed health:** a failed poll marks the feed `FAILING`, and 5 failures in a row mark it `BROKEN` (the local worker also retries each poll first). A broken feed whose URL was discovered is re-discovered automatically; a pinned one gets a suggested replacement in `npm run feeds:health`.
 - **Classifier:** new posts go to an LLM in batches of 10 with their title, blog and first 800 characters. It returns one of four kinds and topic tags from a fixed list; anything else in the answer is discarded. A rate limit or outage pauses the run without penalising articles, and a post whose answers keep failing is skipped after 3 tries. It works with any OpenAI-compatible API, and without one the feed still works, unfiltered.
+- **RSS:** [`/feed.xml`](https://engfeed.vercel.app/feed.xml) has the latest 50 engineering posts, and `/feed/<topic>.xml` the same for one topic, such as [`/feed/databases.xml`](https://engfeed.vercel.app/feed/databases.xml). Items link to the original posts, and Vercel's CDN caches each feed for 30 minutes so readers polling it don't wake the database.
 - **Site:** a Next.js app on Vercel reading Postgres on Neon. Bookmarks and read marks are kept per browser with a random, httpOnly cookie, so visitors don't share them. A Redis cache is supported but optional, and the live site runs without one.
 
 ## Results
@@ -45,6 +46,8 @@ flowchart LR
 | Scheduled runs since launch | 16/16 succeeded |
 
 The classifier was scored with `npm run eval:classify` on 110 real articles from the feed, using `gemini-3.1-flash-lite`. The labels were written by Claude, the AI assistant used to build this, before seeing any model output, not by an independent reviewer. 22 labels were marked debatable in advance, for example a post that announces a feature but explains how it works. On the same 110 articles a local `qwen2.5:7b` got 75 right, and a smaller 3B model managed at best 41 of the 70 it was tried on, which is why the classifier runs on a hosted free tier instead.
+
+Two ideas to hide fewer good posts were tested on the same 110 articles and not shipped ([branch `experiment/full-text-classifier`](https://github.com/DecodeDebangi/engfeed/tree/experiment/full-text-classifier)). Asking the model whether it was sure, and hiding only confident labels, changed nothing: it said it was sure about all 110. Classifying from the fetched article page instead of the feed excerpt rescued 2 engineering posts but let 7 more announcements and marketing posts through.
 
 Before the LLM, topic tags came from substring matching, which tagged 57% of posts "AI & ML" because "ai" matches "maintain" and "detail". Matching whole words brought that to 22%.
 
@@ -102,6 +105,7 @@ Pushing to `main` deploys the site, and a change to `sources.yaml` applies itsel
 | `GET /api/articles/[id]` | One article with its cleaned HTML, for the reader. |
 | `GET /api/companies` | The followed blogs, with article counts. |
 | `GET /api/stats` | Totals for the header. |
+| `GET /feed.xml`, `GET /feed/<topic>.xml` | RSS 2.0 feeds of the latest engineering posts, overall or for one topic (`ai-ml`, `databases`, `distributed-systems` and so on). |
 | `GET`/`POST /api/bookmarks` | The visitor's saved posts; `POST { "articleId": "..." }` toggles one. |
 | `POST /api/read` | Mark a post read or unread. |
 | `POST /api/admin/trigger-sync` | Sync now. Requires `Authorization: Bearer <ADMIN_API_KEY>`; refused when the key isn't set. |

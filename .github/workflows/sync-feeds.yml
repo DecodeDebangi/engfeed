@@ -13,7 +13,7 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 55
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -31,4 +31,4 @@ jobs:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_BATCH_SIZE: '10'
           LLM_MIN_INTERVAL_MS: '6000'
-          LLM_MAX_PER_RUN: '300'
+          LLM_MAX_PER_RUN: '1000'
