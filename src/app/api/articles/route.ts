@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { redis } from '@/lib/redis';
 import { getVisitorId } from '@/lib/visitor';
+import { ENGINEERING_ONLY } from '@/lib/article-filters';
 
 export const dynamic = 'force-dynamic';
 
@@ -93,7 +94,7 @@ export async function GET(request: NextRequest) {
     // Hide non-engineering posts by default, but never something the user searched for or saved.
     // Unclassified articles stay visible, so the feed still works without an LLM.
     if (!showAllKinds && !search && !bookmarkedOnly) {
-      whereClause.AND = [{ OR: [{ kind: null }, { kind: 'ENGINEERING' }] }];
+      whereClause.AND = [ENGINEERING_ONLY];
     }
 
     // Query DB for articles and total count

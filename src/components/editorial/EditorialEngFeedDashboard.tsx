@@ -10,7 +10,8 @@ import { SyncProgressModal } from '../SyncProgressModal';
 import { ArticleItem } from '../ArticleCard';
 import { CompanyOption } from '../SidebarFilters';
 import { KindFilterToggle } from '../KindFilterToggle';
-import { BookOpen, Bookmark, ChevronLeft, ChevronRight, Filter, Inbox } from 'lucide-react';
+import { BookOpen, Bookmark, ChevronLeft, ChevronRight, Filter, Inbox, Rss } from 'lucide-react';
+import { topicSlug } from '@/lib/utils';
 
 const SHOW_ALL_KINDS_KEY = 'engfeed_show_all_kinds';
 
@@ -351,8 +352,18 @@ export const EditorialEngFeedDashboard: React.FC = () => {
               {hasClassifiedArticles && activeView === 'all' && (
                 <KindFilterToggle showAll={showAllKinds} onChange={handleShowAllKindsChange} isNight={isNight} />
               )}
-              <div className={`text-xs font-sans font-mono ${isNight ? 'text-stone-400' : 'text-slate-700 font-semibold'}`}>
-                Page {currentPage} of {pagination.totalPages || 1}
+              <div className={`flex items-center gap-3 text-xs font-sans ${isNight ? 'text-stone-400' : 'text-slate-700 font-semibold'}`}>
+                {activeView === 'all' && (
+                  <a
+                    href={selectedTag ? `/feed/${topicSlug(selectedTag)}.xml` : '/feed.xml'}
+                    title={`Follow ${selectedTag ? `the ${selectedTag} posts` : 'these posts'} in your RSS reader`}
+                    className={`inline-flex items-center gap-1 ${isNight ? 'hover:text-amber-400' : 'hover:text-amber-900'}`}
+                  >
+                    <Rss className="w-3.5 h-3.5" />
+                    <span>RSS</span>
+                  </a>
+                )}
+                <span className="font-mono">Page {currentPage} of {pagination.totalPages || 1}</span>
               </div>
             </div>
           </div>

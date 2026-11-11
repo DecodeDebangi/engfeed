@@ -15,12 +15,14 @@
     "feeds:health": "tsx scripts/feed-health.ts",
     "feeds:discover": "tsx scripts/discover-feed.ts",
     "classify": "tsx scripts/classify-articles.ts",
+    "fetch-bodies": "tsx scripts/fetch-bodies.ts",
     "worker": "tsx src/workers/standalone-worker.ts",
     "sync:scheduled": "tsx scripts/run-scheduled.ts",
     "test:rss": "tsx scripts/test-rss.ts",
     "test:sync": "tsx scripts/test-sync.ts",
     "test:tags": "tsx scripts/test-tags.ts",
     "test:classify": "tsx scripts/test-classify.ts",
+    "test:full-text": "tsx scripts/test-full-text.ts",
     "eval:classify": "tsx scripts/eval-classifier.ts",
     "test:api": "tsx scripts/test-api.ts"
   },
@@ -28,6 +30,7 @@
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@mozilla/readability": "^0.6.0",
     "@neon/config": "^1.13.0",
     "@neon/env": "^2.1.0",
     "@prisma/client": "^5.19.0",
@@ -38,16 +41,19 @@
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
     "ioredis": "^5.4.1",
+    "jsdom": "^31.0.0",
     "lucide-react": "^0.439.0",
     "next": "^15.5.29",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "robots-parser": "^3.0.1",
     "rss-parser": "^3.13.0",
     "sanitize-html": "^2.13.0",
     "tailwind-merge": "^2.5.2",
     "yaml": "^2.9.1"
   },
   "devDependencies": {
+    "@types/jsdom": "^30.0.0",
     "@types/node": "^20.16.5",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",

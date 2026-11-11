@@ -29,6 +29,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# eval cache of fetched article text (third-party content, kept local)
+/.cache/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

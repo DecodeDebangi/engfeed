@@ -176,10 +176,11 @@ export async function parseFeed(rssUrl: string, cache: FeedCacheHeaders = {}): P
   const articles: NormalizedArticle[] = [];
 
   for (const item of feed.items || []) {
-    const url = item.link || item.guid || '';
+    // Some feeds (Twilio's, for one) wrap links and titles in line breaks
+    const url = (item.link || item.guid || '').trim();
     if (!url) continue;
 
-    const title = item.title || 'Untitled Article';
+    const title = item.title?.trim() || 'Untitled Article';
     const rawContent = item['content:encoded'] || item.content || item.description || item.summary || '';
     const { cleanText, sanitizedHtml } = cleanHtmlContent(rawContent);
 

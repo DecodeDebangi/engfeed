@@ -1,12 +1,12 @@
 import http from 'http';
 import { AddressInfo } from 'net';
-import { classifyBatch, classifyPendingArticles } from '../src/lib/classifier';
+import { CLASSIFIER_VERSION, classifyBatch, classifyPendingArticles } from '../src/lib/classifier';
 import { db } from '../src/lib/db';
 
 const TEST_SLUG = 'test-classify-temp-feed';
 
 // Stands in for the LLM. Runs are scoped to a temporary company, so real articles are never touched.
-type Mode = 'good' | 'fenced' | 'garbage' | 'unknown-values' | 'rate-limited' | 'overloaded' | 'server-error';
+type Mode = 'good' | 'confident' | 'fenced' | 'garbage' | 'unknown-values' | 'rate-limited' | 'overloaded' | 'server-error';
 let mode: Mode = 'good';
 
 const server = http.createServer((req, res) => {
@@ -23,6 +23,8 @@ const server = http.createServer((req, res) => {
       results: posts.map((post: { i: number }) =>
               mode === 'unknown-values'
                 ? { i: post.i, kind: 'NONSENSE', tags: ['Databases'] }
+                : mode === 'confident'
+                ? { i: post.i, kind: 'ANNOUNCEMENT', confident: true, tags: ['Databases'] }
                 : { i: post.i, kind: 'ANNOUNCEMENT', tags: ['Databases', 'Made Up Tag', 'Databases'] }
             ),
     });
@@ -146,9 +148,18 @@ async function main() {
     result = await run();
     state = await article();
     check('a good answer is stored', state.kind === 'ANNOUNCEMENT' && state.tags.join() === 'Databases' && !!state.classifiedAt, state);
+    check('an answer without "confident" counts as unsure, so the post stays visible', state.kindConfident === false, state.kindConfident);
+    check('a classified article records the current classifier version', state.classifierVersion === CLASSIFIER_VERSION, state.classifierVersion);
+
+    // An older classifier version means the article is classified again, keeping its label until then
+    await db.article.updateMany({ where: { companyId }, data: { classifierVersion: 0 } });
+    mode = 'confident';
+    result = await run();
+    state = await article();
+    check('an article from an older classifier version is classified again', result.classified === 1 && state.kindConfident === true && state.classifierVersion === CLASSIFIER_VERSION, { result, state });
     check('a classified article is not pending', result.remaining === 0, result);
 
-    await db.article.updateMany({ where: { companyId }, data: { kind: null, classifyAttempts: 0 } });
+    await db.article.updateMany({ where: { companyId }, data: { kind: null, classifierVersion: 0, classifyAttempts: 0 } });
     mode = 'garbage';
     for (let i = 0; i < 3; i++) await run();
     result = await run();

@@ -65,8 +65,13 @@ model Article {
   tags        String[]  // Tech tags e.g. ["AI", "Architecture", "Distributed Systems"]
   viewsCount  Int       @default(0)
   kind        ArticleKind? // null until classified
+  kindConfident Boolean?  // false when the model wasn't sure; only confident non-engineering posts are hidden
   classifiedAt DateTime?
+  classifierVersion Int   @default(0) // below CLASSIFIER_VERSION means (re)classify
   classifyAttempts Int    @default(0)
+  bodyText    String?   @db.Text // start of the article page's text, for classification only; never shown
+  bodyFetchedAt DateTime?
+  bodyFetchAttempts Int  @default(0)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
