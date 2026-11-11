@@ -1,301 +1,118 @@
-# EngFeed 🚀
+# EngFeed
 
-**EngFeed** is a production-grade aggregator and distraction-free reader dashboard for top engineering blogs (Netflix, Meta, Cloudflare, Uber, Stripe, Airbnb, GitHub, OpenAI, Vercel, Supabase, etc.).
+A reader for 80 company engineering blogs that shows the engineering posts and hides the product announcements, hiring posts and marketing that make up most of what those blogs publish.
 
-It polls, cleans, normalizes, and indexes thousands of technical engineering posts, providing sub-100ms API response times with Redis caching, tech-topic categorization, automated read-time estimation, bookmark management, and a clean Reader Mode UI.
+**Live: https://engfeed.vercel.app**
 
----
+![The EngFeed feed on desktop: topic and blog filters on the left, and a grid of engineering posts from Meta, Google DeepMind, Databricks, MongoDB, Cloudflare and Hugging Face, with "Engineering posts only" ticked above them.](docs/screenshot.png)
 
-## ✨ Features
+Company blogs mix deep technical write-ups with launch notes and customer stories. EngFeed polls every blog in a curated list, and an LLM labels each post as engineering, announcement, careers or marketing, so the feed can show only the engineering ones. One tick box brings the rest back, and search and saved posts always show everything.
 
-- **📡 Automated RSS/Atom Ingestion Engine**:
-  - Polling worker utilizing BullMQ and `rss-parser`.
-  - HTML scrubbing and sanitization via `cheerio` & `sanitize-html`.
-  - SHA-256 GUID hash deduplication preventing duplicate entries.
-  - Keyword-based topic tags (AI & ML, Infrastructure, Distributed Systems, Databases, Backend, Frontend, Security, DevOps, Mobile, Fintech), refined by the optional LLM classifier below.
-  - Feed health tracking: failing feeds retry, then get marked `FAILING` or `BROKEN`, and unchanged feeds are skipped with `ETag`/`Last-Modified`.
+> Status: running in production. Feeds sync every 2 hours through GitHub Actions; about two thirds of the 11,500 stored articles had been classified on 2026-11-12, and the rest are being worked through at 300 per run.
 
-- **🗂️ Curated Source List**:
-  - Blogs live in `sources.yaml`. Give a blog a name, slug, website and category, and its feed and logo are found automatically.
-  - Removing a blog retires it: polling stops and its articles stay. A broken discovered feed is re-discovered automatically; a broken pinned feed gets a suggested replacement in `npm run feeds:health`.
+## How it works
 
-- **🧠 Optional LLM Classifier**:
-  - Sorts posts into engineering, announcement, careers or marketing, and hides everything but engineering by default. Search and bookmarks always show everything, and the feed has a toggle to turn the filter off.
-  - Works with any OpenAI-compatible API (see `.env.example`). With no LLM configured the feed still works, using keyword tags and no filtering.
-  - Estimated reading time calculator (words / 200 WPM).
-
-- **⚡ Sub-100ms API Layer & Caching**:
-  - High-performance Next.js Server API routes.
-  - Intelligent Redis caching (`ioredis`) for articles, stats, and company lists.
-  - Support for pagination (`page`, `limit`), instant keyword search, domain category filters, tech tag filters, and bookmark filters.
-
-- **🎨 Editorial Reader UI**:
-  - Built with Next.js 15 (App Router), TypeScript, and Tailwind CSS.
-  - Multi-column responsive article feed grid with company badges, relative publish dates ("2 hours ago"), and read times.
-  - **Distraction-Free Reader Mode**: Accessible modal stripping out corporate sidebars, headers, popups, with reading progress indicator, font size toggle (`A-`, `A`, `A+`), and direct post links.
-  - **Live RSS Sync Modal**: On-demand feed sync execution with live progress reporting.
-  - **Bookmark Manager**: Instant optimistic bookmarking with user persistence.
-
----
-
-## 🛠️ Tech Stack
-
-- **Frontend**: Next.js 15 (App Router), React 18, TypeScript, Tailwind CSS, Lucide Icons, Date-Fns, `@tailwindcss/typography`
-- **Backend API**: Next.js Server API Routes & Server Actions
-- **Database & ORM**: PostgreSQL managed via Prisma ORM
-- **Caching & Queues**: Redis 7, Ioredis, BullMQ
-- **Feed Processing**: `rss-parser`, Cheerio, `sanitize-html`
-- **Containers**: Docker Compose for PostgreSQL & Redis
-
----
-
-## 📂 Repository Architecture & Folder Structure
-
-```
-engineering-blogs/
-├── docker-compose.yml           # PostgreSQL & Redis container definitions
-├── package.json                 # Project dependencies & scripts
-├── tsconfig.json                # Strict TypeScript configuration
-├── tailwind.config.js           # Dark theme design system & typography plugin
-├── sources.yaml                 # The curated list of engineering blogs
-├── prisma/
-│   ├── schema.prisma            # PostgreSQL models (Company, Article, UserBookmark)
-│   └── seed.ts                  # Syncs sources.yaml into the database
-├── scripts/
-│   ├── test-rss.ts              # Ingestion worker test script
-│   └── test-api.ts              # Full API integration & Redis cache test suite
-├── src/
-│   ├── app/
-│   │   ├── api/                 # High-performance API routes
-│   │   │   ├── admin/trigger-sync/ # POST: Force RSS sync endpoint
-│   │   │   ├── articles/       # GET: Paginated & filtered articles endpoint
-│   │   │   ├── articles/[id]/  # GET: Single article detail & Reader Mode HTML
-│   │   │   ├── bookmarks/      # GET & POST: User bookmark manager
-│   │   │   ├── companies/      # GET: Registered company blogs list
-│   │   │   └── stats/          # GET: Global metrics
-│   │   ├── globals.css         # Dark glassmorphic design system styling
-│   │   ├── layout.tsx          # Root layout & SEO metadata
-│   │   └── page.tsx            # Main application entry point
-│   ├── components/              # Frontend React UI Components
-│   │   ├── ArticleCard.tsx     # Article card with badges & actions
-│   │   ├── ArticleSkeleton.tsx # Shimmer loading skeleton grid
-│   │   ├── EngFeedDashboard.tsx# Main client state container & layout
-│   │   ├── Navbar.tsx          # Navigation header, search & stats
-│   │   ├── ReaderModal.tsx     # Distraction-free clean reader view
-│   │   ├── SidebarFilters.tsx  # Tech tags, categories & company filters
-│   │   └── SyncProgressModal.tsx# On-demand RSS sync execution overlay
-│   ├── lib/
-│   │   ├── db.ts               # Prisma Client singleton instance
-│   │   ├── ingestion.ts        # RSS ingestion service & cache invalidation
-│   │   ├── queue.ts            # BullMQ background job queue
-│   │   ├── redis.ts            # Redis client connection pool
-│   │   ├── rss-parser.ts       # Feed parser, HTML scrubber & tag generator
-│   │   └── utils.ts            # Class merging & date formatting helpers
-│   └── workers/
-│       └── standalone-worker.ts# Standalone background worker process
-└── .env.example                 # Environment configuration template
+```mermaid
+flowchart LR
+  Y[sources.yaml<br/>80 blogs] --> SD[seed: discover<br/>feed URL + logo]
+  SD --> DB[(Postgres<br/>Neon)]
+  GA[GitHub Actions<br/>every 2 hours] --> SY[sync feeds<br/>5 at a time, ETag]
+  SY --> CL[clean, dedupe,<br/>keyword tags]
+  CL --> DB
+  GA --> LLM[classify new posts<br/>Gemini, 10 per request]
+  LLM --> DB
+  U[visitor] --> V[Next.js on Vercel]
+  V --> DB
 ```
 
----
+- **Curated list:** blogs live in [`sources.yaml`](sources.yaml) with a name, website and category. The feed URL and logo are discovered from the site (its `<link rel="alternate">` tags, then common feed paths), so 51 of the 80 blogs need no feed URL at all. The other 29 pin one, usually because discovery would pick the whole company blog instead of its engineering section. Removing a blog retires it: polling stops and its articles stay.
+- **Sync:** every feed is polled with `ETag`/`Last-Modified`, so unchanged feeds cost one small request. Posts are cleaned with `sanitize-html`, de-duplicated by a hash of their id, and given keyword topic tags that match whole words only.
+- **Feed health:** a failed poll marks the feed `FAILING`, and 5 failures in a row mark it `BROKEN` (the local worker also retries each poll first). A broken feed whose URL was discovered is re-discovered automatically; a pinned one gets a suggested replacement in `npm run feeds:health`.
+- **Classifier:** new posts go to an LLM in batches of 10 with their title, blog and first 800 characters. It returns one of four kinds and topic tags from a fixed list; anything else in the answer is discarded. A rate limit or outage pauses the run without penalising articles, and a post whose answers keep failing is skipped after 3 tries. It works with any OpenAI-compatible API, and without one the feed still works, unfiltered.
+- **Site:** a Next.js app on Vercel reading Postgres on Neon. Bookmarks and read marks are kept per browser with a random, httpOnly cookie, so visitors don't share them. A Redis cache is supported but optional, and the live site runs without one.
 
-## 🚦 Getting Started
+## Results
 
-### 1. Prerequisites
+| What | Measured |
+|---|---|
+| Blogs followed | 80, of which 51 need no feed URL |
+| Articles stored | about 11,500 (2026-11-12) |
+| Full sync of all 80 feeds | 28 s, 0 failures (5 feeds at a time) |
+| Live API response, from India | about 0.45 s, of which about 0.2 s is the network |
+| Classifier, exact label | 97/110 (34/40 on a sample untouched during tuning) |
+| Engineering posts wrongly hidden | 6/36, all on posts whose label was debatable |
+| Posts shown as engineering that weren't | 5/35 |
+| Scheduled runs since launch | 16/16 succeeded |
 
-Ensure you have the following installed:
-- **Node.js**: v18.0.0 or higher
-- **npm**: v9.0.0 or higher
-- **Docker Desktop** (or running PostgreSQL and Redis instances)
+The classifier was scored with `npm run eval:classify` on 110 real articles from the feed, using `gemini-3.1-flash-lite`. The labels were written by Claude, the AI assistant used to build this, before seeing any model output, not by an independent reviewer. 22 labels were marked debatable in advance, for example a post that announces a feature but explains how it works. On the same 110 articles a local `qwen2.5:7b` got 75 right, and a smaller 3B model managed at best 41 of the 70 it was tried on, which is why the classifier runs on a hosted free tier instead.
 
----
+Before the LLM, topic tags came from substring matching, which tagged 57% of posts "AI & ML" because "ai" matches "maintain" and "detail". Matching whole words brought that to 22%.
 
-### 2. Installation & Setup
+### Limits
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/your-username/engfeed.git
-   cd engfeed
-   ```
+- About 1 in 6 engineering posts is still hidden by the filter, mostly borderline ones. The tick box and search are the way to find them.
+- Many feeds publish only an excerpt, so both the classifier and the reader see the first few hundred characters, not the whole post.
+- GitHub runs scheduled workflows late: the 2-hour schedule has run about every 8 hours in practice.
+- Gemini's free tier allows 500 requests a day per model, so a large backlog takes several days.
+- Bookmarks belong to the browser, not an account; clearing cookies loses them.
 
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+## Run it
 
-3. **Configure Environment Variables**:
-   Copy `.env.example` to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-
-   `.env` file configuration:
-   ```env
-   DATABASE_URL="postgresql://engfeed:engfeed123@localhost:5432/engfeed?schema=public"
-   REDIS_URL="redis://localhost:6379"
-   ADMIN_API_KEY=""   # Generate your own with: openssl rand -hex 32
-   NODE_ENV="development"
-   ```
-
----
-
-### 3. Launch Services & Database Migration
-
-1. **Start PostgreSQL and Redis via Docker Compose**:
-   ```bash
-   docker-compose up -d
-   ```
-
-2. **Push Prisma Schema & Seed Database**:
-   ```bash
-   npx prisma db push
-   npx prisma db seed
-   ```
-
-3. **Run Initial RSS Feed Ingestion**:
-   ```bash
-   npm run test:rss
-   ```
-   *This ingests the articles from every feed in `sources.yaml` into PostgreSQL.*
-
----
-
-### 4. Running the Web Application
-
-1. **Start Next.js Development Server**:
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-2. **Start Standalone Background Worker (Optional)**:
-   ```bash
-   npm run worker
-   ```
-   *Syncs every feed on a 2-hour schedule and, if `LLM_MODEL` is set, classifies new articles every 10 minutes.*
-
-3. **Useful Commands**:
-   ```bash
-   npm run db:seed                       # Apply changes to sources.yaml
-   npm run feeds:health                  # List failing, broken and stale feeds
-   npm run feeds:discover -- <website>   # See which feed and logo a website resolves to
-   npm run classify -- [max articles]    # Classify pending articles now
-   npm run sync:scheduled                # One pass of sync and classify, as GitHub Actions runs it
-   npm run eval:classify                 # Score the configured LLM against hand-labelled articles
-   npm run test:tags && npm run test:sync && npm run test:classify
-   ```
-
----
-
-## 🚀 Deploying
-
-The site runs on Vercel, with the database on Neon and the cache on Upstash Redis. Vercel can't keep a worker running, so GitHub Actions syncs feeds and classifies articles every 2 hours instead (`.github/workflows/sync-feeds.yml`).
-
-1. **Neon:** create a database and copy its pooled and direct connection strings. Add `?pgbouncer=true` to the pooled one.
-2. **Upstash:** create a Redis database and copy its `rediss://` URL.
-3. **Schema and data:** with `DATABASE_URL` and `DIRECT_URL` pointing at Neon, run `npx prisma db push`, then either `npm run db:seed` for an empty start or `pg_restore` a dump of your local database.
-4. **Vercel:** import the GitHub repo and set `DATABASE_URL`, `DIRECT_URL`, `REDIS_URL` and `ADMIN_API_KEY`. Leave `NEXT_PUBLIC_ENABLE_ADMIN_SYNC` unset so the sync button stays hidden.
-5. **GitHub Actions secrets:** add `DATABASE_URL`, `DIRECT_URL`, `REDIS_URL`, `LLM_MODEL`, `LLM_BASE_URL` and `LLM_API_KEY`.
-
-Pushing to `main` then deploys the site, and a change to `sources.yaml` also applies itself to the database (`.github/workflows/seed-sources.yml`). Run schema changes by hand with `npx prisma db push`. On public repos, GitHub pauses scheduled workflows after 60 days with no repo activity.
-
----
-
-## 📡 API Reference
-
-### 1. `GET /api/articles`
-Fetch paginated and filtered articles. Response is cached in Redis for sub-100ms response times.
-
-**Query Parameters:**
-- `page` (number, default: `1`)
-- `limit` (number, default: `20`)
-- `company` (string, company slug)
-- `tag` (string, tech topic tag e.g. `AI & ML`, `Infrastructure`)
-- `search` (string, keyword search in title/summary)
-- `sort` (`desc` or `asc`, default: `desc`)
-- `bookmarked` (`true` or `false`)
-- `kinds` (`all` to include announcements, careers and marketing posts, which are hidden by default)
-
-**Example Response:**
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "id": "cmtpitzx606urs56ankz13tgs",
-      "title": "Achieving Extreme Efficiency through Specialized GPU Kernel Generation",
-      "slug": "achieving-extreme-efficiency-through-specialized-gpu-kernel-generation-3f9b2d",
-      "url": "https://www.databricks.com/blog/achieving-extreme-efficiency-through-specialized-gpu-kernel-generation",
-      "summary": "Traditionally, production inference systems rely on generic kernels...",
-      "publishedAt": "2026-09-04T20:00:00.000Z",
-      "readTime": 5,
-      "tags": ["AI & ML", "Infrastructure"],
-      "company": {
-        "id": "company_123",
-        "name": "Databricks Blog",
-        "slug": "databricks",
-        "category": "Data Engineering"
-      },
-      "isBookmarked": false
-    }
-  ],
-  "pagination": {
-    "page": 1,
-    "limit": 20,
-    "totalCount": 7360,
-    "totalPages": 368,
-    "hasNextPage": true,
-    "hasPrevPage": false
-  }
-}
-```
-
----
-
-### 2. `GET /api/articles/[id]`
-Fetch full article details and sanitized HTML for Reader Mode.
-
----
-
-### 3. `GET /api/companies`
-Fetch list of all registered engineering blogs with article counts and categories.
-
----
-
-### 4. `POST /api/bookmarks`
-Toggle bookmark status for an article.
-
-**Request Body:**
-```json
-{
-  "articleId": "cmtpitzx606urs56ankz13tgs",
-  "userId": "default-user"
-}
-```
-
----
-
-### 5. `POST /api/admin/trigger-sync`
-Force-poll and refresh RSS feeds. Requires `Authorization: Bearer <ADMIN_API_KEY>`.
-
----
-
-## 🧪 Testing & Benchmarks
-
-Run the automated test suites:
+Needs Node.js 18.18 or later and Docker.
 
 ```bash
-# Test RSS parser, HTML scrubber, read time, and deduplication
-npm run test:rss
-
-# Test full backend API layer and Redis sub-100ms cache latency
-npm run test:api
-
-# Test production build compilation
-npm run build
+git clone https://github.com/DecodeDebangi/engfeed.git
+cd engfeed
+npm install
+cp .env.example .env            # set ADMIN_API_KEY with: openssl rand -hex 32
+docker compose up -d            # Postgres and Redis
+npx prisma db push
+npm run db:seed                 # loads sources.yaml and discovers feeds
+npm run test:rss                # first sync of every feed
+npm run dev                     # http://localhost:3000
 ```
 
----
+To classify posts, set the `LLM_*` variables in `.env` (see [`.env.example`](.env.example)) and run `npm run classify`, or `npm run worker` to sync and classify on a schedule.
 
-## 📜 License
+Useful commands:
 
-Distributed under the MIT License. See `LICENSE` for details.
+```bash
+npm run feeds:health                  # failing, broken and stale feeds
+npm run feeds:discover -- <website>   # which feed and logo a website resolves to
+npm run sync:scheduled                # one sync-and-classify pass, as GitHub Actions runs it
+npm run eval:classify                 # score the configured LLM against the labelled articles
+```
+
+## Deploy
+
+The live site uses Vercel and Neon on their free plans, with GitHub Actions doing the work a background worker would do elsewhere ([`sync-feeds.yml`](.github/workflows/sync-feeds.yml)).
+
+1. **Neon:** create a project and copy its pooled and direct connection strings. Add `pgbouncer=true` to the pooled one.
+2. **Schema and data:** with `DATABASE_URL` and `DIRECT_URL` pointing at Neon, run `npx prisma db push`, then `npm run db:seed` for an empty start or `pg_restore` a dump of a local database.
+3. **Vercel:** import the repo and set `DATABASE_URL`, `DIRECT_URL` and `ADMIN_API_KEY`. Leave `NEXT_PUBLIC_ENABLE_ADMIN_SYNC` unset so the sync button stays hidden, and `REDIS_URL` unset unless you add a Redis cache such as Upstash.
+4. **GitHub Actions secrets:** `DATABASE_URL`, `DIRECT_URL`, `LLM_MODEL`, `LLM_BASE_URL` and `LLM_API_KEY`.
+
+Pushing to `main` deploys the site, and a change to `sources.yaml` applies itself to the database ([`seed-sources.yml`](.github/workflows/seed-sources.yml)). Schema changes are applied by hand with `npx prisma db push`. GitHub pauses scheduled workflows on public repos after 60 days without activity.
+
+## API
+
+| Route | Does |
+|---|---|
+| `GET /api/articles` | Paginated feed. Query: `page`, `limit`, `company`, `tag`, `search`, `sort`, `bookmarked`, and `kinds=all` to include non-engineering posts. |
+| `GET /api/articles/[id]` | One article with its cleaned HTML, for the reader. |
+| `GET /api/companies` | The followed blogs, with article counts. |
+| `GET /api/stats` | Totals for the header. |
+| `GET`/`POST /api/bookmarks` | The visitor's saved posts; `POST { "articleId": "..." }` toggles one. |
+| `POST /api/read` | Mark a post read or unread. |
+| `POST /api/admin/trigger-sync` | Sync now. Requires `Authorization: Bearer <ADMIN_API_KEY>`; refused when the key isn't set. |
+
+## Tests
+
+```bash
+npm run test:tags       # keyword tagging rules
+npm run test:sync       # feed sync, health states, discovery and retries, against real Postgres and Redis
+npm run test:classify   # classifier error handling: rate limits, outages, bad answers
+npm run test:api        # API routes, including per-visitor bookmarks
+```
+
+`test:sync` and `test:classify` use temporary records and a local stand-in server, so they never touch real articles or call a real LLM.
