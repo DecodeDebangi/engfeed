@@ -27,7 +27,7 @@ flowchart LR
 
 - **Curated list:** blogs live in [`sources.yaml`](sources.yaml) with a name, website and category. The feed URL and logo are discovered from the site (its `<link rel="alternate">` tags, then common feed paths), so 51 of the 80 blogs need no feed URL at all. The other 29 pin one, usually because discovery would pick the whole company blog instead of its engineering section. Removing a blog retires it: polling stops and its articles stay.
 - **Sync:** every feed is polled with `ETag`/`Last-Modified`, so unchanged feeds cost one small request. Posts are cleaned with `sanitize-html`, de-duplicated by a hash of their id, and given keyword topic tags that match whole words only.
-- **Feed health:** a failed poll marks the feed `FAILING`, and 5 failures in a row mark it `BROKEN` (the local worker also retries each poll first). A broken feed whose URL was discovered is re-discovered automatically; a pinned one gets a suggested replacement in `npm run feeds:health`.
+- **Feed health:** a failed poll marks the feed `FAILING`, and 5 failures in a row mark it `BROKEN` (the local worker also retries each poll first). A broken feed whose URL was discovered is re-discovered automatically; a pinned one gets a suggested replacement in `npm run feeds:health`. The scheduled job also opens a GitHub issue (label `broken-feed`) when a feed breaks, and closes it when the feed recovers or the blog is retired.
 - **Classifier:** new posts go to an LLM in batches of 10 with their title, blog and first 800 characters. It returns one of four kinds and topic tags from a fixed list; anything else in the answer is discarded. A rate limit or outage pauses the run without penalising articles, and a post whose answers keep failing is skipped after 3 tries. It works with any OpenAI-compatible API, and without one the feed still works, unfiltered.
 - **RSS:** [`/feed.xml`](https://engfeed.vercel.app/feed.xml) has the latest 50 engineering posts, and `/feed/<topic>.xml` the same for one topic, such as [`/feed/databases.xml`](https://engfeed.vercel.app/feed/databases.xml). Items link to the original posts, and Vercel's CDN caches each feed for 30 minutes so readers polling it don't wake the database.
 - **Site:** a Next.js app on Vercel reading Postgres on Neon. Bookmarks and read marks are kept per browser with a random, httpOnly cookie, so visitors don't share them. A Redis cache is supported but optional, and the live site runs without one.
@@ -112,13 +112,14 @@ Pushing to `main` deploys the site, and a change to `sources.yaml` applies itsel
 
 ## Tests
 
-`npm test` runs all four suites, and GitHub Actions runs them, plus a type check and a production build, on every push to `main` and every pull request ([`test.yml`](.github/workflows/test.yml)), against fresh Postgres and Redis containers.
+`npm test` runs all five suites, and GitHub Actions runs them, plus a type check and a production build, on every push to `main` and every pull request ([`test.yml`](.github/workflows/test.yml)), against fresh Postgres and Redis containers.
 
 ```bash
 npm run test:tags       # keyword tagging rules
 npm run test:sync       # feed sync, health states, discovery and retries, against real Postgres and Redis
 npm run test:classify   # classifier error handling: rate limits, outages, bad answers
+npm run test:alerts     # broken-feed issues opening, de-duplicating and closing
 npm run test:api        # API routes, filters, per-visitor bookmarks, admin key and RSS feeds
 ```
 
-The suites create temporary records and remove them afterwards, so they never touch real articles; `test:sync` and `test:classify` use a local stand-in server instead of real feeds or a real LLM.
+The suites create temporary records and remove them afterwards, so they never touch real articles; `test:sync` and `test:classify` use a local stand-in server instead of real feeds or a real LLM, and `test:alerts` a stand-in for the GitHub API.

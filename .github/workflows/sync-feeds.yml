@@ -6,6 +6,11 @@ on:
   workflow_dispatch:
 
 # Never run two passes at once, since they'd spend LLM quota on the same articles
+# Lets the job open and close issues for broken feeds
+permissions:
+  contents: read
+  issues: write
+
 concurrency:
   group: sync-feeds
   cancel-in-progress: false
@@ -29,6 +34,7 @@ jobs:
           LLM_MODEL: ${{ secrets.LLM_MODEL }}
           LLM_BASE_URL: ${{ secrets.LLM_BASE_URL }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LLM_BATCH_SIZE: '10'
           LLM_MIN_INTERVAL_MS: '6000'
           LLM_MAX_PER_RUN: '1000'
