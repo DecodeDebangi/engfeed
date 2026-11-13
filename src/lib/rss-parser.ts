@@ -149,7 +149,7 @@ export interface FeedCacheHeaders {
 
 export type ParsedFeed =
   | { notModified: true }
-  | { notModified: false; articles: NormalizedArticle[]; etag: string | null; lastModified: string | null };
+  | { notModified: false; title?: string; articles: NormalizedArticle[]; etag: string | null; lastModified: string | null };
 
 /**
  * Fetch and parse an RSS/Atom feed. Throws if the feed can't be fetched or isn't valid,
@@ -210,6 +210,7 @@ export async function parseFeed(rssUrl: string, cache: FeedCacheHeaders = {}): P
 
   return {
     notModified: false,
+    title: feed.title?.trim(),
     articles,
     etag: res.headers.get('etag'),
     lastModified: res.headers.get('last-modified'),

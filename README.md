@@ -84,6 +84,7 @@ Useful commands:
 ```bash
 npm run feeds:health                  # failing, broken and stale feeds
 npm run feeds:discover -- <website>   # which feed and logo a website resolves to
+npm run discover:candidates           # suggest new blogs from Hacker News, Lobsters and links in stored posts
 npm run sync:scheduled                # one sync-and-classify pass, as GitHub Actions runs it
 npm run eval:classify                 # score the configured LLM against the labelled articles
 ```
@@ -114,10 +115,11 @@ Pushing to `main` deploys the site, and a change to `sources.yaml` applies itsel
 
 ## Tests
 
-`npm test` runs all five suites, and GitHub Actions runs them, plus a type check and a production build, on every push to `main` and every pull request ([`test.yml`](.github/workflows/test.yml)), against fresh Postgres and Redis containers.
+`npm test` runs all six suites, and GitHub Actions runs them, plus a type check and a production build, on every push to `main` and every pull request ([`test.yml`](.github/workflows/test.yml)), against fresh Postgres and Redis containers.
 
 ```bash
 npm run test:tags       # keyword tagging rules
+npm run test:candidates # how candidate blogs are grouped by company and recognised
 npm run test:sync       # feed sync, health states, discovery and retries, against real Postgres and Redis
 npm run test:classify   # classifier error handling: rate limits, outages, bad answers
 npm run test:alerts     # broken-feed issues opening, de-duplicating and closing
