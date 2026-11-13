@@ -1,14 +1,18 @@
 import { db } from './db';
 
+const MIN_PREFIX_LENGTH = 3;
+
 /**
  * Turn what someone typed into a Postgres full-text query. Only letters and digits are kept, so any
  * input is safe. Words are stemmed ("caching" also finds "cache"), every word must match, and the last
- * one matches as a prefix so results keep up while typing.
+ * one matches as a prefix so results keep up while typing, once it has 3 letters ("c" alone would match
+ * nearly everything).
  */
 export function toSearchQuery(input: string): string | null {
   const words = input.toLowerCase().match(/[a-z0-9]+/g);
+  const last = words ? words.length - 1 : -1;
   if (!words) return null;
-  return words.map((word, i) => (i === words.length - 1 ? `${word}:*` : word)).join(' & ');
+  return words.map((word, i) => (i === last && word.length >= MIN_PREFIX_LENGTH ? `${word}:*` : word)).join(' & ');
 }
 
 /**

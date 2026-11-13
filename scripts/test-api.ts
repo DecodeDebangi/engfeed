@@ -91,6 +91,7 @@ async function main() {
     check('"cached" finds the same posts as "caching"', (await searchIds('cached')).length === 2);
     check('a half-typed last word matches as a prefix', (await searchIds('caching lay')).join() === cachingTitle.id);
     check('every word must match', (await searchIds('caching kubernetes')).length === 0);
+    check('a one- or two-letter last word is not a prefix, so it can\'t match everything', (await searchIds('w')).length === 0 && (await searchIds('ca')).length === 0);
     const odd = await getArticles(get(`/api/articles?company=${ACTIVE_SLUG}&search=${encodeURIComponent(`c++ & | ! ' "):*`)}`));
     check('search input with symbols is handled safely', odd.status === 200, odd.status);
     const symbolsOnly = await getArticles(get(`/api/articles?company=${ACTIVE_SLUG}&search=${encodeURIComponent('!!! ***')}`));
