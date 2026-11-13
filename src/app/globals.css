@@ -137,10 +137,13 @@ body {
   font-weight: 600 !important;
 }
 
-.prose-paper pre,
-.prose-paper pre * {
+.prose-paper pre {
   color: #f8fafc !important;
   background-color: #0f172a !important;
+}
+
+.prose-paper pre * {
+  color: #f8fafc !important;
 }
 
 .prose-paper blockquote,
@@ -211,10 +214,13 @@ body {
   font-weight: 600 !important;
 }
 
-.prose-sepia pre,
-.prose-sepia pre * {
+.prose-sepia pre {
   color: #f5ebd6 !important;
   background-color: #2b2014 !important;
+}
+
+.prose-sepia pre * {
+  color: #f5ebd6 !important;
 }
 
 .prose-sepia blockquote,
@@ -284,10 +290,13 @@ body {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
 }
 
-.prose-night pre,
-.prose-night pre * {
+.prose-night pre {
   color: #f8fafc !important;
   background-color: #020617 !important;
+}
+
+.prose-night pre * {
+  color: #f8fafc !important;
 }
 
 .prose-night blockquote,
@@ -315,4 +324,40 @@ body {
 /* Legacy fallback */
 .prose-custom {
   @apply prose-night;
+}
+
+/* Code blocks in the reader, all themes. The inline-code rules above (padding, highlight, bold) must
+   not apply inside a block, or every line gets its own box; long lines scroll inside the block
+   instead of widening the reader. */
+.prose-paper pre,
+.prose-sepia pre,
+.prose-night pre {
+  overflow-x: auto;
+  max-width: 100%;
+  padding: 1rem 1.25rem;
+  margin: 1.25rem 0;
+  border-radius: 0.75rem;
+  font-size: 0.85em;
+  line-height: 1.6;
+  white-space: pre;
+}
+
+.prose-paper pre code,
+.prose-sepia pre code,
+.prose-night pre code {
+  display: block;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  font-weight: 400 !important;
+  white-space: inherit;
+}
+
+/* Wide tables scroll inside the reader too (images already have max-width above) */
+.prose-paper table,
+.prose-sepia table,
+.prose-night table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
 }
