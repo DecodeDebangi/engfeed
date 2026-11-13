@@ -1,0 +1,78 @@
+name: Suggest blogs
+
+# Once a week, looks for engineering blogs worth following and opens a pull request adding them to
+# sources.yaml. Merging it follows them; closing it, or deleting an entry first, rejects them for good.
+on:
+  schedule:
+    - cron: '41 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: suggest-blogs
+  cancel-in-progress: false
+
+jobs:
+  suggest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # One suggestion PR at a time: an open one waits for review instead of being replaced
+      - name: Check for an open suggestion PR
+        id: open
+        run: echo "number=$(gh pr list --head blog-suggestions --state open --json number --jq '.[0].number // empty')" >> "$GITHUB_OUTPUT"
+
+      - if: steps.open.outputs.number != ''
+        run: echo "Suggestion PR #${{ steps.open.outputs.number }} is still open; nothing to do until it's merged or closed."
+
+      - if: steps.open.outputs.number == ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - if: steps.open.outputs.number == ''
+        run: npm ci
+
+      # Model answers are cached per blog and newest post, so each week only asks about blogs that changed
+      - if: steps.open.outputs.number == ''
+        uses: actions/cache@v4
+        with:
+          path: .cache/candidate-assessments.json
+          key: candidate-assessments-${{ github.run_id }}
+          restore-keys: candidate-assessments-
+
+      - if: steps.open.outputs.number == ''
+        run: npm run discover:candidates -- --apply
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          LLM_MODEL: ${{ secrets.LLM_MODEL }}
+          LLM_BASE_URL: ${{ secrets.LLM_BASE_URL }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LLM_MIN_INTERVAL_MS: '6000'
+
+      - if: steps.open.outputs.number == ''
+        name: Open the pull request
+        run: |
+          if git diff --quiet sources.yaml; then
+            echo "Nothing new to suggest this week."
+            exit 0
+          fi
+          git config user.name "Debangi"
+          git config user.email "debangiofficial@gmail.com"
+          git switch -C blog-suggestions
+          git add sources.yaml
+          git commit -m "feat: suggest new blogs to follow"
+          git push --force origin blog-suggestions
+          gh pr create --base main --head blog-suggestions \
+            --title "Suggested blogs to follow, week of $(date +%Y-%m-%d)" \
+            --body-file .cache/blog-suggestions.md

@@ -1,0 +1,10 @@
+# Blogs `npm run discover:candidates` should never suggest, by site: the registrable domain
+# (example.com), or the publication on a shared host (medium.com/acme-engineering, someone.github.io).
+#
+# You rarely need this file. Closing a weekly suggestion PR, or deleting an entry from one before
+# merging, rejects those blogs automatically. List a blog here to rule it out before it's ever suggested.
+#
+# - site: example.com
+#   reason: product announcements only
+
+[]

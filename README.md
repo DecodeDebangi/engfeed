@@ -26,6 +26,7 @@ flowchart LR
 ```
 
 - **Curated list:** blogs live in [`sources.yaml`](sources.yaml) with a name, website and category. The feed URL and logo are discovered from the site (its `<link rel="alternate">` tags, then common feed paths), so 49 of the 74 blogs need no feed URL at all. The other 25 pin one, usually because discovery would pick the whole company blog instead of its engineering section. Removing a blog retires it: polling stops and its articles stay.
+- **New blogs:** every Monday a workflow ([`suggest-blogs.yml`](.github/workflows/suggest-blogs.yml)) looks for blogs worth following in the last 90 days of Hacker News and Lobsters, and in links from followed blogs. It checks each candidate for an active feed, asks the LLM what kind of blog it is, and applies fixed rules ([`assess.ts`](src/lib/candidates/assess.ts)): company engineering blogs where at least half the recent posts are technical, and personal blogs that have drawn attention more than once. The ones that pass arrive as a pull request adding them to `sources.yaml`. Merging it follows them; closing it, or deleting an entry first, rejects them, and they aren't suggested again. [`rejected-candidates.yaml`](rejected-candidates.yaml) rules out others by hand.
 - **Sync:** every feed is polled with `ETag`/`Last-Modified`, so unchanged feeds cost one small request. Posts are cleaned with `sanitize-html`, de-duplicated by a hash of their id, and given keyword topic tags that match whole words only.
 - **Feed health:** a failed poll marks the feed `FAILING`, and 5 failures in a row mark it `BROKEN` (the local worker also retries each poll first). A broken feed whose URL was discovered is re-discovered automatically; a pinned one gets a suggested replacement in `npm run feeds:health`. The scheduled job also opens a GitHub issue (label `broken-feed`) when a feed breaks, and closes it when the feed recovers or the blog is retired.
 - **Classifier:** new posts go to an LLM in batches of 10 with their title, blog and first 800 characters. It returns one of four kinds and topic tags from a fixed list; anything else in the answer is discarded. A rate limit or outage pauses the run without penalising articles, and a post whose answers keep failing is skipped after 3 tries. It works with any OpenAI-compatible API, and without one the feed still works, unfiltered.
@@ -84,7 +85,7 @@ Useful commands:
 ```bash
 npm run feeds:health                  # failing, broken and stale feeds
 npm run feeds:discover -- <website>   # which feed and logo a website resolves to
-npm run discover:candidates           # suggest new blogs from Hacker News, Lobsters and links in stored posts
+npm run discover:candidates           # suggest new blogs from Hacker News, Lobsters and links in stored posts (--apply adds them to sources.yaml)
 npm run sync:scheduled                # one sync-and-classify pass, as GitHub Actions runs it
 npm run eval:classify                 # score the configured LLM against the labelled articles
 ```
@@ -98,7 +99,7 @@ The live site uses Vercel and Neon on their free plans, with GitHub Actions doin
 3. **Vercel:** import the repo and set `DATABASE_URL`, `DIRECT_URL` and `ADMIN_API_KEY`. Leave `NEXT_PUBLIC_ENABLE_ADMIN_SYNC` unset so the sync button stays hidden, and `REDIS_URL` unset unless you add a Redis cache such as Upstash.
 4. **GitHub Actions secrets:** `DATABASE_URL`, `DIRECT_URL`, `LLM_MODEL`, `LLM_BASE_URL` and `LLM_API_KEY`.
 
-Pushing to `main` deploys the site, and a change to `sources.yaml` applies itself to the database ([`seed-sources.yml`](.github/workflows/seed-sources.yml)). Schema changes are applied by hand with `npx prisma db push`, followed by `npm run db:search`. GitHub pauses scheduled workflows on public repos after 60 days without activity.
+Pushing to `main` deploys the site, and a change to `sources.yaml` applies itself to the database ([`seed-sources.yml`](.github/workflows/seed-sources.yml)). For the weekly blog suggestions, allow Actions to open pull requests (Settings → Actions → General → Workflow permissions). Schema changes are applied by hand with `npx prisma db push`, followed by `npm run db:search`. GitHub pauses scheduled workflows on public repos after 60 days without activity.
 
 ## API
 
@@ -119,7 +120,7 @@ Pushing to `main` deploys the site, and a change to `sources.yaml` applies itsel
 
 ```bash
 npm run test:tags       # keyword tagging rules
-npm run test:candidates # how candidate blogs are grouped by company and recognised
+npm run test:candidates # how candidate blogs are recognised, judged and written into sources.yaml
 npm run test:sync       # feed sync, health states, discovery and retries, against real Postgres and Redis
 npm run test:classify   # classifier error handling: rate limits, outages, bad answers
 npm run test:alerts     # broken-feed issues opening, de-duplicating and closing

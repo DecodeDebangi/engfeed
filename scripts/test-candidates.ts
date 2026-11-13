@@ -1,5 +1,7 @@
 import { decide, BlogAssessment, Signals } from '../src/lib/candidates/assess';
 import { blogHome, looksLikeBlogPost, siteKey } from '../src/lib/candidates/site-key';
+import { appendSources, candidateMarker, keysFromMarker, pullRequestBody, Suggestion, toSourceEntry, uniqueSlug } from '../src/lib/candidates/suggestions';
+import { parse } from 'yaml';
 
 const KEYS: [string, string | null][] = [
   ['https://blogs.janestreet.com/feed.xml', 'janestreet.com'],
@@ -54,6 +56,24 @@ const DECISIONS: [string, Signals, BlogAssessment | null, boolean][] = [
   ['unassessed blog', active, null, false],
 ];
 for (const [name, signals, assessment, want] of DECISIONS) check(`decide: ${name}`, decide(signals, assessment).suggest, want);
+
+// Suggestion PRs
+const suggestion = (name: string, key: string): Suggestion => ({
+  key, name, websiteUrl: `https://${key}/blog`, category: 'Security', description: 'Notes: on "quoting" & #hashes', reason: 'Company engineering blog, 7/10 engineering posts',
+  evidence: '2 distinct posts on HN/Lobsters', feedUrl: `https://${key}/feed.xml`, postsLastYear: 12, recent: ['A post'],
+});
+const taken = new Set(['acme', 'acme-2']);
+check('a slug already used by a followed or retired blog gets a number', uniqueSlug('acme', taken), 'acme-3');
+check('a name becomes a plain slug', toSourceEntry(suggestion('Ünïcode Labs, Inc.', 'u.dev'), new Set()).slug, 'unicode-labs-inc');
+const existing = '# comment kept\n\n- name: Old\n  slug: old\n  websiteUrl: https://old.dev\n  category: Security\n';
+const appended = appendSources(existing, [toSourceEntry(suggestion('Acme', 'acme.dev'), new Set()), toSourceEntry(suggestion('Beta: Labs', 'beta.dev'), new Set())]);
+const parsed = parse(appended);
+check('appending keeps the existing entries and comments', appended.startsWith(existing.trimEnd()) && parsed[0].slug === 'old', true);
+check('appended entries parse back with awkward characters intact', parsed[2]?.name === 'Beta: Labs' && parsed[1]?.description === 'Notes: on "quoting" & #hashes', true);
+const body = pullRequestBody([suggestion('Acme', 'acme.dev'), suggestion('Medium pub', 'medium.com/acme-eng')]);
+check('the PR body records which blogs it suggested', keysFromMarker(body).join(), 'acme.dev,medium.com/acme-eng');
+check('a body without the marker suggests nothing', keysFromMarker('Some other PR').length, 0);
+check('the marker survives a round trip', keysFromMarker(`edited text\n${candidateMarker(['a.dev'])}`).join(), 'a.dev');
 
 console.log(failures === 0 ? '\n✅ All candidate checks passed' : `\n❌ ${failures} candidate checks failed`);
 process.exit(failures > 0 ? 1 : 0);

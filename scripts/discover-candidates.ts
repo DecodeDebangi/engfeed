@@ -2,17 +2,21 @@ import fs from 'fs';
 import path from 'path';
 import { assessBlog, BlogAssessment, decide } from '../src/lib/candidates/assess';
 import { blogHome, looksLikeBlogPost, siteKey } from '../src/lib/candidates/site-key';
+import { appendSources, entriesYaml, keysFromClosedPullRequests, loadRejectedList, pullRequestBody, Suggestion, toSourceEntry } from '../src/lib/candidates/suggestions';
 import { LlmUnavailableError } from '../src/lib/classifier';
 import { db } from '../src/lib/db';
 import { discoverFeed } from '../src/lib/feed-discovery';
 import { parseFeed } from '../src/lib/rss-parser';
 import { loadSources } from '../src/lib/sources';
 
-// Usage: npm run discover:candidates -- [--days 90] [--top 40]
+// Usage: npm run discover:candidates -- [--days 90] [--top 40] [--apply]
 // Finds engineering blogs worth following that aren't in sources.yaml yet, from Hacker News, Lobsters,
 // links inside posts already stored, and candidate-blogs.txt. Checks the top ones for an active feed,
 // asks the LLM what kind of blog each is, and suggests company engineering blogs and well-known personal
-// blogs (see RULES in src/lib/candidates/assess.ts). It changes nothing; you decide what to add.
+// blogs (see RULES in src/lib/candidates/assess.ts). Blogs in rejected-candidates.yaml, or in a closed
+// suggestion PR (when GITHUB_TOKEN and GITHUB_REPOSITORY are set), are never suggested.
+// It changes nothing unless --apply is given; then it adds the suggestions to sources.yaml and writes the
+// pull request description to .cache/blog-suggestions.md, as the weekly suggest-blogs workflow does.
 const args = process.argv.slice(2);
 const option = (name: string, fallback: number) => {
   const i = args.indexOf(`--${name}`);
@@ -20,6 +24,8 @@ const option = (name: string, fallback: number) => {
 };
 const DAYS = option('days', 90);
 const TOP = option('top', 40);
+const APPLY = args.includes('--apply');
+const PR_BODY_FILE = path.join(process.cwd(), '.cache/blog-suggestions.md');
 const ACTIVE_WITHIN_DAYS = 90;
 const QUALIFY_CONCURRENCY = 6;
 
@@ -163,19 +169,26 @@ async function main() {
     candidateList: fromCandidateList(),
   };
 
-  // Anything already followed or retired, by any of its URLs, is skipped
+  // Anything already followed or retired, by any of its URLs, is skipped, and so is anything rejected
   const known = new Set<string>();
-  const companies = await db.company.findMany({ select: { websiteUrl: true, rssUrl: true } });
+  const companies = await db.company.findMany({ select: { websiteUrl: true, rssUrl: true, slug: true } });
   for (const url of [...companies.flatMap((c) => [c.websiteUrl, c.rssUrl]), ...loadSources().flatMap((s) => [s.websiteUrl, s.rssUrl ?? ''])]) {
     const key = siteKey(url);
     if (key) known.add(key);
   }
+  const rejectedList = loadRejectedList();
+  const rejectedInPrs = await keysFromClosedPullRequests();
+  const rejected = new Set([...rejectedList, ...(rejectedInPrs ?? [])].filter((key) => !known.has(key)));
 
-  const ranked = [...candidates.values()].filter((e) => !known.has(e.key)).sort((a, b) => score(b) - score(a));
+  const ranked = [...candidates.values()].filter((e) => !known.has(e.key) && !rejected.has(e.key)).sort((a, b) => score(b) - score(a));
   console.log(
     `Sources: ${counts.hackerNews} Hacker News stories and ${counts.lobsters} Lobsters stories from the last ${DAYS} days, links in ${counts.storedPosts} stored posts, ${counts.candidateList} URLs in candidate-blogs.txt.`
   );
-  console.log(`${candidates.size} blogs found, ${candidates.size - ranked.length} already followed or retired. Checking the top ${Math.min(TOP, ranked.length)} for a working feed...\n`);
+  console.log(
+    `${candidates.size} blogs found, ${candidates.size - ranked.length} already followed, retired or rejected ` +
+      `(${rejected.size} rejected: ${rejectedList.size} in rejected-candidates.yaml, ${rejectedInPrs ? `${rejectedInPrs.size} in closed suggestion PRs` : 'closed suggestion PRs not checked without GITHUB_TOKEN'}). ` +
+      `Checking the top ${Math.min(TOP, ranked.length)} for a working feed...\n`
+  );
 
   const top = ranked.slice(0, TOP);
   const results: { e: Evidence; q: Awaited<ReturnType<typeof qualify>> }[] = [];
@@ -222,17 +235,18 @@ async function main() {
   fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
   fs.writeFileSync(CACHE_FILE, JSON.stringify(assessmentCache, null, 1));
 
-  const describe = ({ e, q, assessment, reason }: (typeof decided)[number]) => {
-    const signals = [
-      e.storyUrls.size ? `${e.storyUrls.size} distinct posts on HN/Lobsters` : '',
+  const evidenceText = (e: Evidence) =>
+    [
+      e.storyUrls.size ? `${e.storyUrls.size === 1 ? '1 post' : `${e.storyUrls.size} distinct posts`} on HN/Lobsters` : '',
       e.hnPosts ? `HN ${e.hnPosts} / ${e.hnPoints} pts` : '',
       e.lobstersPosts ? `Lobsters ${e.lobstersPosts} / ${e.lobstersScore} pts` : '',
       e.citedBy.size ? `cited by ${e.citedBy.size} followed blogs (${[...e.citedBy].slice(0, 3).join(', ')})` : '',
       e.inCandidateList ? 'in candidate-blogs.txt' : '',
     ].filter(Boolean).join('; ');
+  const describe = ({ e, q, assessment, reason }: (typeof decided)[number]) => {
     console.log(`- ${assessment?.owner || q.title || e.key} | ${e.home}`);
     console.log(`    ${reason}${assessment ? ` | ${assessment.category}` : ''}`);
-    console.log(`    evidence: ${signals}`);
+    console.log(`    evidence: ${evidenceText(e)}`);
     console.log(`    feed: ${q.feedUrl} | newest ${q.newest?.toISOString().slice(0, 10) ?? '?'} | ${q.postsLastYear} posts in the last year`);
     if (q.recent.length) console.log(`    recent: ${q.recent.map((t) => `"${t.slice(0, 60)}"`).join(' · ')}`);
   };
@@ -246,13 +260,37 @@ async function main() {
   console.log(`\n=== NO FEED FOUND (${noFeed.length}): ${noFeed.map((r) => r.e.home).join(', ')}`);
   if (llmStopped) console.log(`\n⏸️ Stopped asking the LLM: ${llmStopped}. The rest are marked "not assessed"; run again later.`);
 
-  if (suggested.length) {
-    console.log('\n=== sources.yaml snippet for the suggested ones (delete any you don\'t want)');
-    for (const { e, q, assessment } of suggested) {
-      const slug = e.key.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      console.log(`\n- name: ${q.title ?? e.key}\n  slug: ${slug}\n  websiteUrl: ${e.home}\n  category: ${assessment?.category ?? 'TODO'}`);
-    }
+  if (!suggested.length) {
+    if (APPLY && fs.existsSync(PR_BODY_FILE)) fs.rmSync(PR_BODY_FILE);
+    return;
   }
+
+  const suggestions: Suggestion[] = suggested.map(({ e, q, assessment, reason }) => ({
+    key: e.key,
+    name: assessment?.name || assessment?.owner || q.title || e.key,
+    websiteUrl: e.home,
+    category: assessment?.category ?? 'Personal Blogs',
+    description: assessment?.description,
+    reason: reason.charAt(0).toUpperCase() + reason.slice(1),
+    evidence: evidenceText(e),
+    feedUrl: q.feedUrl!,
+    postsLastYear: q.postsLastYear,
+    recent: q.recent,
+  }));
+  // Slugs must not clash with any followed or retired blog
+  const taken = new Set([...companies.map((c) => c.slug), ...loadSources().map((s) => s.slug)]);
+  const entries = suggestions.map((s) => toSourceEntry(s, taken));
+  if (!APPLY) {
+    console.log("\n=== sources.yaml entries for the suggested ones (delete any you don't want), or rerun with --apply\n");
+    console.log(entriesYaml(entries));
+    return;
+  }
+  const sourcesFile = path.join(process.cwd(), 'sources.yaml');
+  fs.writeFileSync(sourcesFile, appendSources(fs.readFileSync(sourcesFile, 'utf8'), entries));
+  loadSources(); // fails loudly if the file no longer parses
+  const note = llmStopped ? `The LLM stopped part-way (${llmStopped}), so some blogs weren't assessed this week; they'll be checked next week.` : undefined;
+  fs.writeFileSync(PR_BODY_FILE, pullRequestBody(suggestions, note));
+  console.log(`\n✍️ Added ${entries.length} to sources.yaml (${entries.map((e) => e.slug).join(', ')}) and wrote ${path.relative(process.cwd(), PR_BODY_FILE)}.`);
 }
 
 main()
