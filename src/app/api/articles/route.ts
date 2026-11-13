@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { redis } from '@/lib/redis';
 import { getVisitorId } from '@/lib/visitor';
 import { ENGINEERING_ONLY } from '@/lib/article-filters';
+import { searchArticleIds, toSearchQuery } from '@/lib/search';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,6 +33,30 @@ async function withVisitorState<T extends { data: { id: string }[] }>(payload: T
   };
 }
 
+const ARTICLE_SELECT = {
+  id: true,
+  title: true,
+  slug: true,
+  url: true,
+  summary: true,
+  publishedAt: true,
+  readTime: true,
+  tags: true,
+  kind: true,
+  viewsCount: true,
+  createdAt: true,
+  company: {
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      logoUrl: true,
+      category: true,
+      websiteUrl: true,
+    },
+  },
+} as const;
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -39,7 +64,8 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '20', 10)));
     const companySlug = searchParams.get('company') || undefined;
     const tag = searchParams.get('tag') || undefined;
-    const search = searchParams.get('search') || undefined;
+    const search = searchParams.get('search')?.trim() || undefined;
+    const searchQuery = search ? toSearchQuery(search) : null;
     const sort = searchParams.get('sort') === 'asc' ? 'asc' : 'desc';
     const userId = getVisitorId(request);
     const bookmarkedOnly = searchParams.get('bookmarked') === 'true';
@@ -78,13 +104,6 @@ export async function GET(request: NextRequest) {
       whereClause.tags = { has: tag };
     }
 
-    if (search) {
-      whereClause.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { summary: { contains: search, mode: 'insensitive' } },
-      ];
-    }
-
     if (bookmarkedOnly) {
       whereClause.bookmarks = {
         some: { userId },
@@ -97,39 +116,35 @@ export async function GET(request: NextRequest) {
       whereClause.AND = [ENGINEERING_ONLY];
     }
 
-    // Query DB for articles and total count
-    const [articles, totalCount] = await Promise.all([
-      db.article.findMany({
-        where: whereClause,
-        orderBy: { publishedAt: sort },
-        skip,
-        take: limit,
-        select: {
-          id: true,
-          title: true,
-          slug: true,
-          url: true,
-          summary: true,
-          publishedAt: true,
-          readTime: true,
-          tags: true,
-          kind: true,
-          viewsCount: true,
-          createdAt: true,
-          company: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-              logoUrl: true,
-              category: true,
-              websiteUrl: true,
-            },
-          },
-        },
-      }),
-      db.article.count({ where: whereClause }),
-    ]);
+    // A search is ranked by relevance using the full-text index; everything else is newest first
+    let articles;
+    let totalCount;
+    if (search) {
+      const { ids, total } = searchQuery
+        ? await searchArticleIds({
+            query: searchQuery,
+            companySlug,
+            tag,
+            bookmarkedBy: bookmarkedOnly ? userId : undefined,
+            skip,
+            take: limit,
+          })
+        : { ids: [], total: 0 };
+      const found = await db.article.findMany({ where: { id: { in: ids } }, select: ARTICLE_SELECT });
+      articles = ids.map((id) => found.find((article) => article.id === id)!).filter(Boolean);
+      totalCount = total;
+    } else {
+      [articles, totalCount] = await Promise.all([
+        db.article.findMany({
+          where: whereClause,
+          orderBy: { publishedAt: sort },
+          skip,
+          take: limit,
+          select: ARTICLE_SELECT,
+        }),
+        db.article.count({ where: whereClause }),
+      ]);
+    }
 
     const totalPages = Math.ceil(totalCount / limit);
 

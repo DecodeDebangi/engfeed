@@ -64,6 +64,9 @@ model Article {
   readTime    Int       @default(3) // in minutes
   tags        String[]  // Tech tags e.g. ["AI", "Architecture", "Distributed Systems"]
   viewsCount  Int       @default(0)
+  // Full-text search: a stored, generated column (title weighted above summary). Prisma can't declare
+  // generated columns, so prisma/search.sql turns it into one; run `npm run db:search` after `db push`.
+  searchVector Unsupported("tsvector")?
   kind        ArticleKind? // null until classified
   classifiedAt DateTime?
   classifyAttempts Int    @default(0)
@@ -77,6 +80,7 @@ model Article {
   @@index([companyId])
   @@index([kind])
   @@index([publishedAt(sort: Desc)])
+  @@index([searchVector], type: Gin)
   @@index([slug])
 }
 

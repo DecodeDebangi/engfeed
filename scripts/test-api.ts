@@ -47,7 +47,7 @@ async function main() {
     },
   });
   // Newest-but-not-future dates, so the posts head the RSS feed
-  const article = (title: string, kind: 'ENGINEERING' | 'ANNOUNCEMENT' | null, minutesAgo: number) =>
+  const article = (title: string, kind: 'ENGINEERING' | 'ANNOUNCEMENT' | null, minutesAgo: number, summary = `${title} summary`) =>
     db.article.create({
       data: {
         companyId: company.id,
@@ -55,7 +55,7 @@ async function main() {
         slug: `test-api-${title.toLowerCase().replace(/\W+/g, '-')}-${RUN}`,
         url: `https://test-api.invalid/${RUN}/${title.toLowerCase().replace(/\W+/g, '-')}`,
         guidHash: `test-api-${title}-${RUN}`,
-        summary: `${title} summary`,
+        summary,
         content: `<p>${title} body</p>`,
         publishedAt: new Date(Date.now() - minutesAgo * 60_000),
         tags: ['Databases'],
@@ -65,16 +65,36 @@ async function main() {
   const engineering = await article('Engineering post', 'ENGINEERING', 1);
   const announcement = await article('Announcement post', 'ANNOUNCEMENT', 2);
   const unclassified = await article('Unclassified post', null, 3);
+  // For search: one mentions caching in its title, the other only in its summary
+  const cachingTitle = await article('How we built a caching layer', 'ENGINEERING', 600);
+  const cachingSummary = await article('Weekly roundup', 'ENGINEERING', 5, 'Notes on caching, queues and other things');
 
   try {
     // Articles
     const list = (query: string) => getArticles(get(`/api/articles?company=${ACTIVE_SLUG}&${query}`)).then((r) => r.json());
     const defaultList = await list('limit=10');
+    const searchIds = async (q: string) => (await list(`limit=10&search=${encodeURIComponent(q)}`)).data.map((a: { id: string }) => a.id);
     const ids = (data: { data: { id: string }[] }) => data.data.map((a) => a.id).sort();
-    check('the feed hides posts classified as non-engineering', ids(defaultList).join() === [engineering.id, unclassified.id].sort().join(), ids(defaultList));
-    check('kinds=all shows every post', (await list('limit=10&kinds=all')).data.length === 3);
+    check(
+      'the feed hides posts classified as non-engineering',
+      !ids(defaultList).includes(announcement.id) && [engineering, unclassified, cachingTitle, cachingSummary].every((a) => ids(defaultList).includes(a.id)),
+      ids(defaultList)
+    );
+    check('kinds=all shows every post', (await list('limit=10&kinds=all')).data.length === 5);
     check('search shows hidden kinds too', (await list(`search=Announcement`)).data.some((a: { id: string }) => a.id === announcement.id));
     check('the newest post comes first', defaultList.data[0]?.id === engineering.id, defaultList.data[0]?.title);
+
+    // Search
+    const caching = await searchIds('caching');
+    check('search finds word forms: "caching" matches title and summary', caching.length === 2, caching);
+    check('search ranks a title match above a newer summary-only match', caching[0] === cachingTitle.id && caching[1] === cachingSummary.id, caching);
+    check('"cached" finds the same posts as "caching"', (await searchIds('cached')).length === 2);
+    check('a half-typed last word matches as a prefix', (await searchIds('caching lay')).join() === cachingTitle.id);
+    check('every word must match', (await searchIds('caching kubernetes')).length === 0);
+    const odd = await getArticles(get(`/api/articles?company=${ACTIVE_SLUG}&search=${encodeURIComponent(`c++ & | ! ' "):*`)}`));
+    check('search input with symbols is handled safely', odd.status === 200, odd.status);
+    const symbolsOnly = await getArticles(get(`/api/articles?company=${ACTIVE_SLUG}&search=${encodeURIComponent('!!! ***')}`));
+    check('a search of only symbols returns nothing rather than an error', symbolsOnly.status === 200 && (await symbolsOnly.json()).data.length === 0);
     check('a tag filter returns only posts with that tag', (await list('limit=10&tag=Security')).data.length === 0);
 
     if (redis) {
@@ -109,7 +129,7 @@ async function main() {
     await redis?.del('api:stats:global', 'api:companies:list');
     const companies = await (await getCompanies(get('/api/companies'))).json();
     const listed = companies.data.find((c: { slug: string }) => c.slug === ACTIVE_SLUG);
-    check('the blog list includes active blogs with their article count', listed?.articlesCount === 3, listed);
+    check('the blog list includes active blogs with their article count', listed?.articlesCount === 5, listed);
     check('the blog list leaves out retired blogs', !companies.data.some((c: { slug: string }) => c.slug === RETIRED_SLUG));
     const stats = await (await getStats(get('/api/stats'))).json();
     check('the header counts active blogs only', stats.stats.totalCompanies === statsBefore.stats.totalCompanies + 1, { before: statsBefore.stats.totalCompanies, after: stats.stats.totalCompanies });

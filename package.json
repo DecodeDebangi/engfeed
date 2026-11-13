@@ -12,6 +12,7 @@
     "db:studio": "prisma studio",
     "db:seed": "prisma db seed",
     "db:retag": "tsx scripts/retag-articles.ts",
+    "db:search": "prisma db execute --file prisma/search.sql --schema prisma/schema.prisma",
     "feeds:health": "tsx scripts/feed-health.ts",
     "feeds:discover": "tsx scripts/discover-feed.ts",
     "classify": "tsx scripts/classify-articles.ts",

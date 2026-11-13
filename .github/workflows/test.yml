@@ -42,6 +42,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx prisma db push --skip-generate
+      - run: npm run db:search
       - run: npx tsc --noEmit
       - run: npm test
       - run: npm run build

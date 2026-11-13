@@ -30,6 +30,7 @@ flowchart LR
 - **Feed health:** a failed poll marks the feed `FAILING`, and 5 failures in a row mark it `BROKEN` (the local worker also retries each poll first). A broken feed whose URL was discovered is re-discovered automatically; a pinned one gets a suggested replacement in `npm run feeds:health`. The scheduled job also opens a GitHub issue (label `broken-feed`) when a feed breaks, and closes it when the feed recovers or the blog is retired.
 - **Classifier:** new posts go to an LLM in batches of 10 with their title, blog and first 800 characters. It returns one of four kinds and topic tags from a fixed list; anything else in the answer is discarded. A rate limit or outage pauses the run without penalising articles, and a post whose answers keep failing is skipped after 3 tries. It works with any OpenAI-compatible API, and without one the feed still works, unfiltered.
 - **RSS:** [`/feed.xml`](https://engfeed.vercel.app/feed.xml) has the latest 50 engineering posts, and `/feed/<topic>.xml` the same for one topic, such as [`/feed/databases.xml`](https://engfeed.vercel.app/feed/databases.xml). Items link to the original posts, and Vercel's CDN caches each feed for 30 minutes so readers polling it don't wake the database.
+- **Search:** Postgres full-text search over titles and summaries, with title matches ranked first. Words are stemmed, so "caching" also finds "cache", and the last word matches as a prefix while typing. A trigger keeps an indexed `tsvector` column up to date ([`prisma/search.sql`](prisma/search.sql)); searches take a few milliseconds.
 - **Site:** a Next.js app on Vercel reading Postgres on Neon. Bookmarks and read marks are kept per browser with a random, httpOnly cookie, so visitors don't share them. A Redis cache is supported but optional, and the live site runs without one.
 
 ## Results
@@ -70,6 +71,7 @@ npm install
 cp .env.example .env            # set ADMIN_API_KEY with: openssl rand -hex 32
 docker compose up -d            # Postgres and Redis
 npx prisma db push
+npm run db:search               # full-text search column, trigger and index
 npm run db:seed                 # loads sources.yaml and discovers feeds
 npm run test:rss                # first sync of every feed
 npm run dev                     # http://localhost:3000
@@ -91,11 +93,11 @@ npm run eval:classify                 # score the configured LLM against the lab
 The live site uses Vercel and Neon on their free plans, with GitHub Actions doing the work a background worker would do elsewhere ([`sync-feeds.yml`](.github/workflows/sync-feeds.yml)).
 
 1. **Neon:** create a project and copy its pooled and direct connection strings. Add `pgbouncer=true` to the pooled one.
-2. **Schema and data:** with `DATABASE_URL` and `DIRECT_URL` pointing at Neon, run `npx prisma db push`, then `npm run db:seed` for an empty start or `pg_restore` a dump of a local database.
+2. **Schema and data:** with `DATABASE_URL` and `DIRECT_URL` pointing at Neon, run `npx prisma db push` and `npm run db:search`, then `npm run db:seed` for an empty start or `pg_restore` a dump of a local database.
 3. **Vercel:** import the repo and set `DATABASE_URL`, `DIRECT_URL` and `ADMIN_API_KEY`. Leave `NEXT_PUBLIC_ENABLE_ADMIN_SYNC` unset so the sync button stays hidden, and `REDIS_URL` unset unless you add a Redis cache such as Upstash.
 4. **GitHub Actions secrets:** `DATABASE_URL`, `DIRECT_URL`, `LLM_MODEL`, `LLM_BASE_URL` and `LLM_API_KEY`.
 
-Pushing to `main` deploys the site, and a change to `sources.yaml` applies itself to the database ([`seed-sources.yml`](.github/workflows/seed-sources.yml)). Schema changes are applied by hand with `npx prisma db push`. GitHub pauses scheduled workflows on public repos after 60 days without activity.
+Pushing to `main` deploys the site, and a change to `sources.yaml` applies itself to the database ([`seed-sources.yml`](.github/workflows/seed-sources.yml)). Schema changes are applied by hand with `npx prisma db push`, followed by `npm run db:search`. GitHub pauses scheduled workflows on public repos after 60 days without activity.
 
 ## API
 
@@ -119,7 +121,7 @@ npm run test:tags       # keyword tagging rules
 npm run test:sync       # feed sync, health states, discovery and retries, against real Postgres and Redis
 npm run test:classify   # classifier error handling: rate limits, outages, bad answers
 npm run test:alerts     # broken-feed issues opening, de-duplicating and closing
-npm run test:api        # API routes, filters, per-visitor bookmarks, admin key and RSS feeds
+npm run test:api        # API routes, filters, search, per-visitor bookmarks, admin key and RSS feeds
 ```
 
 The suites create temporary records and remove them afterwards, so they never touch real articles; `test:sync` and `test:classify` use a local stand-in server instead of real feeds or a real LLM, and `test:alerts` a stand-in for the GitHub API.
