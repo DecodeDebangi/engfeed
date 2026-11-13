@@ -237,13 +237,6 @@
   category: DevTools
   description: WebGL multi-player canvas architecture, WebAssembly, design systems, and frontend performance.
 
-- name: Robinhood Engineering
-  slug: robinhood
-  websiteUrl: https://newsroom.robinhood.com
-  category: Fintech
-  description: Zero-commission trading infrastructure, market data streaming, Go backend, and mobile security.
-  rssUrl: https://medium.com/feed/robinhood-engineering
-
 - name: Trail of Bits Blog
   slug: trailofbits
   websiteUrl: https://blog.trailofbits.com
@@ -263,12 +256,6 @@
   websiteUrl: https://auth0.com/blog
   category: Security
   description: Identity management, OAuth 2.0, OpenID Connect, JWT security, and authentication flows.
-
-- name: Bandcamp Tech
-  slug: bandcamp
-  websiteUrl: https://bandcamptech.wordpress.com/
-  category: DevTools
-  description: Music streaming technology, artist platform engineering, and web development at Bandcamp.
 
 - name: Canva Engineering
   slug: canva
@@ -322,24 +309,12 @@
   description: Travel platform engineering, cloud infrastructure, AI travel search, and microfrontends.
   rssUrl: https://medium.com/feed/expedia-group-tech
 
-- name: Flickr Code
-  slug: flickr
-  websiteUrl: http://code.flickr.net/
-  category: Big Tech
-  description: Photo indexing, image serving at scale, API design, and legacy database engineering.
-
 - name: Foursquare Engineering
   slug: foursquare
   websiteUrl: https://engineering.foursquare.com/
   category: Big Tech
   description: Geospatial indexing, location intelligence, Graph placing algorithms, and mobile SDKs.
   rssUrl: https://foursquare.com/feed/
-
-- name: GoDaddy Engineering
-  slug: godaddy
-  websiteUrl: https://godaddy.github.io/engineering/
-  category: DevTools
-  description: DNS infrastructure, open source tooling, web hosting automation, and Kubernetes platform engineering.
 
 - name: Google AI Research
   slug: google-ai
@@ -352,13 +327,6 @@
   websiteUrl: https://blog.heroku.com/engineering
   category: DevTools
   description: PaaS container orchestration, PostgreSQL managed databases, buildpack ecosystems, and developer experience.
-
-- name: Hootsuite Engineering
-  slug: hootsuite
-  websiteUrl: http://code.hootsuite.com/
-  category: Big Tech
-  description: Social media API integrations, high-throughput message streaming, Scala backend, and microservices.
-  rssUrl: https://medium.com/feed/hootsuite-engineering
 
 - name: Indeed Engineering
   slug: indeed
@@ -381,12 +349,6 @@
   description: Global food marketplace engineering, event-driven architecture, Swift iOS apps, and cloud infrastructure.
   rssUrl: https://medium.com/feed/justeattakeaway-tech
 
-- name: Khan Academy Engineering
-  slug: khan-academy
-  websiteUrl: http://engineering.khanacademy.org/
-  category: DevTools
-  description: EdTech engineering, Go backend migration, GraphQL schemas, React frontend, and learning analytics.
-
 - name: Medium Engineering
   slug: medium
   websiteUrl: https://medium.com/medium-eng
@@ -399,12 +361,6 @@
   websiteUrl: https://developers.mews.com/blog/
   category: DevTools
   description: Hospitality cloud APIs, property management platform tech, payments processing, and C#/.NET.
-
-- name: Nextdoor Engineering
-  slug: nextdoor
-  websiteUrl: https://engblog.nextdoor.com/
-  category: Big Tech
-  description: Hyperlocal graph networks, neighborhood feed indexing, Python/Go backend, and iOS/Android tech.
 
 - name: ngrok Blog
   slug: ngrok
@@ -443,12 +399,6 @@
   category: DevTools
   description: Infinite canvas rendering, WebGL performance, video presentation tech, and frontend architecture.
   rssUrl: https://medium.com/feed/prezi-engineering
-
-- name: Skyscanner Tech
-  slug: skyscanner
-  websiteUrl: http://codevoyagers.com/
-  category: Big Tech
-  description: Flight search aggregation engines, microservices, mobile apps, and high-concurrency travel APIs.
 
 - name: SoundCloud Backstage
   slug: soundcloud
@@ -493,13 +443,6 @@
   websiteUrl: https://engineering.tumblr.com/
   category: Big Tech
   description: Blogging platform architecture, PHP/HPHP, MySQL sharding, and real-time dashboard notification streams.
-
-- name: Vinted Engineering
-  slug: vinted
-  websiteUrl: http://engineering.vinted.com/
-  category: Fintech
-  description: Second-hand marketplace infrastructure, Ruby on Rails scaling, elastic search, and payments tech.
-  rssUrl: http://engineering.vinted.com/atom.xml
 
 - name: Yelp Engineering
   slug: yelp

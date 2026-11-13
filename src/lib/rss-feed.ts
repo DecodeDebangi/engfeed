@@ -27,7 +27,7 @@ export async function buildRssFeed({ siteUrl, selfUrl, tag }: { siteUrl: string;
   });
 
   const title = tag ? `EngFeed: ${tag}` : 'EngFeed: engineering posts';
-  const description = `The latest ${tag ? `${tag} ` : ''}posts from 80 company engineering blogs, with announcements, hiring and marketing filtered out.`;
+  const description = `The latest ${tag ? `${tag} ` : ''}posts from company engineering blogs, with announcements, hiring and marketing filtered out.`;
 
   const items = articles
     .map(
