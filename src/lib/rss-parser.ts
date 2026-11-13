@@ -200,7 +200,9 @@ export async function parseFeed(rssUrl: string, cache: FeedCacheHeaders = {}): P
       guidHash,
       summary: summaryText || title,
       content: sanitizedHtml || rawContent || `<p>${title}</p>`,
-      publishedAt: isNaN(publishedAt.getTime()) ? new Date() : publishedAt,
+      // A missing, invalid or future date (some feeds run slightly ahead) becomes now, so a post never
+      // shows as "in 10 minutes"
+      publishedAt: isNaN(publishedAt.getTime()) || publishedAt > new Date() ? new Date() : publishedAt,
       readTime,
       tags,
     });

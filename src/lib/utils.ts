@@ -26,6 +26,12 @@ export function formatDateFull(dateString: string | Date): string {
   }
 }
 
+// Read time comes from the feed's text, so a feed that only gives an excerpt yields "1 min" (9,496 of
+// 9,499 excerpt-only posts on 2026-11-13). Show it only when it's longer than that, rather than show a wrong number.
+export function isReadTimeKnown(readTime: number): boolean {
+  return readTime > 1;
+}
+
 // URL-safe name for a topic, as used in /feed/<slug>.xml: 'AI & ML' -> 'ai-ml'
 export function topicSlug(tag: string): string {
   return tag.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');

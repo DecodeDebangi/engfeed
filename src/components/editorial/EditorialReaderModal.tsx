@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
+import { CompanyLogo } from './CompanyLogo';
 import { X, ExternalLink, Bookmark, Clock, Check, Copy, ArrowUpRight, Type, Sun, Moon, CheckCircle2 } from 'lucide-react';
 import { ArticleItem } from '../ArticleCard';
-import { formatDateFull } from '@/lib/utils';
+import { formatDateFull, isReadTimeKnown } from '@/lib/utils';
 
 interface EditorialReaderModalProps {
   article: ArticleItem | null;
@@ -144,23 +145,13 @@ export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
           }`}
         >
           <div className="flex items-center gap-3">
-            {article.company.logoUrl ? (
-              <img
-                src={article.company.logoUrl}
-                alt={article.company.name}
-                className="w-7 h-7 rounded-lg object-cover bg-stone-100 border border-stone-200"
-              />
-            ) : (
-              <div className="w-7 h-7 rounded-lg bg-stone-900 text-white flex items-center justify-center font-bold text-xs">
-                {article.company.name.charAt(0)}
-              </div>
-            )}
+            <CompanyLogo name={article.company.name} logoUrl={article.company.logoUrl} />
             <div>
               <span className="text-xs font-serif font-bold block">
                 {article.company.name}
               </span>
               <span className="text-[10px] text-stone-500 block">
-                Editorial Reader • {article.readTime} min read
+                {isReadTimeKnown(article.readTime) ? `Reader view • ${article.readTime} min read` : 'Reader view'}
               </span>
             </div>
           </div>
@@ -324,11 +315,15 @@ export const EditorialReaderModal: React.FC<EditorialReaderModalProps> = ({
 
             <div className={`flex items-center gap-3 text-xs font-sans font-medium ${readerTheme === 'night' ? 'text-stone-400' : 'text-slate-600'}`}>
               <span>Published {formatDateFull(article.publishedAt)}</span>
-              <span>•</span>
-              <span className="flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5" />
-                {article.readTime} min read
-              </span>
+              {isReadTimeKnown(article.readTime) && (
+                <>
+                  <span>•</span>
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-3.5 h-3.5" />
+                    {article.readTime} min read
+                  </span>
+                </>
+              )}
             </div>
           </div>
 

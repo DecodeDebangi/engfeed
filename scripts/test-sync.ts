@@ -5,6 +5,7 @@ import { db } from '../src/lib/db';
 import { createRssWorker, queueConnection, rssQueue } from '../src/lib/queue';
 import { discoverFeed, findLogo } from '../src/lib/feed-discovery';
 import { syncCompanyFeedOnce } from '../src/lib/ingestion';
+import { parseFeed } from '../src/lib/rss-parser';
 
 const TEST_SLUG = 'test-sync-temp-feed';
 const TEST_QUEUE_NAME = 'rss-ingestion-test-queue';
@@ -33,6 +34,9 @@ const server = http.createServer((req, res) => {
       <link rel="alternate" type="application/rss+xml" href="/moved-feed">
       <link rel="icon" href="/icon.png">
     </head></html>`);
+  } else if (req.url === '/future-feed') {
+    res.writeHead(200, { 'Content-Type': 'application/rss+xml' });
+    res.end(FEED_XML.replace('Mon, 02 Nov 2026 10:00:00 GMT', new Date(Date.now() + 3_600_000).toUTCString()));
   } else if (req.url === '/icon.png') {
     res.writeHead(200, { 'Content-Type': 'image/png' });
     res.end('png');
@@ -136,6 +140,9 @@ async function main() {
     const recovered = await syncCompanyFeedOnce(id);
     state = await company();
     check('the switched feed then recovers', !recovered.error && state.feedStatus === 'ACTIVE' && state.suggestedRssUrl === null, { recovered, state });
+
+    const future = await parseFeed(`http://127.0.0.1:${port}/future-feed`);
+    check('a post dated in the future is dated now instead', !future.notModified && future.articles[0].publishedAt.getTime() <= Date.now(), future);
 
     const page = await discoverFeed(siteUrl);
     check('discovery ignores comment feeds', page === movedUrl, page);

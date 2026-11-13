@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
+import { CompanyLogo } from './CompanyLogo';
 import { Bookmark, Clock, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { ArticleItem } from '../ArticleCard';
-import { formatRelativeDate } from '@/lib/utils';
+import { formatRelativeDate, isReadTimeKnown } from '@/lib/utils';
 
 interface EditorialArticleCardProps {
   article: ArticleItem;
@@ -122,10 +123,12 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
             </span>
           )}
 
-          <span className={`text-xs font-sans flex items-center gap-1 ${isNight ? 'text-stone-400' : 'text-stone-600 font-medium'}`}>
-            <Clock className="w-3 h-3" />
-            {article.readTime} min
-          </span>
+          {isReadTimeKnown(article.readTime) && (
+            <span className={`text-xs font-sans flex items-center gap-1 ${isNight ? 'text-stone-400' : 'text-stone-600 font-medium'}`}>
+              <Clock className="w-3 h-3" />
+              {article.readTime} min
+            </span>
+          )}
 
           <button
             onClick={handleBookmarkClick}
@@ -161,17 +164,7 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
         {/* Header Metadata */}
         <div className="flex items-center justify-between gap-3 mb-3.5">
           <div className="flex items-center gap-2.5 min-w-0">
-            {article.company.logoUrl ? (
-              <img
-                src={article.company.logoUrl}
-                alt={article.company.name}
-                className="w-7 h-7 rounded-lg object-cover bg-stone-100 border border-stone-200/80"
-              />
-            ) : (
-              <div className="w-7 h-7 rounded-lg bg-stone-900 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
-                {article.company.name.charAt(0)}
-              </div>
-            )}
+            <CompanyLogo name={article.company.name} logoUrl={article.company.logoUrl} />
             <div className="min-w-0 flex-1">
               <span
                 className={`text-xs font-serif font-bold block leading-tight ${
@@ -290,8 +283,12 @@ export const EditorialArticleCard: React.FC<EditorialArticleCardProps> = ({
 
         <div className={`flex items-center justify-between text-[11px] font-sans ${isNight ? 'text-stone-400' : 'text-stone-600 font-medium'}`}>
           <span className="flex items-center gap-1">
-            <Clock className={`w-3 h-3 ${isNight ? 'text-stone-400' : 'text-stone-500'}`} />
-            {article.readTime} min read
+            {isReadTimeKnown(article.readTime) && (
+              <>
+                <Clock className={`w-3 h-3 ${isNight ? 'text-stone-400' : 'text-stone-500'}`} />
+                {article.readTime} min read
+              </>
+            )}
           </span>
           <span>{formatRelativeDate(article.publishedAt)}</span>
         </div>

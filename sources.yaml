@@ -343,10 +343,9 @@
 
 - name: Google AI Research
   slug: google-ai
-  websiteUrl: https://research.googleblog.com/
+  websiteUrl: https://research.google/blog
   category: AI & ML
   description: Computer vision, natural language understanding, TPU architecture, and foundational AI algorithms.
-  rssUrl: https://research.googleblog.com/rss.xml
 
 - name: Heroku Engineering
   slug: heroku
