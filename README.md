@@ -1,6 +1,6 @@
 # EngFeed
 
-A reader for 71 company engineering blogs that shows the engineering posts and hides the product announcements, hiring posts and marketing that make up most of what those blogs publish.
+A reader for 74 engineering blogs that shows the engineering posts and hides the product announcements, hiring posts and marketing that make up most of what those blogs publish.
 
 **Live: https://engfeed.vercel.app** · [![Tests](https://github.com/DecodeDebangi/engfeed/actions/workflows/test.yml/badge.svg)](https://github.com/DecodeDebangi/engfeed/actions/workflows/test.yml)
 
@@ -14,7 +14,7 @@ Company blogs mix deep technical write-ups with launch notes and customer storie
 
 ```mermaid
 flowchart LR
-  Y[sources.yaml<br/>71 blogs] --> SD[seed: discover<br/>feed URL + logo]
+  Y[sources.yaml<br/>74 blogs] --> SD[seed: discover<br/>feed URL + logo]
   SD --> DB[(Postgres<br/>Neon)]
   GA[GitHub Actions<br/>every 2 hours] --> SY[sync feeds<br/>5 at a time, ETag]
   SY --> CL[clean, dedupe,<br/>keyword tags]
@@ -25,7 +25,7 @@ flowchart LR
   V --> DB
 ```
 
-- **Curated list:** blogs live in [`sources.yaml`](sources.yaml) with a name, website and category. The feed URL and logo are discovered from the site (its `<link rel="alternate">` tags, then common feed paths), so 46 of the 71 blogs need no feed URL at all. The other 25 pin one, usually because discovery would pick the whole company blog instead of its engineering section. Removing a blog retires it: polling stops and its articles stay.
+- **Curated list:** blogs live in [`sources.yaml`](sources.yaml) with a name, website and category. The feed URL and logo are discovered from the site (its `<link rel="alternate">` tags, then common feed paths), so 49 of the 74 blogs need no feed URL at all. The other 25 pin one, usually because discovery would pick the whole company blog instead of its engineering section. Removing a blog retires it: polling stops and its articles stay.
 - **Sync:** every feed is polled with `ETag`/`Last-Modified`, so unchanged feeds cost one small request. Posts are cleaned with `sanitize-html`, de-duplicated by a hash of their id, and given keyword topic tags that match whole words only.
 - **Feed health:** a failed poll marks the feed `FAILING`, and 5 failures in a row mark it `BROKEN` (the local worker also retries each poll first). A broken feed whose URL was discovered is re-discovered automatically; a pinned one gets a suggested replacement in `npm run feeds:health`. The scheduled job also opens a GitHub issue (label `broken-feed`) when a feed breaks, and closes it when the feed recovers or the blog is retired.
 - **Classifier:** new posts go to an LLM in batches of 10 with their title, blog and first 800 characters. It returns one of four kinds and topic tags from a fixed list; anything else in the answer is discarded. A rate limit or outage pauses the run without penalising articles, and a post whose answers keep failing is skipped after 3 tries. It works with any OpenAI-compatible API, and without one the feed still works, unfiltered.
@@ -37,7 +37,7 @@ flowchart LR
 
 | What | Measured |
 |---|---|
-| Blogs followed | 71, of which 46 need no feed URL (9 inactive blogs retired on 2026-11-13) |
+| Blogs followed | 74, of which 49 need no feed URL (9 inactive blogs retired and 3 found by `discover:candidates` added on 2026-11-13) |
 | Articles stored | about 11,500 (2026-11-12) |
 | Full sync of 80 feeds | 28 s, 0 failures (5 feeds at a time) |
 | Live API response, from India | about 0.45 s, of which about 0.2 s is the network |

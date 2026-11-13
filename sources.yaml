@@ -456,3 +456,21 @@
   category: DevTools
   description: Customer service platform tech, ticket indexing, Ruby/Go microservices, and cloud security.
   rssUrl: https://medium.com/feed/zendesk-engineering
+
+- name: Phorion
+  slug: phorion
+  websiteUrl: https://phorion.io/blog
+  category: Security
+  description: macOS endpoint security research, attack reproductions and security advisories.
+
+- name: Strands Agents
+  slug: strands-agents
+  websiteUrl: https://strandsagents.com/blog
+  category: AI & ML
+  description: Building AI agents with the open-source Strands Agents SDK, backed by AWS.
+
+- name: acidvegas
+  slug: acidvegas
+  websiteUrl: https://acid.vegas/blog
+  category: Security
+  description: A hacker's personal blog on networking, DNS and security experiments.
