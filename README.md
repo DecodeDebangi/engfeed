@@ -125,3 +125,7 @@ npm run test:api        # API routes, filters, search, per-visitor bookmarks, ad
 ```
 
 The suites create temporary records and remove them afterwards, so they never touch real articles; `test:sync` and `test:classify` use a local stand-in server instead of real feeds or a real LLM, and `test:alerts` a stand-in for the GitHub API.
+
+## License
+
+[MIT](LICENSE)
