@@ -97,7 +97,7 @@ function validateResult(result: any): Classification | null {
 /**
  * Pull the JSON out of a reply, since models sometimes wrap it in a code fence or a sentence
  */
-function extractJson(content: string): string {
+export function extractJson(content: string): string {
   return content.slice(content.indexOf('{'), content.lastIndexOf('}') + 1);
 }
 
@@ -107,10 +107,29 @@ function extractJson(content: string): string {
  * Throws LlmUnavailableError if the service is unreachable or refuses the request.
  */
 export async function classifyBatch(articles: ArticleToClassify[]): Promise<(Classification | null)[]> {
+  const posts = articles.map((article, i) => ({ i, ...article }));
+  const content = await requestCompletion(SYSTEM_PROMPT, JSON.stringify({ posts }));
+  if (content === null) return articles.map(() => null);
+
+  let results: any[] = [];
+  try {
+    results = JSON.parse(extractJson(content)).results;
+  } catch {
+    // Unparseable answers fall through as all-null, below
+  }
+
+  return articles.map((_, i) => validateResult(Array.isArray(results) ? results.find((result) => result?.i === i) : null));
+}
+
+/**
+ * Send one request to the configured OpenAI-compatible API and return the reply's text, or null if
+ * the reply is unusable (a plain 500, which some local models return for one specific input).
+ * Throws LlmUnavailableError if the service is unconfigured, unreachable or refuses the request.
+ */
+export async function requestCompletion(system: string, user: string): Promise<string | null> {
   const config = getLlmConfig();
   if (!config) throw new LlmUnavailableError('LLM_MODEL is not set');
 
-  const posts = articles.map((article, i) => ({ i, ...article }));
   await waitForNextRequestSlot(config.minIntervalMs);
 
   let res: Response;
@@ -125,8 +144,8 @@ export async function classifyBatch(articles: ArticleToClassify[]): Promise<(Cla
         model: config.model,
         temperature: 0,
         messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: JSON.stringify({ posts }) },
+          { role: 'system', content: system },
+          { role: 'user', content: user },
         ],
       }),
       signal: AbortSignal.timeout(config.timeoutMs),
@@ -135,23 +154,17 @@ export async function classifyBatch(articles: ArticleToClassify[]): Promise<(Cla
     throw new LlmUnavailableError(`Could not reach ${config.baseUrl}: ${err.cause?.code || err.message}`);
   }
 
-  // A plain 500 can come from one specific post (some local models choke on it), so it counts against
-  // the batch rather than stopping the run. classifyPendingArticles stops if they keep coming.
-  if (res.status === 500) return articles.map(() => null);
-  // Anything else, such as a 429 or a 503 "high demand", says nothing about the articles
+  // A plain 500 can come from one specific input (some local models choke on it), so it counts against
+  // that request rather than stopping the run. classifyPendingArticles stops if they keep coming.
+  if (res.status === 500) return null;
+  // Anything else, such as a 429 or a 503 "high demand", says nothing about the input
   if (!res.ok) {
     throw new LlmUnavailableError(res.status === 429 ? 'Rate limit or quota reached (HTTP 429)' : `HTTP ${res.status} from ${config.baseUrl}`);
   }
 
   const body = await res.json().catch(() => null);
-  let results: any[] = [];
-  try {
-    results = JSON.parse(extractJson(body?.choices?.[0]?.message?.content)).results;
-  } catch {
-    // Unparseable answers fall through as all-null, below
-  }
-
-  return articles.map((_, i) => validateResult(Array.isArray(results) ? results.find((result) => result?.i === i) : null));
+  const content = body?.choices?.[0]?.message?.content;
+  return typeof content === 'string' ? content : null;
 }
 
 /**

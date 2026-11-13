@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
+import { assessBlog, BlogAssessment, decide } from '../src/lib/candidates/assess';
 import { blogHome, looksLikeBlogPost, siteKey } from '../src/lib/candidates/site-key';
+import { LlmUnavailableError } from '../src/lib/classifier';
 import { db } from '../src/lib/db';
 import { discoverFeed } from '../src/lib/feed-discovery';
 import { parseFeed } from '../src/lib/rss-parser';
@@ -8,8 +10,9 @@ import { loadSources } from '../src/lib/sources';
 
 // Usage: npm run discover:candidates -- [--days 90] [--top 40]
 // Finds engineering blogs worth following that aren't in sources.yaml yet, from Hacker News, Lobsters,
-// links inside posts already stored, and candidate-blogs.txt. Prints a ranked list with evidence and a
-// sources.yaml snippet for the active ones. It changes nothing; you decide what to add.
+// links inside posts already stored, and candidate-blogs.txt. Checks the top ones for an active feed,
+// asks the LLM what kind of blog each is, and suggests company engineering blogs and well-known personal
+// blogs (see RULES in src/lib/candidates/assess.ts). It changes nothing; you decide what to add.
 const args = process.argv.slice(2);
 const option = (name: string, fallback: number) => {
   const i = args.indexOf(`--${name}`);
@@ -28,11 +31,19 @@ interface Evidence {
   lobstersPosts: number;
   lobstersScore: number;
   citedBy: Set<string>;
+  // Distinct posts seen on Hacker News or Lobsters; the same post shared on both counts once
+  storyUrls: Set<string>;
   inCandidateList: boolean;
   examples: string[];
 }
 
 const candidates = new Map<string, Evidence>();
+
+const normalizeStoryUrl = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/[?#].*$/, '').replace(/\/$/, '').toLowerCase();
+
+// Assessments are cached per blog and its newest post, so a rerun only asks about blogs that changed
+const CACHE_FILE = path.join(process.cwd(), '.cache/candidate-assessments.json');
+const assessmentCache: Record<string, BlogAssessment | null> = fs.existsSync(CACHE_FILE) ? JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8')) : {};
 
 function note(url: string, update: (e: Evidence) => void, example?: string) {
   if (!looksLikeBlogPost(url)) return;
@@ -40,7 +51,7 @@ function note(url: string, update: (e: Evidence) => void, example?: string) {
   if (!key) return;
   const evidence =
     candidates.get(key) ??
-    { key, home: blogHome(url), hnPosts: 0, hnPoints: 0, lobstersPosts: 0, lobstersScore: 0, citedBy: new Set(), inCandidateList: false, examples: [] };
+    { key, home: blogHome(url), hnPosts: 0, hnPoints: 0, lobstersPosts: 0, lobstersScore: 0, citedBy: new Set(), storyUrls: new Set(), inCandidateList: false, examples: [] };
   update(evidence);
   if (example && evidence.examples.length < 3 && !evidence.examples.includes(example)) evidence.examples.push(example);
   candidates.set(key, evidence);
@@ -57,6 +68,7 @@ async function fromHackerNews(since: number) {
       if (!hit.url) continue;
       count++;
       note(hit.url, (e) => {
+        e.storyUrls.add(normalizeStoryUrl(hit.url));
         e.hnPosts++;
         e.hnPoints += hit.points;
       }, hit.title);
@@ -76,6 +88,7 @@ async function fromLobsters() {
       if (!story.url) continue;
       count++;
       note(story.url, (e) => {
+        e.storyUrls.add(normalizeStoryUrl(story.url));
         e.lobstersPosts++;
         e.lobstersScore += story.score;
       }, story.title);
@@ -108,7 +121,7 @@ function fromCandidateList() {
     if (!key) continue;
     const evidence =
       candidates.get(key) ??
-      { key, home: url.replace(/\/$/, ''), hnPosts: 0, hnPoints: 0, lobstersPosts: 0, lobstersScore: 0, citedBy: new Set(), inCandidateList: false, examples: [] };
+      { key, home: url.replace(/\/$/, ''), hnPosts: 0, hnPoints: 0, lobstersPosts: 0, lobstersScore: 0, citedBy: new Set(), storyUrls: new Set(), inCandidateList: false, examples: [] };
     evidence.inCandidateList = true;
     candidates.set(key, evidence);
   }
@@ -120,21 +133,24 @@ const score = (e: Evidence) =>
 
 async function qualify(e: Evidence) {
   const feedUrl = (await discoverFeed(e.home)) ?? (e.home !== new URL(e.home).origin ? await discoverFeed(new URL(e.home).origin) : null);
-  if (!feedUrl) return { feedUrl: null, title: undefined, newest: null as Date | null, postsLastYear: 0, recent: [] as string[] };
+  const none = { feedUrl, title: undefined as string | undefined, newest: null as Date | null, postsLastYear: 0, recent: [] as string[], posts: [] as { title: string; summary: string }[] };
+  if (!feedUrl) return { ...none, feedUrl: null };
   try {
     const feed = await parseFeed(feedUrl);
     const articles = feed.notModified ? [] : feed.articles;
     const dates = articles.map((a) => a.publishedAt).sort((a, b) => b.getTime() - a.getTime());
     const yearAgo = Date.now() - 365 * 86400_000;
+    const newestFirst = [...articles].sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
     return {
       feedUrl,
       title: feed.notModified ? undefined : feed.title,
       newest: dates[0] ?? null,
       postsLastYear: dates.filter((d) => d.getTime() > yearAgo).length,
-      recent: [...articles].sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime()).slice(0, 3).map((a) => a.title),
+      recent: newestFirst.slice(0, 3).map((a) => a.title),
+      posts: newestFirst.slice(0, 10).map((a) => ({ title: a.title, summary: a.summary })),
     };
   } catch {
-    return { feedUrl, title: undefined, newest: null as Date | null, postsLastYear: 0, recent: [] as string[] };
+    return none;
   }
 }
 
@@ -171,35 +187,70 @@ async function main() {
   );
   results.sort((a, b) => score(b.e) - score(a.e));
 
+  // Cheap checks first; the LLM is asked only about blogs that pass them
+  const categories = [...new Set(loadSources().map((s) => s.category)), 'Personal Blogs'];
   const activeSince = Date.now() - ACTIVE_WITHIN_DAYS * 86400_000;
-  const status = (r: (typeof results)[number]) =>
-    !r.q.feedUrl ? 'no feed' : r.q.newest && r.q.newest.getTime() > activeSince ? 'active' : 'quiet';
+  const decided: { e: Evidence; q: (typeof results)[number]['q']; assessment: BlogAssessment | null; suggest: boolean; reason: string }[] = [];
+  let llmStopped: string | undefined;
 
-  for (const group of ['active', 'quiet', 'no feed']) {
-    const rows = results.filter((r) => status(r) === group);
-    console.log(`=== ${group.toUpperCase()} (${rows.length})`);
-    for (const { e, q } of rows) {
-      const signals = [
-        e.hnPosts ? `HN ${e.hnPosts} posts / ${e.hnPoints} pts` : '',
-        e.lobstersPosts ? `Lobsters ${e.lobstersPosts} / ${e.lobstersScore} pts` : '',
-        e.citedBy.size ? `cited by ${e.citedBy.size} followed blogs (${[...e.citedBy].slice(0, 3).join(', ')})` : '',
-        e.inCandidateList ? 'in candidate-blogs.txt' : '',
-      ].filter(Boolean).join('; ');
-      console.log(`- ${q.title ?? e.key} | ${e.home}`);
-      console.log(`    evidence: ${signals}`);
-      if (q.feedUrl) console.log(`    feed: ${q.feedUrl} | newest ${q.newest?.toISOString().slice(0, 10) ?? '?'} | ${q.postsLastYear} posts in the last year`);
-      const titles = q.recent.length ? q.recent : e.examples;
-      if (titles.length) console.log(`    recent: ${titles.map((t) => `"${t.slice(0, 60)}"`).join(' · ')}`);
+  for (const { e, q } of results) {
+    if (!q.feedUrl) continue;
+    const signals = {
+      appearances: e.storyUrls.size,
+      citedBy: e.citedBy.size,
+      postsLastYear: q.postsLastYear,
+      activeRecently: !!q.newest && q.newest.getTime() > activeSince,
+    };
+    const precheck = decide(signals, { kind: 'COMPANY_ENGINEERING', owner: '', engineeringPosts: 1, postsJudged: 1, category: '' });
+    let assessment: BlogAssessment | null = null;
+    const cacheKey = `${e.key}@${q.newest?.toISOString().slice(0, 10)}`;
+    if (precheck.suggest && cacheKey in assessmentCache) {
+      assessment = assessmentCache[cacheKey];
+    } else if (precheck.suggest && !llmStopped) {
+      try {
+        assessment = await assessBlog({ name: q.title ?? e.key, url: e.home, posts: q.posts }, categories);
+        assessmentCache[cacheKey] = assessment;
+      } catch (err) {
+        if (!(err instanceof LlmUnavailableError)) throw err;
+        llmStopped = err.message;
+      }
     }
-    console.log();
+    const verdict = precheck.suggest ? decide(signals, assessment) : precheck;
+    decided.push({ e, q, assessment, ...verdict });
   }
 
-  const active = results.filter((r) => status(r) === 'active');
-  if (active.length) {
-    console.log('=== sources.yaml snippet for the active ones (set a category, and delete any you don\'t want)');
-    for (const { e, q } of active) {
+  fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
+  fs.writeFileSync(CACHE_FILE, JSON.stringify(assessmentCache, null, 1));
+
+  const describe = ({ e, q, assessment, reason }: (typeof decided)[number]) => {
+    const signals = [
+      e.storyUrls.size ? `${e.storyUrls.size} distinct posts on HN/Lobsters` : '',
+      e.hnPosts ? `HN ${e.hnPosts} / ${e.hnPoints} pts` : '',
+      e.lobstersPosts ? `Lobsters ${e.lobstersPosts} / ${e.lobstersScore} pts` : '',
+      e.citedBy.size ? `cited by ${e.citedBy.size} followed blogs (${[...e.citedBy].slice(0, 3).join(', ')})` : '',
+      e.inCandidateList ? 'in candidate-blogs.txt' : '',
+    ].filter(Boolean).join('; ');
+    console.log(`- ${assessment?.owner || q.title || e.key} | ${e.home}`);
+    console.log(`    ${reason}${assessment ? ` | ${assessment.category}` : ''}`);
+    console.log(`    evidence: ${signals}`);
+    console.log(`    feed: ${q.feedUrl} | newest ${q.newest?.toISOString().slice(0, 10) ?? '?'} | ${q.postsLastYear} posts in the last year`);
+    if (q.recent.length) console.log(`    recent: ${q.recent.map((t) => `"${t.slice(0, 60)}"`).join(' · ')}`);
+  };
+
+  const suggested = decided.filter((d) => d.suggest);
+  console.log(`=== SUGGESTED (${suggested.length})`);
+  suggested.forEach(describe);
+  console.log(`\n=== NOT SUGGESTED (${decided.length - suggested.length})`);
+  decided.filter((d) => !d.suggest).forEach(describe);
+  const noFeed = results.filter((r) => !r.q.feedUrl);
+  console.log(`\n=== NO FEED FOUND (${noFeed.length}): ${noFeed.map((r) => r.e.home).join(', ')}`);
+  if (llmStopped) console.log(`\n⏸️ Stopped asking the LLM: ${llmStopped}. The rest are marked "not assessed"; run again later.`);
+
+  if (suggested.length) {
+    console.log('\n=== sources.yaml snippet for the suggested ones (delete any you don\'t want)');
+    for (const { e, q, assessment } of suggested) {
       const slug = e.key.replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      console.log(`\n- name: ${q.title ?? e.key}\n  slug: ${slug}\n  websiteUrl: ${e.home}\n  category: TODO`);
+      console.log(`\n- name: ${q.title ?? e.key}\n  slug: ${slug}\n  websiteUrl: ${e.home}\n  category: ${assessment?.category ?? 'TODO'}`);
     }
   }
 }
