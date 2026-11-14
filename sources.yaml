@@ -474,3 +474,27 @@
   websiteUrl: https://acid.vegas/blog
   category: Security
   description: A hacker's personal blog on networking, DNS and security experiments.
+
+- name: Google Developers Blog
+  slug: google-developers-blog
+  websiteUrl: https://developers.googleblog.com
+  category: AI & ML
+  description: Building AI agents, optimizing TPU model training, and scaling inference on Google Cloud.
+
+- name: VulnCheck Blog
+  slug: vulncheck-blog
+  websiteUrl: https://www.vulncheck.com/blog
+  category: Security
+  description: Vulnerability research, exploit analysis, and threat intelligence from security engineers.
+
+- name: Amutable
+  slug: amutable
+  websiteUrl: https://amutable.com/blog
+  category: Cloud & Infra
+  description: Building immutable, verifiable Linux infrastructure using TPM attestation and secure boot.
+
+- name: null program
+  slug: null-program
+  websiteUrl: https://nullprogram.com/blog
+  category: DevTools
+  description: Deep dives into C programming, compiler internals, algorithms, and software development tools.
