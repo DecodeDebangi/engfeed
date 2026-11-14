@@ -2,7 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import { assessBlog, BlogAssessment, decide } from '../src/lib/candidates/assess';
 import { blogHome, looksLikeBlogPost, siteKey } from '../src/lib/candidates/site-key';
-import { appendSources, entriesYaml, keysFromClosedPullRequests, loadRejectedList, pullRequestBody, Suggestion, toSourceEntry } from '../src/lib/candidates/suggestions';
+import { appendSources, blogSection, carryOver, entriesYaml, loadRejectedList, pullRequestBody, Suggestion, suggestionPullRequests, toSourceEntry } from '../src/lib/candidates/suggestions';
+import { parse } from 'yaml';
+import type { FeedSource } from '../src/lib/sources';
 import { LlmUnavailableError } from '../src/lib/classifier';
 import { db } from '../src/lib/db';
 import { discoverFeed } from '../src/lib/feed-discovery';
@@ -16,7 +18,8 @@ import { loadSources } from '../src/lib/sources';
 // blogs (see RULES in src/lib/candidates/assess.ts). Blogs in rejected-candidates.yaml, or in a closed
 // suggestion PR (when GITHUB_TOKEN and GITHUB_REPOSITORY are set), are never suggested.
 // It changes nothing unless --apply is given; then it adds the suggestions to sources.yaml and writes the
-// pull request description to .cache/blog-suggestions.md, as the weekly suggest-blogs workflow does.
+// pull request description to .cache/blog-suggestions.md, as the weekly suggest-blogs workflow does. If a
+// suggestion PR is open, the entries still on its branch are carried over, so the new suggestions join it.
 const args = process.argv.slice(2);
 const option = (name: string, fallback: number) => {
   const i = args.indexOf(`--${name}`);
@@ -176,9 +179,14 @@ async function main() {
     const key = siteKey(url);
     if (key) known.add(key);
   }
+  // An open suggestion PR's remaining entries are carried over, so they aren't suggested twice; an entry
+  // deleted from its branch counts as rejected, like every blog a closed PR suggested that isn't followed
+  const prs = await suggestionPullRequests();
+  const carried = prs?.open ? carryOver(parse(prs.open.sourcesYaml) as FeedSource[], prs.open.body, siteKey) : { keys: [], kept: [] };
+  carried.kept.forEach(({ key }) => known.add(key));
   const rejectedList = loadRejectedList();
-  const rejectedInPrs = await keysFromClosedPullRequests();
-  const rejected = new Set([...rejectedList, ...(rejectedInPrs ?? [])].filter((key) => !known.has(key)));
+  const rejectedInPrs = new Set([...(prs?.suggestedKeys ?? [])].filter((key) => !known.has(key)));
+  const rejected = new Set([...rejectedList, ...rejectedInPrs].filter((key) => !known.has(key)));
 
   const ranked = [...candidates.values()].filter((e) => !known.has(e.key) && !rejected.has(e.key)).sort((a, b) => score(b) - score(a));
   console.log(
@@ -186,7 +194,8 @@ async function main() {
   );
   console.log(
     `${candidates.size} blogs found, ${candidates.size - ranked.length} already followed, retired or rejected ` +
-      `(${rejected.size} rejected: ${rejectedList.size} in rejected-candidates.yaml, ${rejectedInPrs ? `${rejectedInPrs.size} in closed suggestion PRs` : 'closed suggestion PRs not checked without GITHUB_TOKEN'}). ` +
+      `(${rejected.size} rejected: ${rejectedList.size} in rejected-candidates.yaml, ${prs ? `${rejectedInPrs.size} skipped in suggestion PRs` : 'suggestion PRs not checked without GITHUB_TOKEN'}). ` +
+      (prs?.open ? `Open suggestion PR #${prs.open.number} still proposes ${carried.kept.length}, which will be kept. ` : '') +
       `Checking the top ${Math.min(TOP, ranked.length)} for a working feed...\n`
   );
 
@@ -277,20 +286,28 @@ async function main() {
     postsLastYear: q.postsLastYear,
     recent: q.recent,
   }));
-  // Slugs must not clash with any followed or retired blog
-  const taken = new Set([...companies.map((c) => c.slug), ...loadSources().map((s) => s.slug)]);
+  // Slugs must not clash with any followed, retired or carried-over blog
+  const taken = new Set([...companies.map((c) => c.slug), ...loadSources().map((s) => s.slug), ...carried.kept.map((c) => c.entry.slug)]);
   const entries = suggestions.map((s) => toSourceEntry(s, taken));
   if (!APPLY) {
     console.log("\n=== sources.yaml entries for the suggested ones (delete any you don't want), or rerun with --apply\n");
     console.log(entriesYaml(entries));
     return;
   }
+  // The branch is rebuilt from this checkout each time, so it never conflicts with main
   const sourcesFile = path.join(process.cwd(), 'sources.yaml');
-  fs.writeFileSync(sourcesFile, appendSources(fs.readFileSync(sourcesFile, 'utf8'), entries));
+  fs.writeFileSync(sourcesFile, appendSources(fs.readFileSync(sourcesFile, 'utf8'), [...carried.kept.map((c) => c.entry), ...entries]));
   loadSources(); // fails loudly if the file no longer parses
-  const note = llmStopped ? `The LLM stopped part-way (${llmStopped}), so some blogs weren't assessed this week; they'll be checked next week.` : undefined;
-  fs.writeFileSync(PR_BODY_FILE, pullRequestBody(suggestions, note));
-  console.log(`\n✍️ Added ${entries.length} to sources.yaml (${entries.map((e) => e.slug).join(', ')}) and wrote ${path.relative(process.cwd(), PR_BODY_FILE)}.`);
+  // Kept generic: the error text can include the LLM's address, which is a secret
+  const note = llmStopped ? "The LLM stopped part-way this run, so some blogs weren't assessed; they'll be checked next week." : undefined;
+  const sections = [...carried.kept.map((c) => c.section), ...suggestions.map(blogSection)];
+  const keys = [...new Set([...carried.keys, ...suggestions.map((s) => s.key)])];
+  fs.writeFileSync(PR_BODY_FILE, pullRequestBody(sections, keys, note));
+  console.log(
+    `\n✍️ Added ${entries.length} to sources.yaml (${entries.map((e) => e.slug).join(', ')})` +
+      (carried.kept.length ? ` after the ${carried.kept.length} carried over from PR #${prs!.open!.number}` : '') +
+      ` and wrote ${path.relative(process.cwd(), PR_BODY_FILE)}.`
+  );
 }
 
 main()

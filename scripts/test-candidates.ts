@@ -1,6 +1,6 @@
 import { decide, BlogAssessment, Signals } from '../src/lib/candidates/assess';
 import { blogHome, looksLikeBlogPost, siteKey } from '../src/lib/candidates/site-key';
-import { appendSources, candidateMarker, keysFromMarker, pullRequestBody, Suggestion, toSourceEntry, uniqueSlug } from '../src/lib/candidates/suggestions';
+import { appendSources, blogSection, candidateMarker, carryOver, keysFromMarker, pullRequestBody, Suggestion, toSourceEntry, uniqueSlug } from '../src/lib/candidates/suggestions';
 import { parse } from 'yaml';
 
 const KEYS: [string, string | null][] = [
@@ -70,8 +70,21 @@ const appended = appendSources(existing, [toSourceEntry(suggestion('Acme', 'acme
 const parsed = parse(appended);
 check('appending keeps the existing entries and comments', appended.startsWith(existing.trimEnd()) && parsed[0].slug === 'old', true);
 check('appended entries parse back with awkward characters intact', parsed[2]?.name === 'Beta: Labs' && parsed[1]?.description === 'Notes: on "quoting" & #hashes', true);
-const body = pullRequestBody([suggestion('Acme', 'acme.dev'), suggestion('Medium pub', 'medium.com/acme-eng')]);
+const acme = suggestion('Acme', 'acme.dev');
+const pub = suggestion('Medium pub', 'medium.com/acme-eng');
+const body = pullRequestBody([acme, pub].map(blogSection), ['acme.dev', 'medium.com/acme-eng'], 'The LLM stopped part-way this run.');
 check('the PR body records which blogs it suggested', keysFromMarker(body).join(), 'acme.dev,medium.com/acme-eng');
+
+// An open PR: Acme was kept and renamed on the branch, the Medium publication was deleted
+const branch = [{ name: 'Old', slug: 'old', websiteUrl: 'https://old.dev', category: 'Security' }, { ...toSourceEntry(acme, new Set()), name: 'Acme Engineering' }];
+const carried = carryOver(branch, body, siteKey);
+check('an open PR carries over only the entries still on its branch', carried.kept.map((c) => c.key).join(), 'acme.dev');
+check('a carried entry keeps the edit made on the branch', carried.kept[0]?.entry.name, 'Acme Engineering');
+check('a carried entry keeps its full description section', carried.kept[0]?.section, blogSection(acme));
+check('a deleted entry stays recorded, so it counts as rejected', carried.keys.includes('medium.com/acme-eng'), true);
+check('the run note is not mistaken for part of a blog section', carried.kept[0]?.section.includes('LLM'), false);
+const oldStyle = carryOver(branch, `### [Acme](https://acme.dev/blog)\n${candidateMarker(['acme.dev'])}`, siteKey);
+check('a PR from before sections were tagged gets a short section from its entry', oldStyle.kept[0]?.section.includes('### [Acme Engineering](https://acme.dev/blog)'), true);
 check('a body without the marker suggests nothing', keysFromMarker('Some other PR').length, 0);
 check('the marker survives a round trip', keysFromMarker(`edited text\n${candidateMarker(['a.dev'])}`).join(), 'a.dev');
 
