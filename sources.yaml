@@ -474,3 +474,9 @@
   websiteUrl: https://acid.vegas/blog
   category: Security
   description: A hacker's personal blog on networking, DNS and security experiments.
+
+- name: Namespace Blog
+  slug: namespace-blog
+  websiteUrl: https://namespace.so/blog
+  category: DevTools
+  description: Building cloud-based development environments, Bazel caching, and macOS virtualization.
