@@ -50,7 +50,7 @@ jobs:
           restore-keys: candidate-assessments-
 
       - if: steps.open.outputs.number == ''
-        run: npm run discover:candidates -- --apply
+        run: npm run discover:candidates -- --apply --top 60
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           DIRECT_URL: ${{ secrets.DIRECT_URL }}

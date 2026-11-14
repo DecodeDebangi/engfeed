@@ -85,11 +85,13 @@ export function pullRequestBody(suggestions: Suggestion[], note?: string) {
     )
     .join('\n\n');
 
+  const one = suggestions.length === 1;
   return `The weekly search of Hacker News, Lobsters and links in followed blogs found ${suggestions.length === 1 ? 'one blog' : `${suggestions.length} blogs`} that ${suggestions.length === 1 ? 'fits' : 'fit'} what EngFeed follows: company engineering blogs, and personal blogs that have drawn attention more than once.
 
-**To follow them**, merge this PR. The blogs are added to \`sources.yaml\`, and their posts appear after the next feed sync.
+${one ? `**To follow it**, merge this PR. The blog is added to \`sources.yaml\`, and its posts appear after the next feed sync.
+**To skip it**, close the PR.` : `**To follow them**, merge this PR. The blogs are added to \`sources.yaml\`, and their posts appear after the next feed sync.
 **To skip one**, delete its entry from \`sources.yaml\` on this branch before merging.
-**To skip all**, close the PR.
+**To skip all**, close the PR.`}
 
 Skipped blogs aren't suggested again. No new PR opens while this one is open.
 
